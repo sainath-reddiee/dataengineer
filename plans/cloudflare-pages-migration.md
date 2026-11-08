@@ -1,6 +1,6 @@
 # Cloudflare Pages migration — DataEngineer Hub
 
-Last updated 8 Nov 2026 after the production Pages deploy and custom-domain attach.
+Last updated 8 Nov 2026 after DNS cutover. Public origin is Cloudflare Pages.
 
 WordPress stays on Hostinger at `app.dataengineerhub.blog` forever.
 
@@ -8,13 +8,12 @@ WordPress stays on Hostinger at `app.dataengineerhub.blog` forever.
 
 | Piece | Status |
 |---|---|
-| Cloudflare proxy on `dataengineerhub.blog` | On (`Server: cloudflare`, `CF-RAY`). HTML is `cf-cache-status: DYNAMIC` — proxy only, origin still Hostinger. |
-| Hostinger origin | Live. Headers include `platform: hostinger`, `x-turbo-charged-by: LiteSpeed`. |
+| Public origin | Cloudflare Pages. Apex and www custom domains **Active**. No `platform: hostinger` on the public host. |
+| Hostinger | WordPress only, at `app.dataengineerhub.blog`. FTP still uploads `public_html` for a week as rollback. |
 | Workers & Pages project `dataengineerhub` | Created. Preview host: `https://dataengineerhub.pages.dev` (noindexed in `public/_headers`). |
 | Worker routes on the zone | **None.** The old `dataengineerhub-pseo-router` is not intercepting. R2 bucket `dataengineerhub-pseo` still exists; leave it. |
-| Wrangler CLI | Needs `npx wrangler login` once (Allow in the browser). |
-| GitHub Actions | Hostinger FTP still default. Opt in with workflow input **deploy_cloudflare** or repo variable `ENABLE_CLOUDFLARE_PAGES=true`. Secrets: `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`. |
-| Account ID | `3734dc24feea2731e5f52e0e769d0deb` (also shown on Workers & Pages). |
+| GitHub Actions | `ENABLE_CLOUDFLARE_PAGES=true` plus secrets `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID`. FTP still runs; Pages is the live origin. |
+| Account ID | `3734dc24feea2731e5f52e0e769d0deb` |
 
 ## What Pages fixes vs what it does not
 
@@ -39,7 +38,7 @@ Build still happens in GitHub Actions (`npm run build` then `npm run pages:prepa
 2. [x] Do **not** drag the full `dist/` in the dashboard (DuckDB wasm > 25 MiB; upload will fail). Deploy with Wrangler / Actions.
 3. [x] GitHub secret `CLOUDFLARE_API_TOKEN` added (Pages write).
 4. [x] GitHub secret `CLOUDFLARE_ACCOUNT_ID` = `3734dc24feea2731e5f52e0e769d0deb`.
-5. [ ] GitHub → Settings → Variables → `ENABLE_CLOUDFLARE_PAGES` = `true` so every `main` deploy also uploads `dist-pages`.
+5. [x] GitHub → Settings → Variables → `ENABLE_CLOUDFLARE_PAGES` = `true`.
 
 ## First deploy (preview only)
 
@@ -64,13 +63,12 @@ Check:
 
 ## DNS cutover
 
-1. [x] Pages project `dataengineerhub` custom domains: `dataengineerhub.blog` and `www.dataengineerhub.blog` (added 8 Nov 2026; status starts at initializing).
-2. [ ] SSL/TLS on the zone: **Full (strict)** — Wrangler OAuth cannot patch this (`zone:read` only). Set it in the dashboard if it is not already Strict.
-3. Caching → keep orange-cloud. Pages is now origin once domain status is `active`.
-4. Caching → Purge Everything after the domains go active.
-5. Run `node scripts/verifyLiveAdsenseReview.js` against the apex.
-6. Keep Hostinger FTP for a week as rollback. Then stop deploying `public_html`.
-7. Set GitHub variable `ENABLE_CLOUDFLARE_PAGES=true`.
+1. [x] Custom domains `dataengineerhub.blog` and `www.dataengineerhub.blog` are **Active**.
+2. [x] Apex and www serve Pages HTML over HTTPS (HSTS on). Confirm SSL/TLS is **Full (strict)** in the zone if the dashboard still says Flexible.
+3. [x] Orange-cloud CNAME `@` and `www` → `dataengineerhub.pages.dev`. `app` A record still Hostinger.
+4. Caching → Purge Everything if an old Hostinger HTML page is still cached.
+5. Keep Hostinger FTP for a week as rollback. Then stop deploying `public_html`.
+6. [x] GitHub variable `ENABLE_CLOUDFLARE_PAGES=true`.
 
 Rollback: remove the Pages custom domain. Cloudflare will proxy Hostinger again if the A/CNAME still points at Hostinger origin.
 

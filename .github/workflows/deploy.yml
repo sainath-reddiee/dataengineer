@@ -703,8 +703,11 @@ jobs:
         run: |
           echo "🔍 Verifying deployment..."
           FAIL=0
+          # Pages 308s directory URLs onto a trailing slash. Follow those
+          # so this check matches the live apex, not Hostinger DirectorySlash Off.
+          curl_live() { curl -sSL --max-redirs 5 "$@"; }
 
-          homepage_code=$(curl -sS -o /dev/null -w "%{http_code}" https://dataengineerhub.blog/ || echo "000")
+          homepage_code=$(curl_live -o /dev/null -w "%{http_code}" https://dataengineerhub.blog/ || echo "000")
           if [ "$homepage_code" = "200" ]; then
             echo "✅ Main site is accessible (HTTP $homepage_code)"
           else
@@ -712,7 +715,7 @@ jobs:
             FAIL=1
           fi
 
-          sitemap_code=$(curl -sS -o /dev/null -w "%{http_code}" https://dataengineerhub.blog/sitemap.xml || echo "000")
+          sitemap_code=$(curl_live -o /dev/null -w "%{http_code}" https://dataengineerhub.blog/sitemap.xml || echo "000")
           if [ "$sitemap_code" = "200" ]; then
             echo "✅ Sitemap is accessible (HTTP $sitemap_code)"
           else
@@ -723,12 +726,12 @@ jobs:
           # Fail the deployment when /articles is missing or falls through to
           # the homepage/404 shell. Print the status first so a 404 is obvious
           # in the log instead of a silent grep miss + exit 1.
-          ARTICLES_CODE=$(curl -sS -o /tmp/live-articles.html -w "%{http_code}" -A "AdsBot-Google (+http://www.google.com/adsbot.html)" https://dataengineerhub.blog/articles || echo "000")
+          ARTICLES_CODE=$(curl_live -o /tmp/live-articles.html -w "%{http_code}" -A "AdsBot-Google (+http://www.google.com/adsbot.html)" https://dataengineerhub.blog/articles/ || echo "000")
           ARTICLES_HTML=$(cat /tmp/live-articles.html 2>/dev/null || true)
           if [ "$ARTICLES_CODE" != "200" ]; then
             echo "❌ /articles returned HTTP $ARTICLES_CODE (expected 200 static listing)"
             FAIL=1
-          elif ! grep -q 'rel="canonical" href="https://dataengineerhub.blog/articles"' /tmp/live-articles.html; then
+          elif ! grep -qE 'rel="canonical" href="https://dataengineerhub.blog/articles/?"' /tmp/live-articles.html; then
             echo "❌ /articles is not serving its canonical static listing (HTTP $ARTICLES_CODE)"
             FAIL=1
           else
@@ -736,7 +739,7 @@ jobs:
             if [ "$LIVE_ARTICLE_LINKS" -lt 50 ]; then
               echo "❌ /articles exposes only $LIVE_ARTICLE_LINKS article links to AdsBot"
               FAIL=1
-            elif curl -sI -A "AdsBot-Google (+http://www.google.com/adsbot.html)" https://dataengineerhub.blog/articles | grep -qi '^x-robots-tag:.*noindex'; then
+            elif curl -sSIL --max-redirs 5 -A "AdsBot-Google (+http://www.google.com/adsbot.html)" https://dataengineerhub.blog/articles/ | grep -qi '^x-robots-tag:.*noindex'; then
               echo "❌ /articles unexpectedly returns X-Robots-Tag: noindex"
               FAIL=1
             else
@@ -752,8 +755,8 @@ jobs:
           # x-r2-key pages still say index,follow. .htaccess X-Robots-Tag
           # only applies when Apache serves the file, not when R2 does.
           for PAGE in glossary/snowflake compare/airflow-vs-prefect category/snowflake cheatsheets/snowflake-interview-questions; do
-            PAGE_CODE=$(curl -sS -o /tmp/live-pseo.html -w "%{http_code}" -A "Googlebot" "https://dataengineerhub.blog/${PAGE}" || echo "000")
-            PAGE_HEADERS=$(curl -sSI -A "Googlebot" "https://dataengineerhub.blog/${PAGE}" || true)
+            PAGE_CODE=$(curl_live -o /tmp/live-pseo.html -w "%{http_code}" -A "Googlebot" "https://dataengineerhub.blog/${PAGE}/" || echo "000")
+            PAGE_HEADERS=$(curl -sSIL --max-redirs 5 -A "Googlebot" "https://dataengineerhub.blog/${PAGE}/" || true)
             if [ "$PAGE_CODE" != "200" ]; then
               echo "::warning::/${PAGE} returned HTTP $PAGE_CODE; static dist was already verified, but production cache/origin needs checking"
             elif ! grep -qi 'meta name="robots" content="noindex, follow"' /tmp/live-pseo.html; then
@@ -767,7 +770,7 @@ jobs:
             fi
           done
 
-          robots_code=$(curl -sS -o /dev/null -w "%{http_code}" https://dataengineerhub.blog/robots.txt || echo "000")
+          robots_code=$(curl_live -o /dev/null -w "%{http_code}" https://dataengineerhub.blog/robots.txt || echo "000")
           if [ "$robots_code" = "200" ]; then
             echo "✅ Robots.txt is accessible (HTTP $robots_code)"
           else
@@ -776,7 +779,7 @@ jobs:
 
           if [ -f "public/indexnow-key.txt" ]; then
             KEY=$(cat public/indexnow-key.txt | tr -d '[:space:]')
-            if curl -sf -o /dev/null "https://dataengineerhub.blog/${KEY}.txt"; then
+            if curl_live -sf -o /dev/null "https://dataengineerhub.blog/${KEY}.txt"; then
               echo "✅ IndexNow key verification file is accessible"
             else
               echo "⚠️ IndexNow key verification failed"
@@ -785,8 +788,8 @@ jobs:
 
           # Verify essential pages (About, Contact, Privacy, Terms, Disclaimer)
           for PAGE in about contact privacy-policy terms-of-service disclaimer; do
-            STATUS=$(curl -sS -o /dev/null -w "%{http_code}" "https://dataengineerhub.blog/${PAGE}" || echo "000")
-            if [ "$STATUS" = "200" ] || [ "$STATUS" = "301" ]; then
+            STATUS=$(curl_live -o /dev/null -w "%{http_code}" "https://dataengineerhub.blog/${PAGE}/" || echo "000")
+            if [ "$STATUS" = "200" ] || [ "$STATUS" = "301" ] || [ "$STATUS" = "308" ]; then
               echo "✅ Essential page /${PAGE} is accessible (HTTP $STATUS)"
             else
               echo "⚠️ Essential page /${PAGE} returned status: $STATUS"
@@ -796,7 +799,7 @@ jobs:
           # Verify a sample article (-print -quit avoids SIGPIPE from head closing the pipe)
           SAMPLE_ARTICLE=$(find dist/articles -mindepth 2 -name 'index.html' -print -quit | sed 's|dist||; s|/index.html||')
           if [ -n "$SAMPLE_ARTICLE" ]; then
-            SAMPLE_CODE=$(curl -sS -o /dev/null -w "%{http_code}" "https://dataengineerhub.blog${SAMPLE_ARTICLE}" || echo "000")
+            SAMPLE_CODE=$(curl_live -o /dev/null -w "%{http_code}" "https://dataengineerhub.blog${SAMPLE_ARTICLE}/" || echo "000")
             if [ "$SAMPLE_CODE" = "200" ]; then
               echo "✅ Sample article is accessible: ${SAMPLE_ARTICLE}"
             else
@@ -916,11 +919,11 @@ jobs:
           key: ftp-state-${{ github.run_id }}
 
       - name: ☁️ Prepare Cloudflare Pages bundle
-        if: steps.changes.outputs.deploy_cloudflare == 'true' && steps.changes.outputs.dry_run != 'true'
+        if: ${{ !cancelled() && steps.changes.outputs.deploy_cloudflare == 'true' && steps.changes.outputs.dry_run != 'true' }}
         run: node scripts/prepareCloudflarePages.js
 
       - name: ☁️ Deploy to Cloudflare Pages
-        if: steps.changes.outputs.deploy_cloudflare == 'true' && steps.changes.outputs.dry_run != 'true'
+        if: ${{ !cancelled() && steps.changes.outputs.deploy_cloudflare == 'true' && steps.changes.outputs.dry_run != 'true' }}
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
