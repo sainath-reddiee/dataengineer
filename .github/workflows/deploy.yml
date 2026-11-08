@@ -54,10 +54,10 @@ on:
         type: boolean
         default: false
       deploy_cloudflare:
-        description: 'Also deploy dist-pages to Cloudflare Pages (preview until DNS cutover)?'
+        description: 'Upload dist-pages to Cloudflare Pages (live origin). Leave on.'
         required: false
         type: boolean
-        default: false
+        default: true
   # No daily schedule: code changes deploy on push, WordPress posts deploy via
   # repository_dispatch, and anything else can be run manually. A nightly run
   # only burned Actions minutes re-uploading an unchanged site.
@@ -119,6 +119,7 @@ jobs:
           IN_DRY_RUN: ${{ github.event.inputs.dry_run }}
           IN_DEPLOY_CLOUDFLARE: ${{ github.event.inputs.deploy_cloudflare }}
           ENABLE_CLOUDFLARE_PAGES: ${{ vars.ENABLE_CLOUDFLARE_PAGES }}
+          SKIP_CLOUDFLARE_PAGES: ${{ vars.SKIP_CLOUDFLARE_PAGES }}
         run: |
           echo "trigger=${{ github.event_name }}" >> $GITHUB_OUTPUT
 
@@ -243,12 +244,15 @@ jobs:
             fi
           fi
 
-          DEPLOY_CF="false"
-          if [ "$IN_DEPLOY_CLOUDFLARE" = "true" ] || [ "$ENABLE_CLOUDFLARE_PAGES" = "true" ]; then
-            DEPLOY_CF="true"
+          # Pages is the live origin. Upload unless someone explicitly opts out.
+          # (A repo *secret* named ENABLE_CLOUDFLARE_PAGES is invisible here;
+          # it must be an Actions *variable*, or we just default on.)
+          DEPLOY_CF="true"
+          if [ "$IN_DEPLOY_CLOUDFLARE" = "false" ] || [ "$SKIP_CLOUDFLARE_PAGES" = "true" ] || [ "$ENABLE_CLOUDFLARE_PAGES" = "false" ]; then
+            DEPLOY_CF="false"
           fi
           echo "deploy_cloudflare=$DEPLOY_CF" >> $GITHUB_OUTPUT
-          echo "☁️ Cloudflare Pages deploy: $DEPLOY_CF"
+          echo "☁️ Cloudflare Pages deploy: $DEPLOY_CF (var ENABLE_CLOUDFLARE_PAGES='$ENABLE_CLOUDFLARE_PAGES' skip='$SKIP_CLOUDFLARE_PAGES' input='$IN_DEPLOY_CLOUDFLARE')"
 
       - name: 💾 Restore Build Cache
         id: cache-restore
