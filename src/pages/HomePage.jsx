@@ -5,6 +5,7 @@ import Hero from '../components/Hero';
 import MetaTags from '../components/SEO/MetaTags';
 import LeadStories from '../components/editorial/LeadStories';
 import ArticleLedger from '../components/editorial/ArticleLedger';
+import StackShelf from '../components/editorial/StackShelf';
 import ContinueReading from '@/components/ContinueReading';
 import { usePosts } from '@/hooks/useWordPress';
 
@@ -57,6 +58,10 @@ const HomePage = () => {
         <div className="mx-auto max-w-6xl space-y-16 px-4 py-10 sm:px-6">
           <ContinueReading />
           <LeadStories posts={posts} loading={loading} error={error} />
+          <StackShelf
+            categories={posts.map((post) => post.category)}
+            omitSlugs={posts.map((post) => post.slug)}
+          />
 
           {ledgerPosts.length > 0 && (
             <section>
