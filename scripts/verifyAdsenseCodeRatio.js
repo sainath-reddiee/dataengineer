@@ -59,6 +59,21 @@ const enhancedWindow = enhanceArticleCodeBlocks(windowSqlHtml);
 assert(enhancedWindow.includes('source_records'), 'contextual lede should reference the queried table');
 assert(enhancedWindow.includes('tok-var'), 'SQL @variables should be highlighted with tok-var');
 
+const accountLimitHtml = `<pre><code>-- Cap all users at 20 credits per day for CLI
+ALTER ACCOUNT SET CORTEX_CODE_CLI_DAILY_EST_CREDIT_LIMIT_PER_USER = 20;</code></pre>`;
+const enhancedLimit = enhanceArticleCodeBlocks(accountLimitHtml);
+assert(enhancedLimit.includes('data-lang="SQL"'), 'ALTER ACCOUNT must be labeled SQL, not a generic snippet');
+assert(
+  !enhancedLimit.includes('article-code-lede">Config — Cap all users'),
+  'caption must not repeat the comment that is already line 1'
+);
+const unsetHtml = '<pre><code>ALTER ACCOUNT UNSET CORTEX_CODE_CLI_DAILY_EST_CREDIT_LIMIT_PER_USER;</code></pre>';
+const enhancedUnset = enhanceArticleCodeBlocks(unsetHtml);
+const unsetLede = (enhancedUnset.match(/article-code-lede">([^<]*)</) || [])[1] || '';
+assert(!unsetLede.includes('ALTER ACCOUNT'), 'caption must not copy the UNSET statement');
+assert(unsetLede.includes('account parameter'), 'UNSET caption should describe the statement');
+assert(enhancedUnset.includes('ACCOUNT UNSET CORTEX_CODE_CLI_DAILY_EST_CREDIT_LIMIT_PER_USER'), 'the statement itself must stay in the code block');
+
 const doubleEncodedHtml = `<pre><code class="language-python">tags = &amp;#91;&quot;snowflake&quot;, &quot;dbt&quot;]</code></pre>`;
 const enhancedDecoded = enhanceArticleCodeBlocks(doubleEncodedHtml);
 assert(!enhancedDecoded.includes('&amp;#91;') && !enhancedDecoded.includes('&#91;'), 'double-encoded numeric entities must be decoded to [');

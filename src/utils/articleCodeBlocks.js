@@ -125,16 +125,14 @@ export function deriveCodeLede(text, language) {
 
   if (lines.length === 0) return LEDES[language] || LEDES.Snippet;
 
-  // 1. Check if the author wrote a meaningful leading comment
+  // A leading comment is already the first line of the block. Repeating it
+  // in the caption is the duplicated line readers see above the code.
+  // Only a filename comment is worth a caption, because it names the file.
   const firstComment = lines[0].match(/^(?:--|#|\/\/)\s*(.{3,88})$/);
   if (firstComment) {
     const cleaned = firstComment[1].replace(/^[-=#*\s]+|[-=#*\s]+$/g, '').trim();
     if (/^[a-zA-Z0-9_./-]+\.[a-zA-Z0-9]+(\s*\([^)]+\))?$/i.test(cleaned) || /^dockerfile$/i.test(cleaned)) {
       return `${langLabel} file (${cleaned}) — review parameters before deploying.`;
-    }
-    if (cleaned.length >= 8 && !/^(todo|fixme|example|sql|python|bash|shell)$/i.test(cleaned)) {
-      const sentence = `${cleaned.charAt(0).toUpperCase()}${cleaned.slice(1).replace(/\.$/, '')}`;
-      return `${langLabel} — ${sentence}.`;
     }
   }
 
@@ -151,6 +149,16 @@ export function deriveCodeLede(text, language) {
       return table
         ? `SQL zero-copy clone (${table}) — creates a metadata pointer without duplicating micro-partitions.`
         : 'SQL zero-copy clone — creates an instant metadata pointer to existing micro-partitions.';
+    }
+    if (/\bALTER\s+ACCOUNT\b/i.test(raw) && /\b(?:SET|UNSET)\b/i.test(raw)) {
+      return /\bUNSET\b/i.test(raw)
+        ? 'SQL account parameter — clears an account-level setting and restores the default.'
+        : 'SQL account parameter — sets an account-level limit for every user.';
+    }
+    if (/\bALTER\s+USER\b/i.test(raw) && /\b(?:SET|UNSET)\b/i.test(raw)) {
+      return /\bUNSET\b/i.test(raw)
+        ? 'SQL user parameter — removes one user override so the account default applies.'
+        : 'SQL user parameter — overrides the account default for one user.';
     }
     if (/^\s*(?:CREATE|ALTER|DROP|GRANT|REVOKE)\b/i.test(raw)) {
       const objMatch = raw.match(/\b(?:RESOURCE\s+MONITOR|WAREHOUSE|DATABASE|SCHEMA|DYNAMIC\s+TABLE|ICEBERG\s+TABLE|TABLE|VIEW|TASK|STREAM|MASKING\s+POLICY|ROW\s+ACCESS\s+POLICY|STAGE|ROLE|USER|GIT\s+REPOSITORY|DBT\s+PROJECT)\b/i);
@@ -230,13 +238,8 @@ export function deriveCodeLede(text, language) {
     }
   }
 
-  // 7. Generic Snippet / fallback with first identifier
-  const firstCodeLine = lines.find((l) => !l.startsWith('#') && !l.startsWith('--') && !l.startsWith('//')) || lines[0];
-  if (firstCodeLine && firstCodeLine.length >= 4) {
-    const preview = firstCodeLine.slice(0, 44).trim();
-    return `${langLabel} snippet — ${preview}${firstCodeLine.length > 44 ? '…' : ''}`;
-  }
-
+  // Do not paste the first statement into the caption. That line is already
+  // in the block, and a truncated copy reads as a duplicated snippet.
   return LEDES[language] || LEDES.Snippet;
 }
 
