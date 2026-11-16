@@ -106,8 +106,14 @@ for (const path of mustNoindex) {
 for (const path of mustIndex) {
   const page = await fetchText(path);
   const value = robots(page.html);
+  const header = page.headers.get('x-robots-tag') || '';
   if (isNoindex(value)) {
     console.error(`❌ ${path} unexpectedly noindex (${value})`);
+    failed += 1;
+  } else if (isNoindex(header)) {
+    // Cloudflare Pages merges _headers rules, so a wildcard noindex plus a
+    // specific "index" rule still sends noindex. The meta tag alone hides it.
+    console.error(`❌ ${path} meta is indexable but X-Robots-Tag header says "${header}" (check public/_headers for a wildcard noindex)`);
     failed += 1;
   } else {
     console.log(`✅ ${path} ${value || 'indexable'}`);

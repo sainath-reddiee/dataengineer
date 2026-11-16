@@ -62,9 +62,20 @@ const MetaTags = ({
   const runtimePath = typeof window !== 'undefined'
     ? (window.location.pathname !== '/' ? window.location.pathname.replace(/\/+$/, '') : '/')
     : '';
-  const currentUrl = url
+  // Cloudflare Pages serves directory pages at the trailing-slash URL and 308s
+  // the bare form, so the canonical names the slash form (same as the SSG shell).
+  const withTrailingSlash = (href) => {
+    try {
+      const u = new URL(href, SITE_CONFIG.url);
+      if (!/\.[a-z0-9]+$/i.test(u.pathname) && !u.pathname.endsWith('/')) u.pathname += '/';
+      return u.toString();
+    } catch {
+      return href;
+    }
+  };
+  const currentUrl = withTrailingSlash(url
     ? ensureAbsoluteUrl(url)
-    : `${SITE_CONFIG.url}${runtimePath}`;
+    : `${SITE_CONFIG.url}${runtimePath}`);
 
   let pathForGate = runtimePath;
   if (url) {

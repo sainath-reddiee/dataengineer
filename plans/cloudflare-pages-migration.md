@@ -65,7 +65,8 @@ Check:
 
 1. [x] Custom domains `dataengineerhub.blog` and `www.dataengineerhub.blog` are **Active**.
 2. [x] Apex and www serve Pages HTML over HTTPS (HSTS on). Confirm SSL/TLS is **Full (strict)** in the zone if the dashboard still says Flexible.
-3. [x] Orange-cloud CNAME `@` and `www` → `dataengineerhub.pages.dev`. `app` A record still Hostinger.
+3. [x] Orange-cloud CNAME `@` → `dataengineerhub.pages.dev`. `app` A record still Hostinger.
+   - Updated 2026-11-16: `www` is no longer a Pages custom domain. It keeps a proxied CNAME to the apex and two Cloudflare Redirect Rules (`www to apex` for https, `www http to apex` for http) 301 every `www` URL to `https://dataengineerhub.blog/<same path and query>`. A Pages custom domain is served before zone rules run, which is why the redirect never fired while `www` was attached. The zone's Universal certificate covers `*.dataengineerhub.blog`, so HTTPS on `www` stays valid. Rollback: Pages, Custom domains, Set up a custom domain, `www.dataengineerhub.blog`, and delete the two redirect rules.
 4. Caching → Purge Everything if an old Hostinger HTML page is still cached.
 5. Keep Hostinger FTP for a week as rollback. Then stop deploying `public_html`.
 6. [x] GitHub variable `ENABLE_CLOUDFLARE_PAGES=true`.

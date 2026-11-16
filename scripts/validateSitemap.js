@@ -341,7 +341,7 @@ class SitemapValidator {
 
     const requiredPages = [
       { url: SITE_URL + '/', name: 'Homepage' },
-      { url: SITE_URL + '/articles', name: 'Articles page' },
+      { url: SITE_URL + '/articles/', name: 'Articles page' },
     ];
 
     requiredPages.forEach(page => {

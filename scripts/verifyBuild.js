@@ -264,7 +264,7 @@ async function verifyBuild() {
     } else {
       const listingHtml = fs.readFileSync(articlesListingPath, 'utf8');
       const listingCanonicalOk =
-        /<link\s+rel="canonical"\s+href="https:\/\/dataengineerhub\.blog\/articles"\s*\/?>/i.test(listingHtml);
+        /<link\s+rel="canonical"\s+href="https:\/\/dataengineerhub\.blog\/articles\/?"\s*\/?>/i.test(listingHtml);
       const listingRobots = listingHtml.match(/<meta\s+name="robots"\s+content="([^"]+)"/i);
       const listingIsNoindex = listingRobots && /noindex/i.test(listingRobots[1]);
       const articleLinks = new Set(

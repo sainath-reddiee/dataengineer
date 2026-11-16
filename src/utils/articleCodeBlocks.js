@@ -229,13 +229,10 @@ export function deriveCodeLede(text, language) {
     }
   }
 
-  // 6. Shell / CLI inspection
+  // 6. Shell / CLI: never quote the first line. It is already in the block, and
+  // a snippet that opens with a comment (-- or #) would be quoted as a command.
   if (language === 'shell') {
-    const firstCmd = lines.find((l) => !l.startsWith('#')) || lines[0];
-    const cleanCmd = firstCmd.replace(/^\$\s*/, '').slice(0, 48);
-    if (cleanCmd) {
-      return `CLI command — executes ${cleanCmd}${firstCmd.length > 48 ? '…' : ''}.`;
-    }
+    return 'CLI command, run it in a terminal with your own credentials and environment.';
   }
 
   // Do not paste the first statement into the caption. That line is already

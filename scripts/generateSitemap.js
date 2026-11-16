@@ -286,11 +286,18 @@ function generateSitemapXML(pages) {
     });
   };
 
+  // Pages serves directory pages at the trailing-slash URL and 308s the bare
+  // form, so the sitemap lists the slash form (matches each page's canonical).
+  const toServedUrl = (url) => {
+    if (/\.[a-z0-9]+$/i.test(url)) return url;
+    return url.endsWith('/') ? url : `${url}/`;
+  };
+
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
         xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
 ${pages.map(page => `  <url>
-    <loc>${escapeXml(page.url)}</loc>
+    <loc>${escapeXml(toServedUrl(page.url))}</loc>
     <lastmod>${page.lastmod}</lastmod>
     <changefreq>${page.changefreq}</changefreq>
     <priority>${page.priority}</priority>${page.image ? `

@@ -4,6 +4,9 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
     
+    <!-- The two fonts the masthead paints with; font-display is optional, so a preload is what makes a first visit use them. -->
+    <link rel="preload" as="font" type="font/woff2" crossorigin href="/fonts/source-serif-4-600.woff2">
+    <link rel="preload" as="font" type="font/woff2" crossorigin href="/fonts/plex-sans-400.woff2">
     <link rel="dns-prefetch" href="//app.dataengineerhub.blog">
     <link rel="dns-prefetch" href="//giscus.app">
     <link rel="dns-prefetch" href="//pagead2.googlesyndication.com">
@@ -50,7 +53,7 @@
       (function() {
         var path = (window.location.pathname || '').toLowerCase();
         var title = 'Data Engineering Tutorials \u2014 Snowflake, Databricks, dbt & AWS';
-        var desc = 'In-depth, production-tested data engineering tutorials covering Snowflake, Databricks, AWS, Azure, GCP, Salesforce Data Cloud, dbt, Apache Airflow, Apache Spark, Python, SQL, lakehouse architectures, ETL/ELT pipelines, and modern data stack best practices.';
+        var desc = 'Production-tested data engineering tutorials on Snowflake, Databricks, dbt, Airflow, AWS and Python, written from real incidents by a working engineer.';
 
         if (path === '/about' || path === '/about/') {
           title = 'About Sainath Reddy \u2014 Data Engineer';
@@ -129,7 +132,7 @@
       })();
     </script>
     <title>Data Engineering Tutorials — Snowflake, Databricks, dbt &amp; AWS</title>
-    <meta name="description" content="In-depth, production-tested data engineering tutorials covering Snowflake, Databricks, AWS, Azure, GCP, Salesforce Data Cloud, dbt, Apache Airflow, Apache Spark, Python, SQL, lakehouse architectures, ETL/ELT pipelines, and modern data stack best practices." />
+    <meta name="description" content="Production-tested data engineering tutorials on Snowflake, Databricks, dbt, Airflow, AWS and Python, written from real incidents by a working engineer." />
 
     <link rel="alternate" type="application/rss+xml" title="DataEngineer Hub RSS Feed" href="https://dataengineerhub.blog/rss.xml" />
     <link rel="alternate" type="text/plain" title="LLM context" href="https://dataengineerhub.blog/llms.txt" />
@@ -166,6 +169,7 @@
     {
       "@context": "https://schema.org",
       "@type": "Organization",
+      "@id": "https://dataengineerhub.blog/#organization",
       "name": "DataEngineer Hub",
       "alternateName": ["Data Engineer Hub", "dataengineerhub"],
       "url": "https://dataengineerhub.blog",
@@ -182,6 +186,7 @@
       ],
       "founder": {
         "@type": "Person",
+        "@id": "https://dataengineerhub.blog/#author",
         "name": "Sainath Reddy",
         "jobTitle": "Data Engineer",
         "url": "https://dataengineerhub.blog/about"
@@ -192,18 +197,12 @@
     {
       "@context": "https://schema.org",
       "@type": "WebSite",
+      "@id": "https://dataengineerhub.blog/#website",
       "name": "DataEngineer Hub",
       "alternateName": ["Data Engineer Hub", "dataengineerhub"],
       "url": "https://dataengineerhub.blog",
       "description": "In-depth tutorials on Snowflake, Apache Spark, dbt, Airflow, Python, SQL, and modern data engineering.",
-      "publisher": {
-        "@type": "Organization",
-        "name": "DataEngineer Hub",
-        "logo": {
-          "@type": "ImageObject",
-          "url": "https://dataengineerhub.blog/logo.png"
-        }
-      },
+      "publisher": { "@id": "https://dataengineerhub.blog/#organization" },
       "potentialAction": {
         "@type": "SearchAction",
         "target": {

@@ -27,8 +27,8 @@ const duckdbVersion = String(pkg.dependencies['@duckdb/duckdb-wasm'] || '').repl
 
 assert(!/^\s*\/\* \/index\.html 200\s*$/m.test(redirects), '_redirects must not SPA-fallback every unknown URL');
 assert(redirects.includes('/.well-known/* /well-known/:splat 200'), '_redirects must rewrite /.well-known/');
-assert(redirects.includes('/playground /tools/sql-playground 301'), '_redirects must keep the short playground URL');
-assert(redirects.includes('/cookie-policy /privacy-policy 301'), '_redirects must keep the cookie-policy alias');
+assert(redirects.includes('/playground /tools/sql-playground/ 301'), '_redirects must keep the short playground URL');
+assert(redirects.includes('/cookie-policy /privacy-policy/ 301'), '_redirects must keep the cookie-policy alias');
 assert(!/^\s*\/\*\/ \/\:splat 301\s*$/m.test(redirects), '_redirects must not strip trailing slashes (loops with Pages 308)');
 assert(redirects.includes('/admin /index.html 200'), '_redirects must still serve private app shells');
 
@@ -44,7 +44,7 @@ const thinTags = htaccess.match(
 );
 assert(thinTags, '.htaccess thin-tag list should exist so Pages can mirror it');
 for (const slug of thinTags[1].split('|')) {
-  assert(redirects.includes(`/tag/${slug} /articles 301`), `_redirects missing thin tag /tag/${slug}`);
+  assert(redirects.includes(`/tag/${slug} /articles/ 301`), `_redirects missing thin tag /tag/${slug}`);
 }
 
 assert(headers.includes('https://:project.pages.dev/*'), '_headers must noindex pages.dev');

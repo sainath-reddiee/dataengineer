@@ -678,6 +678,9 @@ function normalizeArticleLinks(htmlContent, postSlugs) {
  */
 function normalizeHeadings(html) {
   if (!html) return html;
+  // The page template already renders the article title as the single H1, so
+  // any H1 inside the WordPress body becomes an H2.
+  html = html.replace(/<(\/?)h1([\s>])/gi, '<$1h2$2');
   const hasH2 = /<h2[\s>]/i.test(html);
   const hasH3 = /<h3[\s>]/i.test(html);
   if (!hasH2 && hasH3) {
@@ -2908,7 +2911,7 @@ function makeImagesAbsolute(content) {
       const altText = filename.charAt(0).toUpperCase() + filename.slice(1);
       if (altMatch) {
         // Replace empty alt=""
-        return `<img${attrs.replace(/alt="[^"]*"/i, `alt="${escapeHtml(altText)}`)}${close}`;
+        return `<img${attrs.replace(/alt="[^"]*"/i, `alt="${escapeHtml(altText)}"`)}${close}`;
       }
       // No alt attribute at all — add one
       return `<img alt="${escapeHtml(altText)}"${attrs}${close}`;
@@ -3092,6 +3095,45 @@ function sortCategoriesByPriority(categories) {
 // 🔥 FIXED HTML GENERATION - FULL CONTENT FOR CRAWLERS WITH IMAGES
 // ============================================================================
 
+const SITE_ORIGIN = 'https://dataengineerhub.blog';
+// Cloudflare Pages serves every directory page at its trailing-slash URL and
+// 308s the bare form there. Canonicals, og:url and schema URLs use the slash
+// form so they name the URL that actually returns 200.
+function canonicalUrl(pagePath) {
+  if (!pagePath || pagePath === '/') return `${SITE_ORIGIN}/`;
+  if (/\.[a-z0-9]+$/i.test(pagePath)) return `${SITE_ORIGIN}${pagePath}`;
+  return `${SITE_ORIGIN}${pagePath.replace(/\/+$/, '')}/`;
+}
+
+// Jetpack Photon serves the original upload (2.8 MB for a typical hero) when
+// only ?fit= is given. The hero renders at most ~700px wide, so request 1200px
+// (covers 2x screens) at quality 80: ~270 KB instead of ~2.8 MB.
+function optimizeHeroImageUrl(url) {
+  if (!url || !/^https?:\/\/i\d\.wp\.com\//i.test(url)) return url;
+  const base = url.split('?')[0];
+  return `${base}?w=1200&quality=80&ssl=1`;
+}
+
+// Links to a sponsor or to a guest author's own product must not pass ranking
+// credit. Matches the policy on /advertise (rel="sponsored nofollow").
+function markPaidAndGuestLinks(html, { sponsored, guestHost }) {
+  if (!html || (!sponsored && !guestHost)) return html;
+  return html.replace(/<a\b([^>]*?)href=(["'])(https?:\/\/[^"']+)\2([^>]*)>/gi, (match, pre, q, href, post) => {
+    let host = '';
+    try { host = new URL(href).hostname.replace(/^www\./, ''); } catch { return match; }
+    if (host === 'dataengineerhub.blog' || host.endsWith('.dataengineerhub.blog')) return match;
+    if (!sponsored && host !== guestHost) return match;
+    if (/\brel=/i.test(`${pre}${post}`)) {
+      return match.replace(/\brel=(["'])([^"']*)\1/i, (m, qq, val) => {
+        const set = new Set(val.split(/\s+/).filter(Boolean));
+        set.add('sponsored'); set.add('nofollow');
+        return `rel=${qq}${[...set].join(' ')}${qq}`;
+      });
+    }
+    return `<a${pre}href=${q}${href}${q}${post} rel="sponsored nofollow">`;
+  });
+}
+
 function generateFullArticleHTML(pageData, bundleFiles, relatedArticles = []) {
   const { id: postId, title: rawTitle, headline: rawHeadline, description: rawDescription, path: pagePath, fullContent = '', slug, date: postDate, modified: postModified, featuredImage, categoryNames = [], tagNames = [], authorName = 'Sainath Reddy', authorData = null } = pageData;
   const { jsFile, cssFile, modulePreloadHtml = '' } = bundleFiles;
@@ -3110,7 +3152,9 @@ function generateFullArticleHTML(pageData, bundleFiles, relatedArticles = []) {
 
   // 🔥 CRITICAL: Use relative paths from article subdirectory
   const depth = pagePath.split('/').filter(Boolean).length;
-  const relativePrefix = '../'.repeat(depth);
+  // Root-absolute: the page is served from its own directory, so ../../ paths
+  // are fragile (they break if the page is ever served at another depth).
+  const relativePrefix = '/';
 
   // Remove leading slash and prepend relative prefix
   const productionJsFile = jsFile;
@@ -3215,6 +3259,13 @@ function generateFullArticleHTML(pageData, bundleFiles, relatedArticles = []) {
   // Static body is the full WordPress article, identical to what React
   // renders. Never trim or rewrite it for crawlers: that is cloaking.
   let crawlerBody = sanitizeWordPressHTML(processedContent);
+  const isSiteOwner = (authorName || 'Sainath Reddy') === 'Sainath Reddy';
+  let guestHost = '';
+  try { guestHost = !isSiteOwner && authorData?.website ? new URL(authorData.website).hostname.replace(/^www\./, '') : ''; } catch { guestHost = ''; }
+  crawlerBody = markPaidAndGuestLinks(crawlerBody, {
+    sponsored: tagNames.some((t) => String(t).toLowerCase() === 'sponsored'),
+    guestHost,
+  });
 
   // Reading time uses the full tutorial (code included). Robots / schema use
   // prose-only words so a 2,000-token SQL dump cannot pad a thin page.
@@ -3239,7 +3290,7 @@ function generateFullArticleHTML(pageData, bundleFiles, relatedArticles = []) {
   const formattedModified = modifiedDateObj.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
   const wasUpdated = modifiedDateObj > publishDateObj && formattedModified !== formattedDate;
   const heroHtml = featuredImage
-    ? `<div class="article-hero"><img src="${escapeHtml(featuredImage)}" alt="${title}" width="1600" height="900" fetchpriority="high" decoding="async" /></div>`
+    ? `<div class="article-hero"><img src="${escapeHtml(optimizeHeroImageUrl(featuredImage))}" alt="${title}" width="1200" height="675" fetchpriority="high" decoding="async" /></div>`
     : '';
   // Resolve author data: prefer passed-in authorData, fallback to Sainath defaults
   const resolvedAuthorName = authorName || 'Sainath Reddy';
@@ -3251,6 +3302,31 @@ function generateFullArticleHTML(pageData, bundleFiles, relatedArticles = []) {
     slug: '',
     role: resolvedAuthorName === 'Sainath Reddy' ? 'Founder & Owner' : 'Guest Author',
   };
+
+  const authorJsonLdObject = isSiteOwner
+    ? {
+        '@type': 'Person',
+        '@id': 'https://dataengineerhub.blog/#author',
+        name: 'Sainath Reddy',
+        url: 'https://dataengineerhub.blog/about',
+        jobTitle: 'Data Engineer',
+        knowsAbout: ['Snowflake', 'dbt', 'Apache Airflow', 'Apache Spark', 'Databricks', 'AWS data engineering', 'SQL'],
+        sameAs: [
+          'https://www.linkedin.com/in/sainathreddypogaku/',
+          'https://github.com/sainath-reddiee/dataengineer',
+        ],
+      }
+    : {
+        '@type': 'Person',
+        name: resolvedAuthorName,
+        url: authorData?.website || (authorData?.slug ? `https://dataengineerhub.blog/contributors/${authorData.slug}` : 'https://dataengineerhub.blog/contributors'),
+        ...(authorData?.bio ? { description: authorData.bio } : {}),
+        ...(authorData?.role ? { jobTitle: authorData.role } : {}),
+        ...([authorData?.linkedin, authorData?.github, authorData?.twitter].filter(Boolean).length
+          ? { sameAs: [authorData.linkedin, authorData.github, authorData.twitter].filter(Boolean) }
+          : {}),
+      };
+  const authorJsonLd = escapeJsonForScript(authorJsonLdObject);
 
   const bootstrapJson = escapeJsonForScript({
     id: postId || slug,
@@ -3360,27 +3436,28 @@ function generateFullArticleHTML(pageData, bundleFiles, relatedArticles = []) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>${smartTitle(title)}</title>
     <meta name="description" content="${description}" />
-    <link rel="canonical" href="https://dataengineerhub.blog${pagePath}" />
+    <link rel="canonical" href="${canonicalUrl(pagePath)}" />
     <link rel="alternate" type="text/plain" title="LLM context" href="https://dataengineerhub.blog/llms.txt" />
     <link rel="alternate" type="application/rss+xml" title="DataEngineer Hub RSS" href="https://dataengineerhub.blog/rss.xml" />
     <meta name="robots" content="${articleRobotsDirective}" />
-${featuredImage ? `    <link rel="preload" as="image" href="${featuredImage}" />` : ''}
+${featuredImage ? `    <link rel="preload" as="image" href="${escapeHtml(optimizeHeroImageUrl(featuredImage))}" />` : ''}
     <link rel="preload" as="font" type="font/woff2" crossorigin href="${relativePrefix}fonts/source-serif-4-400.woff2">
 
     <!-- Open Graph -->
     <meta property="og:type" content="article" />
-    <meta property="og:url" content="https://dataengineerhub.blog${pagePath}" />
+    <meta property="og:url" content="${canonicalUrl(pagePath)}" />
     <meta property="og:title" content="${title}" />
     <meta property="og:description" content="${description}" />
     <meta property="og:site_name" content="DataEngineer Hub" />
     <meta property="og:image" content="${ogImageUrl}" />
-    <meta property="og:image:width" content="1200" />
+${featuredImage ? '' : `    <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
+`}
     <meta property="og:image:alt" content="${title}" />
     <meta property="og:locale" content="en_US" />
     <meta property="article:published_time" content="${effectivePublished}" />
     <meta property="article:modified_time" content="${effectiveModified}" />
-    <meta property="article:author" content="https://dataengineerhub.blog/about" />
+    <meta property="article:author" content="${isSiteOwner ? 'https://dataengineerhub.blog/about' : escapeHtml(authorData?.website || 'https://dataengineerhub.blog/contributors')}" />
 ${categoryNames.length > 0 ? `    <meta property="article:section" content="${escapeHtml(categoryNames[0])}" />\n` : ''}${tagNames.slice(0, 6).map(t => `    <meta property="article:tag" content="${escapeHtml(t)}" />`).join('\n')}
 
     <link rel="dns-prefetch" href="//app.dataengineerhub.blog">
@@ -3394,7 +3471,6 @@ ${CONSENT_MODE_V2_HTML}
     <link rel="apple-touch-icon" href="/logo.png">
     <link rel="manifest" href="/manifest.json">
     <meta name="theme-color" content="#EFEAE1">
-    <link rel="alternate" type="application/rss+xml" title="DataEngineer Hub RSS Feed" href="https://dataengineerhub.blog/rss.xml" />
     ${productionCssFile ? `<link rel="stylesheet" crossorigin href="${productionCssFile}">` : ''}
 
     <style>
@@ -4022,7 +4098,7 @@ ${CONSENT_MODE_V2_HTML}
         <article>
           <h1 class="article-title">${headline}</h1>
           <div style="display:flex;align-items:center;gap:0.6rem;margin:0.75rem 0 1rem;flex-wrap:wrap;color:#5E584F;font-size:0.9rem;">
-            <a href="/about" style="color:#B4441F;text-decoration:none;font-weight:500;">Sainath Reddy</a>
+            <a href="${isSiteOwner ? '/about' : (authorData?.slug ? `/contributors/${escapeHtml(authorData.slug)}` : '/contributors')}" style="color:#B4441F;text-decoration:none;font-weight:500;">${escapeHtml(authorName || 'Sainath Reddy')}</a>
             <span>·</span>
             <time datetime="${effectivePublished}">${formattedDate}</time>
 ${wasUpdated ? `            <span>·</span>
@@ -4060,7 +4136,7 @@ ${wasUpdated ? `            <span>·</span>
                     <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
                     <polyline points="22 4 12 14.01 9 11.01"/>
                   </svg>
-                  Founder & Owner
+                  ${isSiteOwner ? 'Founder &amp; Owner' : escapeHtml(authorData?.role || 'Guest Author')}
                 </span>
               </div>
 
@@ -4081,12 +4157,12 @@ ${wasUpdated ? `            <span>·</span>
                           ${escapeHtml(authorData?.name || 'Sainath Reddy')}
                         </h3>
                       </a>
-                      <p style="font-size: 0.875rem; font-weight: 600; color: #9C3A1A; margin: 0.25rem 0 0;">Founder & Owner</p>
+                      <p style="font-size: 0.875rem; font-weight: 600; color: #9C3A1A; margin: 0.25rem 0 0;">${isSiteOwner ? 'Founder &amp; Owner' : escapeHtml(authorData?.role || 'Guest Author')}</p>
                     </div>
 
                     <!-- Bio -->
                     <p style="font-size: 0.95rem; color: #3F3B35; line-height: 1.7; margin: 0; max-width: 42rem;">
-                      Data Engineer with 5+ years of experience building scalable data pipelines, cloud data warehouses, and end-to-end analytics solutions. Passionate about making complex data engineering concepts accessible to everyone.
+                      ${isSiteOwner ? 'Data Engineer building scalable data pipelines, cloud data warehouses, and end-to-end analytics solutions. Passionate about making complex data engineering concepts accessible to everyone.' : escapeHtml(authorData?.bio || '')}
                     </p>
 
                     <!-- Social links + CTA -->
@@ -4186,34 +4262,26 @@ ${wasUpdated ? `            <span>·</span>
       "description": "${descriptionJsonLd}",
       "image": {
         "@type": "ImageObject",
-        "url": ${escapeJsonForScript(ogImageUrl)},
+        "url": ${escapeJsonForScript(ogImageUrl)}${featuredImage ? '' : `,
         "width": 1200,
-        "height": 630
+        "height": 630`}
       },
-      "author": {
-        "@type": "Person",
-        "@id": "https://dataengineerhub.blog/about#person",
-        "name": "Sainath Reddy",
-        "url": "https://dataengineerhub.blog/about",
-        "jobTitle": "Data Engineer",
-        "knowsAbout": ["Snowflake", "dbt", "Apache Airflow", "Apache Spark", "Databricks", "AWS data engineering", "SQL"],
-        "sameAs": [
-          "https://www.linkedin.com/in/sainathreddypogaku/",
-          "https://github.com/sainath-reddiee/dataengineer"
-        ]
-      },
+      "author": ${authorJsonLd},
       "publisher": {
         "@type": "Organization",
+        "@id": "https://dataengineerhub.blog/#organization",
         "name": "DataEngineer Hub",
         "logo": {
           "@type": "ImageObject",
           "url": "https://dataengineerhub.blog/logo.png",
-"width": 250,
+          "width": 250,
           "height": 250
         }
       },
       "datePublished": "${effectivePublished}",
       "dateModified": "${effectiveModified}",
+      "inLanguage": "en",
+      "isPartOf": { "@type": "WebSite", "@id": "https://dataengineerhub.blog/#website", "name": "DataEngineer Hub", "url": "https://dataengineerhub.blog/" },
       "wordCount": ${articleWordCount},
       ${categoryNames.length > 0 ? `"articleSection": ${escapeJsonForScript(categoryNames[0])},` : ''}
       ${tagNames.length > 0 ? `"keywords": ${escapeJsonForScript(tagNames.slice(0, 10))},` : ''}
@@ -4223,7 +4291,7 @@ ${wasUpdated ? `            <span>·</span>
       },
       "mainEntityOfPage": {
         "@type": "WebPage",
-        "@id": "https://dataengineerhub.blog${pagePath}"
+        "@id": "${canonicalUrl(pagePath)}"
       }
     }
     </script>
@@ -4250,7 +4318,7 @@ ${wasUpdated ? `            <span>·</span>
           "@type": "ListItem",
           "position": 3,
           "name": "${titleJsonLd}",
-          "item": "https://dataengineerhub.blog${pagePath}"
+          "item": "${canonicalUrl(pagePath)}"
         }
       ]
     }
@@ -4287,7 +4355,7 @@ ${wasUpdated ? `            <span>·</span>
     }
     </script>
 
-    <!-- 🔥 STRUCTURED DATA - Person/Author Schema (E-E-A-T) -->
+    ${isSiteOwner ? `    <!-- 🔥 STRUCTURED DATA - Person/Author Schema (E-E-A-T) -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -4307,7 +4375,7 @@ ${wasUpdated ? `            <span>·</span>
       "knowsAbout": ["Data Engineering", "Snowflake", "AWS", "Azure", "Databricks", "Apache Airflow", "dbt", "ETL/ELT Pipelines", "Data Warehousing", "Cloud Architecture"],
       "description": "Data Engineer with 4+ years of experience specializing in building scalable data pipelines and cloud-native data solutions."
     }
-    </script>
+    </script>` : ''}
 ${videoSchemaBlock}
 ${howToSchemaBlock}
 
@@ -4368,7 +4436,7 @@ function generateSimpleHTML(pageData, bundleFiles) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>${smartTitle(title)}</title>
     <meta name="description" content="${description}" />
-    <link rel="canonical" href="https://dataengineerhub.blog${pagePath}" />
+    <link rel="canonical" href="${canonicalUrl(pagePath)}" />
     ${productionCssFile ? `<link rel="stylesheet" crossorigin href="${productionCssFile}">` : ''}
 
     <style>
@@ -4495,12 +4563,12 @@ function generateArticlesListingHTML(allArticleSummaries, categories, bundleFile
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>All Data Engineering Articles</title>
     <meta name="description" content="Browse all ${allArticleSummaries.length} data engineering articles on DataEngineer Hub. Tutorials on Snowflake, Apache Spark, dbt, Airflow, Python, SQL, and more." />
-    <link rel="canonical" href="https://dataengineerhub.blog/articles" />
+    <link rel="canonical" href="https://dataengineerhub.blog/articles/" />
     <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
 
     <!-- Open Graph -->
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://dataengineerhub.blog/articles" />
+    <meta property="og:url" content="https://dataengineerhub.blog/articles/" />
     <meta property="og:title" content="All Data Engineering Articles" />
     <meta property="og:description" content="Browse ${allArticleSummaries.length} in-depth tutorials covering Snowflake, Spark, dbt, Airflow, Python, and modern data engineering." />
     <meta property="og:site_name" content="DataEngineer Hub" />
@@ -4734,14 +4802,14 @@ function generateCategoryPageHTML(category, categoryArticles, bundleFiles) {
   html += '    <meta name="viewport" content="width=device-width, initial-scale=1.0" />\n';
   html += '    <title>' + safeName + ' - Data Engineering Articles</title>\n';
   html += '    <meta name="description" content="' + descriptionMeta + '" />\n';
-  html += '    <link rel="canonical" href="https://dataengineerhub.blog' + pagePath + '" />\n';
+  html += '    <link rel="canonical" href="' + canonicalUrl(pagePath) + '" />\n';
   var catRobots = (isAdSenseNoindexPath(pagePath) || categoryArticles.length < MIN_INDEXABLE_CATEGORY_COUNT)
     ? 'noindex, follow'
     : 'index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1';
   html += '    <meta name="robots" content="' + catRobots + '" />\n\n';
   html += '    <!-- Open Graph -->\n';
   html += '    <meta property="og:type" content="website" />\n';
-  html += '    <meta property="og:url" content="https://dataengineerhub.blog' + pagePath + '" />\n';
+  html += '    <meta property="og:url" content="' + canonicalUrl(pagePath) + '" />\n';
   html += '    <meta property="og:title" content="' + safeName + ' Articles" />\n';
   html += '    <meta property="og:description" content="Browse ' + categoryArticles.length + ' ' + safeName + ' tutorials and guides for data engineers." />\n';
   html += '    <meta property="og:site_name" content="DataEngineer Hub" />\n';
@@ -4823,7 +4891,7 @@ function generateCategoryPageHTML(category, categoryArticles, bundleFiles) {
   html += '      "@type": "CollectionPage",\n';
   html += '      "name": "' + safeNameJsonLd + ' Articles",\n';
   html += '      "description": "Browse ' + categoryArticles.length + ' articles about ' + safeNameJsonLd + ' on DataEngineer Hub",\n';
-  html += '      "url": "https://dataengineerhub.blog' + pagePath + '",\n';
+  html += '      "url": "' + canonicalUrl(pagePath) + '",\n';
   html += '      "publisher": { "@type": "Organization", "name": "DataEngineer Hub", "url": "https://dataengineerhub.blog" }\n';
   html += '    }\n';
   html += '    <\/script>\n\n';
@@ -5020,12 +5088,12 @@ function generateGlossaryHubPageHTML(allGlossaryTerms, bundleFiles) {
   html += '    <meta name="viewport" content="width=device-width, initial-scale=1.0" />\n';
   html += '    <title>Data Engineering Glossary | ' + totalTerms + ' Key Terms Explained</title>\n';
   html += '    <meta name="description" content="Comprehensive data engineering glossary with ' + totalTerms + ' key terms explained. Learn about ETL, data warehousing, streaming, orchestration, cloud platforms, and more." />\n';
-  html += '    <link rel="canonical" href="https://dataengineerhub.blog/glossary" />\n';
+  html += '    <link rel="canonical" href="https://dataengineerhub.blog/glossary/" />\n';
   html += '    <meta name="robots" content="' + robotsForWordCount(9999, '/glossary') + '" />\n';
   html += '\n';
   html += '    <!-- Open Graph -->\n';
   html += '    <meta property="og:type" content="website" />\n';
-  html += '    <meta property="og:url" content="https://dataengineerhub.blog/glossary" />\n';
+  html += '    <meta property="og:url" content="https://dataengineerhub.blog/glossary/" />\n';
   html += '    <meta property="og:title" content="Data Engineering Glossary | ' + totalTerms + ' Key Terms Explained" />\n';
   html += '    <meta property="og:description" content="Comprehensive glossary covering ' + totalTerms + ' essential data engineering terms across ' + categoryKeys.length + ' categories." />\n';
   html += '    <meta property="og:site_name" content="DataEngineer Hub" />\n';
@@ -5329,11 +5397,11 @@ function generateGlossaryPageHTML(term, allGlossaryTerms, bundleFiles, allArticl
   html += '    <meta name="viewport" content="width=device-width, initial-scale=1.0" />\n';
   html += '    <title>What is ' + escapeHtml(term.term) + '? | Data Engineering Glossary</title>\n';
   html += '    <meta name="description" content="' + escapeHtml(descriptionMeta) + '" />\n';
-  html += '    <link rel="canonical" href="https://dataengineerhub.blog' + pagePath + '" />\n';
+  html += '    <link rel="canonical" href="' + canonicalUrl(pagePath) + '" />\n';
   html += '    <meta name="robots" content="' + robotsDirective + '" />\n\n';
   html += '    <!-- Open Graph -->\n';
   html += '    <meta property="og:type" content="article" />\n';
-  html += '    <meta property="og:url" content="https://dataengineerhub.blog' + pagePath + '" />\n';
+  html += '    <meta property="og:url" content="' + canonicalUrl(pagePath) + '" />\n';
   html += '    <meta property="og:title" content="What is ' + escapeHtml(term.term) + '? | Data Engineering Glossary" />\n';
   html += '    <meta property="og:description" content="' + escapeHtml(descriptionMeta) + '" />\n';
   html += '    <meta property="og:site_name" content="DataEngineer Hub" />\n';
@@ -5474,7 +5542,7 @@ function generateGlossaryPageHTML(term, allGlossaryTerms, bundleFiles, allArticl
   html += '      "@type": "DefinedTerm",\n';
   html += '      "name": "' + term.term.replace(/"/g, '\\"') + '",\n';
   html += '      "description": "' + (term.shortDefinition || '').replace(/"/g, '\\"') + '",\n';
-  html += '      "url": "https://dataengineerhub.blog' + pagePath + '",\n';
+  html += '      "url": "' + canonicalUrl(pagePath) + '",\n';
   html += '      "inDefinedTermSet": {\n';
   html += '        "@type": "DefinedTermSet",\n';
   html += '        "name": "Data Engineering Glossary",\n';
@@ -5490,7 +5558,7 @@ function generateGlossaryPageHTML(term, allGlossaryTerms, bundleFiles, allArticl
   html += '      "@type": "Article",\n';
   html += '      "headline": "What is ' + term.term.replace(/"/g, '\\"') + '?",\n';
   html += '      "description": "' + (term.shortDefinition || '').replace(/"/g, '\\"') + '",\n';
-  html += '      "url": "https://dataengineerhub.blog' + pagePath + '",\n';
+  html += '      "url": "' + canonicalUrl(pagePath) + '",\n';
   html += '      "image": "https://dataengineerhub.blog/og-image.jpg",\n';
   html += '      "author": {\n';
   html += '        "@type": "Person",\n';
@@ -5638,12 +5706,12 @@ function generateCompareHubPageHTML(allComparisons, bundleFiles) {
   html += '    <meta name="viewport" content="width=device-width, initial-scale=1.0" />\n';
   html += '    <title>Data Engineering Tool Comparisons | ' + totalComparisons + ' Head-to-Head Guides</title>\n';
   html += '    <meta name="description" content="Compare ' + totalComparisons + ' popular data engineering tools side by side. Detailed feature comparisons for data warehousing, streaming, orchestration, analytics, and more." />\n';
-  html += '    <link rel="canonical" href="https://dataengineerhub.blog/compare" />\n';
+  html += '    <link rel="canonical" href="https://dataengineerhub.blog/compare/" />\n';
   html += '    <meta name="robots" content="' + robotsForWordCount(9999, '/compare') + '" />\n';
   html += '\n';
   html += '    <!-- Open Graph -->\n';
   html += '    <meta property="og:type" content="website" />\n';
-  html += '    <meta property="og:url" content="https://dataengineerhub.blog/compare" />\n';
+  html += '    <meta property="og:url" content="https://dataengineerhub.blog/compare/" />\n';
   html += '    <meta property="og:title" content="Data Engineering Tool Comparisons | ' + totalComparisons + ' Head-to-Head Guides" />\n';
   html += '    <meta property="og:description" content="Side-by-side comparisons of ' + totalComparisons + ' data engineering tools across ' + categoryKeys.length + ' categories." />\n';
   html += '    <meta property="og:site_name" content="DataEngineer Hub" />\n';
@@ -5988,11 +6056,11 @@ function generateComparePageHTML(comparison, allComparisons, bundleFiles) {
   html += '    <meta name="viewport" content="width=device-width, initial-scale=1.0" />\n';
   html += '    <title>' + escapeHtml(comparison.toolA) + ' vs ' + escapeHtml(comparison.toolB) + ' | Data Engineering Tools Comparison</title>\n';
   html += '    <meta name="description" content="' + escapeHtml(descriptionMeta) + '" />\n';
-  html += '    <link rel="canonical" href="https://dataengineerhub.blog' + pagePath + '" />\n';
+  html += '    <link rel="canonical" href="' + canonicalUrl(pagePath) + '" />\n';
   html += '    <meta name="robots" content="' + compareRobots + '" />\n\n';
   html += '    <!-- Open Graph -->\n';
   html += '    <meta property="og:type" content="article" />\n';
-  html += '    <meta property="og:url" content="https://dataengineerhub.blog' + pagePath + '" />\n';
+  html += '    <meta property="og:url" content="' + canonicalUrl(pagePath) + '" />\n';
   html += '    <meta property="og:title" content="' + escapeHtml(comparison.toolA) + ' vs ' + escapeHtml(comparison.toolB) + ' Comparison" />\n';
   html += '    <meta property="og:description" content="' + escapeHtml(descriptionMeta) + '" />\n';
   html += '    <meta property="og:site_name" content="DataEngineer Hub" />\n';
@@ -6108,7 +6176,7 @@ function generateComparePageHTML(comparison, allComparisons, bundleFiles) {
   html += '      "@type": "Article",\n';
   html += '      "headline": "' + comparison.toolA + ' vs ' + comparison.toolB + ' Comparison",\n';
   html += '      "description": "' + (comparison.shortVerdict || '').replace(/"/g, '\\"') + '",\n';
-  html += '      "url": "https://dataengineerhub.blog' + pagePath + '",\n';
+  html += '      "url": "' + canonicalUrl(pagePath) + '",\n';
   html += '      "image": "https://dataengineerhub.blog/og-image.jpg",\n';
   html += '      "author": { "@type": "Person", "name": "Sainath Reddy", "url": "https://dataengineerhub.blog/about" },\n';
   html += '      "publisher": { "@type": "Organization", "name": "DataEngineer Hub", "url": "https://dataengineerhub.blog" },\n';
@@ -6236,11 +6304,11 @@ function generateCheatsheetHubPageHTML(allCheatsheets, categories, bundleFiles) 
   html += '    <meta name="viewport" content="width=device-width, initial-scale=1.0" />\n';
   html += '    <title>Data Engineering Cheat Sheets | ' + totalSheets + ' Quick References</title>\n';
   html += '    <meta name="description" content="' + totalSheets + ' data engineering cheat sheets covering Snowflake SQL, dbt, Airflow, window functions, interview prep, and best practices. Quick reference guides for data engineers." />\n';
-  html += '    <link rel="canonical" href="https://dataengineerhub.blog/cheatsheets" />\n';
+  html += '    <link rel="canonical" href="https://dataengineerhub.blog/cheatsheets/" />\n';
   html += '    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />\n\n';
   html += '    <!-- Open Graph -->\n';
   html += '    <meta property="og:type" content="website" />\n';
-  html += '    <meta property="og:url" content="https://dataengineerhub.blog/cheatsheets" />\n';
+  html += '    <meta property="og:url" content="https://dataengineerhub.blog/cheatsheets/" />\n';
   html += '    <meta property="og:title" content="Data Engineering Cheat Sheets | ' + totalSheets + ' Quick References" />\n';
   html += '    <meta property="og:description" content="' + totalSheets + ' cheat sheets across ' + categoryKeys.length + ' categories for data engineers." />\n';
   html += '    <meta property="og:site_name" content="DataEngineer Hub" />\n';
@@ -6489,11 +6557,11 @@ function generateCheatsheetPageHTML(sheet, allCheatsheets, bundleFiles) {
   html += '    <meta name="viewport" content="width=device-width, initial-scale=1.0" />\n';
   html += '    <title>' + escapeHtml(sheet.title) + '</title>\n';
   html += '    <meta name="description" content="' + descMeta + '" />\n';
-  html += '    <link rel="canonical" href="https://dataengineerhub.blog' + pagePath + '" />\n';
+  html += '    <link rel="canonical" href="' + canonicalUrl(pagePath) + '" />\n';
   html += '    <meta name="robots" content="' + robotsDirective + '" />\n\n';
   html += '    <!-- Open Graph -->\n';
   html += '    <meta property="og:type" content="article" />\n';
-  html += '    <meta property="og:url" content="https://dataengineerhub.blog' + pagePath + '" />\n';
+  html += '    <meta property="og:url" content="' + canonicalUrl(pagePath) + '" />\n';
   html += '    <meta property="og:title" content="' + escapeHtml(sheet.title) + '" />\n';
   html += '    <meta property="og:description" content="' + descMeta + '" />\n';
   html += '    <meta property="og:site_name" content="DataEngineer Hub" />\n';
@@ -6571,7 +6639,7 @@ function generateCheatsheetPageHTML(sheet, allCheatsheets, bundleFiles) {
   html += '      "@type": "Article",\n';
   html += '      "headline": "' + escapeJsonLd(sheet.title) + '",\n';
   html += '      "description": "' + escapeJsonLd(sheet.shortDescription || '') + '",\n';
-  html += '      "url": "https://dataengineerhub.blog' + pagePath + '",\n';
+  html += '      "url": "' + canonicalUrl(pagePath) + '",\n';
   html += '      "image": "https://dataengineerhub.blog/og-image.jpg",\n';
   html += '      "datePublished": "' + toIsoSchemaDate(sheet.lastUpdated) + '",\n';
   html += '      "dateModified": "' + toIsoSchemaDate(sheet.lastUpdated) + '",\n';
@@ -6664,11 +6732,11 @@ function generateTagPageHTML(tag, tagArticles, bundleFiles) {
   html += '    <meta name="viewport" content="width=device-width, initial-scale=1.0" />\n';
   html += '    <title>' + escapeHtml(tag.name) + ' - Tagged Articles</title>\n';
   html += '    <meta name="description" content="' + escapeHtml(descriptionMeta) + '" />\n';
-  html += '    <link rel="canonical" href="https://dataengineerhub.blog' + pagePath + '" />\n';
+  html += '    <link rel="canonical" href="' + canonicalUrl(pagePath) + '" />\n';
   html += '    <meta name="robots" content="' + robotsForWordCount(tagArticles.length * 200, pagePath) + '" />\n\n';
   html += '    <!-- Open Graph -->\n';
   html += '    <meta property="og:type" content="website" />\n';
-  html += '    <meta property="og:url" content="https://dataengineerhub.blog' + pagePath + '" />\n';
+  html += '    <meta property="og:url" content="' + canonicalUrl(pagePath) + '" />\n';
   html += '    <meta property="og:title" content="' + escapeHtml(tag.name) + ' Articles" />\n';
   html += '    <meta property="og:description" content="Browse ' + tagArticles.length + ' ' + escapeHtml(tag.name) + ' tutorials and guides for data engineers." />\n';
   html += '    <meta property="og:site_name" content="DataEngineer Hub" />\n';
@@ -6753,7 +6821,7 @@ function generateTagPageHTML(tag, tagArticles, bundleFiles) {
   html += '      "@type": "CollectionPage",\n';
   html += '      "name": "' + tag.name + ' Articles",\n';
   html += '      "description": "Browse ' + tagArticles.length + ' articles tagged with ' + tag.name + ' on DataEngineer Hub",\n';
-  html += '      "url": "https://dataengineerhub.blog' + pagePath + '",\n';
+  html += '      "url": "' + canonicalUrl(pagePath) + '",\n';
   html += '      "publisher": { "@type": "Organization", "name": "DataEngineer Hub", "url": "https://dataengineerhub.blog" }\n';
   html += '    }\n';
   html += '    <\/script>\n\n';
@@ -6810,12 +6878,12 @@ function generateEssentialPageHTML(pageData, bundleFiles) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>${smartTitle(title)}</title>
     <meta name="description" content="${description}" />
-    <link rel="canonical" href="https://dataengineerhub.blog${pagePath}" />
+    <link rel="canonical" href="${canonicalUrl(pagePath)}" />
     <meta name="robots" content="${pageRobots}" />
 
     <!-- Open Graph -->
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://dataengineerhub.blog${pagePath}" />
+    <meta property="og:url" content="${canonicalUrl(pagePath)}" />
     <meta property="og:title" content="${title}" />
     <meta property="og:description" content="${description}" />
     <meta property="og:site_name" content="DataEngineer Hub" />
@@ -7093,7 +7161,7 @@ ${CONSENT_MODE_V2_HTML}
       "@type": "WebPage",
       "name": "${titleJsonLd}",
       "description": "${descriptionJsonLd}",
-      "url": "https://dataengineerhub.blog${pagePath}",
+      "url": "${canonicalUrl(pagePath)}",
       "publisher": {
         "@type": "Organization",
         "name": "DataEngineer Hub",
@@ -7117,8 +7185,8 @@ ${CONSENT_MODE_V2_HTML}
         {
           "@type": "ListItem",
           "position": 2,
-          "name": "${titleJsonLd}",
-          "item": "https://dataengineerhub.blog${pagePath}"
+          "name": "${titleJsonLd.split(/\s+[-|:]\s+/)[0].replace(/\s+20\d\d$/, '')}",
+          "item": "${canonicalUrl(pagePath)}"
         }
       ]
     }
@@ -7150,9 +7218,9 @@ ${CONSENT_MODE_V2_HTML}
     {
       "@context": "https://schema.org",
       "@type": "SoftwareApplication",
-      "name": "${titleJsonLd}",
+      "name": "${titleJsonLd.split(/\s+[-|:]\s+/)[0].replace(/\s+20\d\d$/, '')}",
       "description": "${descriptionJsonLd}",
-      "url": "https://dataengineerhub.blog${pagePath}",
+      "url": "${canonicalUrl(pagePath)}",
       "applicationCategory": "DeveloperApplication",
       "operatingSystem": "Any (Web-based)",
       "offers": {
@@ -7162,6 +7230,7 @@ ${CONSENT_MODE_V2_HTML}
       },
       "publisher": {
         "@type": "Organization",
+        "@id": "https://dataengineerhub.blog/#organization",
         "name": "DataEngineer Hub",
         "url": "https://dataengineerhub.blog"
       }
@@ -7175,7 +7244,7 @@ ${CONSENT_MODE_V2_HTML}
       "@type": "CollectionPage",
       "name": "${titleJsonLd}",
       "description": "${descriptionJsonLd}",
-      "url": "https://dataengineerhub.blog${pagePath}",
+      "url": "${canonicalUrl(pagePath)}",
       "isPartOf": {
         "@type": "WebSite",
         "name": "DataEngineer Hub",
@@ -7183,6 +7252,7 @@ ${CONSENT_MODE_V2_HTML}
       },
       "publisher": {
         "@type": "Organization",
+        "@id": "https://dataengineerhub.blog/#organization",
         "name": "DataEngineer Hub",
         "url": "https://dataengineerhub.blog"
       }

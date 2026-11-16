@@ -3,6 +3,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { slashLinksInDirectory } from './lib/slashLinks.js';
 
 const MAX_ASSET_BYTES = 25 * 1024 * 1024;
 const FREE_FILE_LIMIT = 20_000;
@@ -54,6 +55,10 @@ for (const file of walk(dest)) {
     removed.push(`${path.relative(dest, file)} (${(size / (1024 * 1024)).toFixed(1)} MiB)`);
   }
 }
+
+// Point internal links at the slash URLs Pages actually serves (saves a 308 hop).
+const slashed = slashLinksInDirectory(dest, walk(dest));
+console.log(`   slash-normalized ${slashed.links} internal link(s) across ${slashed.pages} page(s)`);
 
 const remaining = walk(dest);
 const oversized = remaining.filter((file) => fs.statSync(file).size >= MAX_ASSET_BYTES);
