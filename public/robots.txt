@@ -127,6 +127,22 @@ Allow: /
 User-agent: ClaudeBot
 Allow: /
 
+# Claude search citability (Claude-SearchBot) and user-triggered browsing
+# (Claude-User) are separate from the ClaudeBot training crawler.
+User-agent: Claude-SearchBot
+Allow: /
+
+User-agent: Claude-User
+Allow: /
+
+# Applebot powers Siri / Spotlight / Safari discovery. Applebot-Extended is a
+# training opt-out label only; allowing it permits Apple Intelligence training.
+User-agent: Applebot
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
 User-agent: Bytespider
 Allow: /
 
