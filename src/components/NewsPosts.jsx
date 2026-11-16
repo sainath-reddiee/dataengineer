@@ -1,5 +1,4 @@
 // src/components/NewsPosts.jsx - Homepage news section
-import React from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { Zap } from 'lucide-react';

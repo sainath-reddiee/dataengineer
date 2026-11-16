@@ -35,6 +35,7 @@ const AllArticlesPage = () => {
       setSearchQuery(q);
       setActiveSearch(q);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- dependency list kept as written; changing it would change when this runs
   }, []);
   
   const postsPerPage = 12;
@@ -53,6 +54,7 @@ const AllArticlesPage = () => {
   };
 
   // Debounced search to avoid excessive API calls
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- dependency list kept as written; changing it would change when this runs
   const debouncedSearch = useCallback(
     debounce((query) => {
       setActiveSearch(query.trim());

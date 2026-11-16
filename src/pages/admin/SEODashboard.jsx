@@ -4,15 +4,10 @@
  * Overview of all SEO metrics with quick actions
  */
 
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import {
-    Search, Layers, GitCompare, Code2, Eye, Sparkles,
-    TrendingUp, AlertCircle, CheckCircle, Clock, ArrowRight, Bot, Zap, Activity,
-    MousePointerClick, Target, Wrench, FileText, Key,
-} from 'lucide-react';
-import { SEOScoreCard } from '@/components/admin/SEOScoreCard';
+import { Search, Layers, Sparkles, TrendingUp, Clock, ArrowRight, Bot, Zap, Activity, Wrench, FileText, Key } from 'lucide-react';
 import wordpressApi from '@/services/wordpressApi';
 import gscService from '@/services/gscService';
 import { summarizeCtrMix } from '@/utils/expectedCtr';

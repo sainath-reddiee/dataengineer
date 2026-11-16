@@ -3,9 +3,9 @@
  * Manual checks for comprehensive SEO that automated tools might miss
  */
 
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { CheckSquare, Square, Save, RotateCcw, ClipboardCheck, AlertCircle } from 'lucide-react';
+import { CheckSquare, Square, RotateCcw, ClipboardCheck, AlertCircle } from 'lucide-react';
 
 const CHECKLIST_STORAGE_KEY = 'seo_toolkit_checklist_v1';
 

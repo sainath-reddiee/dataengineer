@@ -1,7 +1,7 @@
 // src/pages/RoadmapPage.jsx
 // One role roadmap: ordered stages of skills, each linking to content on this
 // site, with tick-off progress stored in the browser.
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Link, Navigate, useParams } from 'react-router-dom';
 import MetaTags from '@/components/SEO/MetaTags';
 import Breadcrumbs from '@/components/SEO/Breadcrumbs';

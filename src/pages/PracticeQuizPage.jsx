@@ -1,7 +1,7 @@
 // src/pages/PracticeQuizPage.jsx
 // Orchestrates the full quiz flow: mode selection -> question loop -> results.
 
-import React, { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link, Navigate, useParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { BookOpen, Cloud, Database, Flame, Sparkles } from 'lucide-react';

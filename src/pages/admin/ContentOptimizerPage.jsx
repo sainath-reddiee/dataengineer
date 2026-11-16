@@ -1,9 +1,8 @@
-﻿import React, { useState, useEffect, useRef } from 'react';
+﻿import { useState, useEffect, useRef } from 'react';
 import { Search, TrendingUp, AlertCircle, CheckCircle, Clock, FileText, Sparkles, Target, Zap, Link as LinkIcon, ArrowRight, Loader2, Copy, Check, Globe } from 'lucide-react';
 import { Link, useSearchParams } from 'react-router-dom';
 import contentOptimizerService from '../../services/contentOptimizerService';
 import { AIOutputSections } from '../../components/admin/AIOutputSections';
-import pdfExportService from '../../services/pdfExportService';
 import aiService from '../../services/aiService';
 import tinyfishService from '../../services/tinyfishService';
 
@@ -106,14 +105,6 @@ const ContentOptimizerPage = () => {
             LOW: 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-lg shadow-blue-500/50'
         };
         return colors[priority] || colors.MEDIUM;
-    };
-
-    const handleExportPDF = () => {
-        if (!result) return;
-        let hostname = 'page';
-        try { hostname = new URL(result.url).hostname; } catch { /* fallback */ }
-        const filename = `seo-analysis-${hostname}-${Date.now()}.pdf`;
-        pdfExportService.exportSingleAnalysis(result, filename);
     };
 
     // AI-powered fix generation for a specific recommendation
@@ -707,7 +698,6 @@ function RecommendationCard({ rec, onGenerateFix, getPriorityBadge }) {
 function GEORewriterPanel({ url, keywords, aiVisibility, serpData, articleContent = '' }) {
     const [loading, setLoading] = useState(false);
     const [rewrite, setRewrite] = useState(null);
-    const [copied, setCopied] = useState(false);
 
     const handleRewrite = async () => {
         if (!aiService.isEnabled) { alert('Set AI API key in sidebar first.'); return; }

@@ -1,5 +1,4 @@
 // src/components/certifications/CertificationCard.jsx - FINAL VERSION WITH MULTIPLE RESOURCE TYPES
-import React from 'react';
 import { motion } from 'framer-motion';
 import { ArrowRight, Star } from 'lucide-react';
 import DOMPurify from 'dompurify';

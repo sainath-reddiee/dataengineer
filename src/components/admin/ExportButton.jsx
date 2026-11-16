@@ -4,7 +4,7 @@
  * Dropdown for exporting report in various formats
  */
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Download, Copy, FileText, Table, Code, Check } from 'lucide-react';
 import { exportToMarkdown, exportToCSV, exportToJSON, downloadFile, copyToClipboard } from '@/utils/seo/exportUtils';

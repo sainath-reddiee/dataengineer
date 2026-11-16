@@ -191,7 +191,6 @@ export function getRecommendedCourses(post = {}, limit = 3) {
     }
   }
 
-  const organicLimit = limit - result.length;
 
   for (const key of keys) {
     const courses = COURSE_MAP[key];

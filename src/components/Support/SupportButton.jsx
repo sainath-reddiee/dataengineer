@@ -1,4 +1,4 @@
-import React, { lazy, Suspense, useState } from 'react';
+import { lazy, Suspense, useState } from 'react';
 import { Coffee } from 'lucide-react';
 import { trackEvent } from '@/utils/analytics';
 

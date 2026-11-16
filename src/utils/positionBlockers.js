@@ -43,7 +43,7 @@ const BUCKET_LABELS = {
  */
 export function detectBlockers(ctx) {
     const blockers = [];
-    const { article, linkMetrics, contentScore, aiVisScore, ctrScore, gscKeywords = [], expectedCtr, cannibalizedKeywords = [], competitorGap } = ctx;
+    const { article, linkMetrics, contentScore, aiVisScore, ctrScore, expectedCtr, cannibalizedKeywords = [], competitorGap } = ctx;
     const bucket = getPositionBucket(article?.position);
     const wordCount = ctx.wordCount || 0;
 

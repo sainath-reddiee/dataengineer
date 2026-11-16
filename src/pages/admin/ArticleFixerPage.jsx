@@ -2,12 +2,8 @@
 // Batch Article Fixer — analyzes all articles against focus keyphrases,
 // uses GSC performance data for smart prioritization, and generates ready-to-paste AI fixes.
 
-import React, { useEffect, useState, useMemo } from 'react';
-import {
-    Wrench, Loader2, AlertTriangle, Sparkles, RefreshCw, Copy, Check,
-    ChevronDown, ChevronRight, Target, TrendingUp, MousePointerClick,
-    Zap, BarChart3,
-} from 'lucide-react';
+import { useEffect, useState, useMemo } from 'react';
+import { Wrench, Loader2, AlertTriangle, Sparkles, RefreshCw, ChevronDown, ChevronRight, Target, MousePointerClick, Zap, BarChart3 } from 'lucide-react';
 import wordpressApi from '@/services/wordpressApi';
 import { buildLinkGraph } from '@/utils/linkAnalysis';
 import { LinkHealthPanel } from '@/components/admin/LinkHealthPanel';
@@ -88,6 +84,7 @@ export function ArticleFixerPage() {
     const [batchResult, setBatchResult] = useState('');
     const mounted = useMountedRef();
 
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- dependency list kept as written; changing it would change when this runs
     useEffect(() => { loadData(); }, []);
 
     async function loadData() {

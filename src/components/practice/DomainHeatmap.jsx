@@ -3,7 +3,6 @@
 // remediation links (topic.relatedArticles). Drop into the result screen
 // or the hub to surface weaknesses at a glance.
 
-import React from 'react';
 import { ArrowRight } from 'lucide-react';
 
 function tone(acc) {

@@ -1,7 +1,7 @@
 ﻿// src/pages/admin/ContentDecayPage.jsx
 // Detects articles losing traffic by comparing GSC data across two 28-day periods.
 
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { TrendingDown, Loader2, AlertTriangle, RefreshCw, Sparkles, ArrowDown, ArrowUp, Minus } from 'lucide-react';
 import gscService from '@/services/gscService';
 import aiService from '@/services/aiService';

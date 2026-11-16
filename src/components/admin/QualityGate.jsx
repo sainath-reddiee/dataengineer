@@ -1,9 +1,9 @@
+/* eslint-disable react-refresh/only-export-components -- exports helpers/hooks alongside components on purpose */
 // src/components/admin/QualityGate.jsx
 // Pre-publish quality gate — scores content for AI detection risk, SEO, readability, and AEO/GEO readiness.
 // Use in Article Writer (Step 4) and Article Fixer before publishing.
 
-import React, { useState } from 'react';
-import { Shield, CheckCircle, AlertTriangle, XCircle, Loader2 } from 'lucide-react';
+import { Shield, CheckCircle, AlertTriangle, XCircle } from 'lucide-react';
 
 // AI-tell phrases that flag content as AI-generated
 const AI_TELLS = [

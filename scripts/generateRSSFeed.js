@@ -146,7 +146,7 @@ function buildRSSFeed(posts) {
         const excerpt = stripHTML(post.excerpt?.rendered || '');
         const link = `${SITE_URL}/articles/${post.slug}`;
         const pubDate = new Date(post.date).toUTCString();
-        const modDate = post.modified ? new Date(post.modified).toUTCString() : pubDate;
+        post.modified ? new Date(post.modified).toUTCString() : pubDate;
 
         let authorName = 'Sainath Reddy';
         if (post._embedded?.author?.[0]?.name) {

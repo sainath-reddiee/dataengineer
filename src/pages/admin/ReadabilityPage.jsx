@@ -1,11 +1,10 @@
 ﻿// src/pages/admin/ReadabilityPage.jsx
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { BookOpen, Loader2, AlertTriangle, CheckCircle, Info, BarChart3 } from 'lucide-react';
+import { BookOpen, Loader2, AlertTriangle, CheckCircle } from 'lucide-react';
 import wordpressApi from '@/services/wordpressApi';
 import { analyzeReadability } from '@/utils/seo/readabilityAnalyzer';
 
-const SEVERITY_ICON = { warning: AlertTriangle, info: Info };
 const SEVERITY_COLOR = { warning: 'text-amber-400', info: 'text-blue-400' };
 
 export function ReadabilityPage() {
@@ -147,7 +146,6 @@ export function ReadabilityPage() {
                                 <AlertTriangle className="w-4 h-4" /> Issues
                             </h3>
                             {result.issues.map((issue, i) => {
-                                const Icon = SEVERITY_ICON[issue.severity] || Info;
                                 return (
                                     <div key={i} className={`text-sm pl-6 ${SEVERITY_COLOR[issue.severity] || 'text-gray-400'}`}>
                                         {issue.text}

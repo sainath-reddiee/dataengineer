@@ -2,7 +2,7 @@
 // AI Article Writer — step-by-step wizard that writes full articles in YOUR format.
 // Uses TinyFish for research + Groq/Gemini for writing section-by-section.
 
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import {
     FileText, Loader2, Sparkles, Copy, Check, Search, ArrowRight,
     ArrowLeft, RefreshCw, ChevronDown, ChevronRight, Zap, Download, Clock,

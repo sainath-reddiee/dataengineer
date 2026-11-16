@@ -3,15 +3,9 @@
 // edit ALL their bio fields inline, preview the AuthorBioCard live,
 // and reassign post authorship without touching WP Admin.
 
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import {
-  Users, User, Edit3, Save, RefreshCw, Search, BookOpen,
-  Linkedin, Twitter, Globe, Github, Camera, Briefcase,
-  FileText, CheckCircle, XCircle, AlertCircle, ChevronRight,
-  Loader2, Eye, Link2, Plus, ArrowRight, Tag, ExternalLink,
-  Trash2, RotateCcw, Star, BadgeCheck, Mail, Info, X
-} from 'lucide-react';
+import { Users, User, Edit3, Save, RefreshCw, Search, BookOpen, Linkedin, Twitter, Globe, Github, Camera, Briefcase, FileText, XCircle, AlertCircle, ChevronRight, Loader2, Eye, Link2, Plus, ArrowRight, ExternalLink, Trash2, RotateCcw, Mail, X } from 'lucide-react';
 import AuthorBioCard from '@/components/AuthorBioCard';
 import { useToast } from '@/components/ui/use-toast';
 
@@ -263,7 +257,7 @@ export default function ContributorManagerPage() {
   // ── Bio editor state
   const [editFields, setEditFields] = useState(null);   // null = not editing
   const [saving, setSaving] = useState(false);
-  const [editing, setEditing] = useState(false);
+  const [, setEditing] = useState(false);
 
   // ── Posts by author
   const [authorPosts, setAuthorPosts] = useState([]);

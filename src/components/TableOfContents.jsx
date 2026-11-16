@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components -- exports helpers/hooks alongside components on purpose */
 import { useState, useEffect, useLayoutEffect, useMemo, useRef } from 'react';
 import { List, ChevronDown, ChevronUp } from 'lucide-react';
 

@@ -59,16 +59,6 @@ const LEARN_LINKS = [
   { name: 'Reading list', path: '/reading-list', icon: Bookmark },
 ];
 
-const LEARN_PATHS = [
-  '/roadmaps',
-  '/interview-prep',
-  '/practice',
-  '/cheatsheets',
-  '/glossary',
-  '/compare',
-  '/contribute',
-  '/reading-list',
-];
 
 // Editorial nav: plain text links; the current page gets a rust underline.
 const pillClass = (active) =>

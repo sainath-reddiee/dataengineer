@@ -1,9 +1,9 @@
 ﻿// src/pages/admin/CompetitorGapPage.jsx
 // Compare your article against any competitor URL — AI-powered gap analysis.
 
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Users, Loader2, AlertTriangle, Sparkles, TrendingUp, FileText } from 'lucide-react';
+import { Users, Loader2, AlertTriangle, Sparkles, FileText } from 'lucide-react';
 import wordpressApi from '@/services/wordpressApi';
 import { analyzeCompetitorGap } from '@/services/competitorAnalyzer';
 import aiService from '@/services/aiService';

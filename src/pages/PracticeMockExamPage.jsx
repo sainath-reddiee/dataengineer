@@ -1,7 +1,7 @@
 // src/pages/PracticeMockExamPage.jsx
 // Timed mock exam over a practice bank: pick a length, answer under a real
 // exam clock with no feedback, then review every answer with explanations.
-import React, { useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Link, Navigate, useParams } from 'react-router-dom';
 import { Flag } from 'lucide-react';
 import MetaTags from '@/components/SEO/MetaTags';

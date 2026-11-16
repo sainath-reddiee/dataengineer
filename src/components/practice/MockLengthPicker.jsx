@@ -1,6 +1,5 @@
 // src/components/practice/MockLengthPicker.jsx
 // Quick / Standard / Full cards showing question count and time.
-import React from 'react';
 import { getMockPlan, MOCK_LENGTHS } from '@/lib/practice/mockExam';
 
 const minutes = (sec) => `${Math.round(sec / 60)} min`;

@@ -18,11 +18,6 @@ const COMPETITOR_DOMAINS = [
 ];
 
 // Niche seed keywords for trend discovery
-const SEED_TOPICS = [
-    'snowflake', 'dbt', 'data engineering', 'airflow', 'spark',
-    'data pipeline', 'data warehouse', 'ELT', 'data lakehouse',
-    'iceberg', 'delta lake', 'databricks', 'fivetran',
-];
 
 class TrendIntelligenceService {
 
@@ -140,7 +135,7 @@ class TrendIntelligenceService {
      * Find content gaps — topics competitors rank for that you don't cover.
      * Compares your GSC keywords against competitor SERP presence.
      */
-    async findContentGaps(yourSlugs = []) {
+    async findContentGaps() {
         if (!tinyfishService.isEnabled) throw new Error('TinyFish API key required.');
 
         const gaps = [];

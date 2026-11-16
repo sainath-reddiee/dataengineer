@@ -2,11 +2,8 @@
 // Surfaces rising keywords from GSC and suggests content patches to inject them
 // into existing articles for increased relevance and rankings.
 
-import React, { useEffect, useState, useMemo } from 'react';
-import {
-    TrendingUp, Loader2, AlertTriangle, RefreshCw, Sparkles, ArrowUpRight,
-    FileText, Zap, ChevronDown, ChevronRight, Copy, Check,
-} from 'lucide-react';
+import { useEffect, useState, useMemo } from 'react';
+import { TrendingUp, Loader2, AlertTriangle, RefreshCw, Sparkles, FileText, Zap, ChevronDown, ChevronRight, Copy, Check } from 'lucide-react';
 import gscService from '@/services/gscService';
 import keywordTrendService from '@/services/keywordTrendService';
 import wordpressApi from '@/services/wordpressApi';

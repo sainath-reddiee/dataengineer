@@ -8,7 +8,7 @@
  * Export SEO report as Markdown
  */
 export function exportToMarkdown(report, options = {}) {
-    const { includeDetails = true, title = 'SEO Analysis Report' } = options;
+    const { title = 'SEO Analysis Report' } = options;
 
     let md = `# ${title}\n\n`;
     md += `**URL:** ${report.url || 'N/A'}\n`;

@@ -1,4 +1,3 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
 import { Bookmark, BookOpen } from 'lucide-react';
 import MetaTags from '@/components/SEO/MetaTags';

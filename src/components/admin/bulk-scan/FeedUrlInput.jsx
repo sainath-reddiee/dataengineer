@@ -1,7 +1,7 @@
 // Feed URL Input Component
 // Parse sitemap, RSS, JSON, or plain text feeds
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Rss, Loader2, Check, AlertCircle, FileText, Code, List } from 'lucide-react';
 import feedParser from '@/services/feedParser';
 

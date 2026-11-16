@@ -3,11 +3,8 @@
 // Checks keyword placement in: title, meta, H1, H2s, first paragraph, URL, 
 // image alts, density, and provides AI-powered rewrite suggestions.
 
-import React, { useState, useEffect, useMemo, useRef } from 'react';
-import {
-    Target, Loader2, AlertTriangle, CheckCircle, XCircle, Sparkles,
-    RefreshCw, Copy, Check, Search, FileText, ArrowRight,
-} from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { Target, Loader2, AlertTriangle, CheckCircle, XCircle, Sparkles, Search, ArrowRight } from 'lucide-react';
 import { Link, useSearchParams } from 'react-router-dom';
 import wordpressApi from '@/services/wordpressApi';
 import aiService from '@/services/aiService';

@@ -1,5 +1,4 @@
 // src/components/practice/ProgressBar.jsx
-import React from 'react';
 
 const ProgressBar = ({ current, total, answers = {} }) => {
   const pct = total ? Math.round((current / total) * 100) : 0;

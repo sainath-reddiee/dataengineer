@@ -1,7 +1,7 @@
 // Activity History — unified timeline of all admin tool actions.
 // Shows what you did, when, on which article, with full result data.
 
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -147,6 +147,7 @@ export function ActivityHistoryPage() {
 
     useEffect(() => {
         loadEntries();
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- dependency list kept as written; changing it would change when this runs
     }, [filterTool, filterSlug]);
 
     function loadEntries() {

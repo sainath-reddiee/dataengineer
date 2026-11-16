@@ -1,17 +1,13 @@
 // src/pages/CheatSheetCategoryPage.jsx
 // Category-scoped cheat-sheet listing. One page per category in CHEATSHEET_CATEGORIES.
 // Examples: /cheatsheets/category/sql, /cheatsheets/category/interview.
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { useParams, Link, Navigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { motion } from 'framer-motion';
 import { ArrowLeft, ChevronRight, FileText, BookOpen, Clock } from 'lucide-react';
 import MetaTags from '@/components/SEO/MetaTags';
-import {
-  cheatsheets,
-  CHEATSHEET_CATEGORIES,
-  getCheatSheetsByCategory,
-} from '@/data/cheatsheetData';
+import { CHEATSHEET_CATEGORIES, getCheatSheetsByCategory } from '@/data/cheatsheetData';
 import { SITE_CONFIG } from '@/lib/seoConfig';
 import { isAdSenseNoindexPath } from '@/data/adsenseQualityGate';
 

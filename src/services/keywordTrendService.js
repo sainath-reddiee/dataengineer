@@ -10,7 +10,6 @@
 import gscService from './gscService';
 
 // Google Trends unofficial API (via CORS proxy for client-side usage)
-const TRENDS_PROXY_BASE = 'https://trends.google.com/trends/api/dailytrends';
 
 class KeywordTrendService {
     /**

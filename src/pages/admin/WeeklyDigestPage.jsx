@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Copy, Check, Mail, Linkedin, Rss, Users, Download, Search } from 'lucide-react';
 import wordpressApi from '@/services/wordpressApi';
 import { buildEmailDigest, buildLinkedInPost, selectRecentPosts } from '@/utils/weeklyDigest';
@@ -73,6 +73,7 @@ export function WeeklyDigestPage() {
   const recent = useMemo(() => selectRecentPosts(posts, 7, 6), [posts]);
   const emailDraft = useMemo(() => buildEmailDigest(recent), [recent]);
   const linkedInDraft = useMemo(() => buildLinkedInPost(recent), [recent]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- dependency list kept as written; changing it would change when this runs
   const rows = subscribers?.subscribers || [];
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();

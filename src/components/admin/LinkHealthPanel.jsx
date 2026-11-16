@@ -2,8 +2,7 @@
 // Reusable panel showing link health metrics for an article.
 // Used by ArticleOptimizer, ArticleFixer, CTRFixer.
 
-import React from 'react';
-import { Link2, Link as LinkIcon, AlertTriangle, ExternalLink, TrendingUp } from 'lucide-react';
+import { Link2, AlertTriangle, ExternalLink } from 'lucide-react';
 import { analyzeArticleLinks, suggestAuthorityLinks } from '@/utils/linkAnalysis';
 
 export function LinkHealthPanel({ article, linkGraph, compact = false }) {

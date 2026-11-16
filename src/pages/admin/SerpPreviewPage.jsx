@@ -3,7 +3,7 @@
  * SERP Preview Page - See how pages look in search results
  */
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Eye, Globe, Monitor, Smartphone, Loader2 } from 'lucide-react';
 import { fetchBlogArticleHTML } from '@/utils/fetchBlogArticleHTML';

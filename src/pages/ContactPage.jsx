@@ -1,7 +1,7 @@
 // src/pages/ContactPage.jsx
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Send, Mail, Phone, MapPin, CheckCircle, Loader2, Coffee, Clock } from 'lucide-react';
+import { Send, Mail, Phone, MapPin, CheckCircle, Loader2, Clock } from 'lucide-react';
 import SupportButton from '@/components/Support/SupportButton';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';

@@ -4,7 +4,7 @@
 //   - Top landed pages with avg scroll + click-inside rate
 //   - Dead-end list (high landings, 0% click inside) and Magnet list (high click-inside)
 
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Activity, RefreshCw, Trash2, TrendingDown, Flame } from 'lucide-react';
 import {
     getEngagementStats, getTopEntries, getSourceBreakdown, clearEngagementStats,

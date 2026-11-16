@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components -- exports helpers/hooks alongside components on purpose */
 import { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 

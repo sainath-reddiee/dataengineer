@@ -2,13 +2,8 @@
 // TinyFish-powered SERP Intelligence — live competitor analysis, SERP feature
 // detection, PAA extraction, page validation, and competitor monitoring.
 
-import React, { useState } from 'react';
-import {
-    Globe, Loader2, AlertTriangle, Search, Target, FileText, CheckCircle,
-    XCircle, ExternalLink, RefreshCw, Copy, Check, Eye,
-    MessageCircleQuestion, Shield, Users,
-} from 'lucide-react';
-import { useSearchParams } from 'react-router-dom';
+import { useState } from 'react';
+import { Globe, Loader2, AlertTriangle, Search, CheckCircle, XCircle, Copy, Check, Eye, MessageCircleQuestion, Shield, Users } from 'lucide-react';
 import tinyfishService from '@/services/tinyfishService';
 
 const TABS = [
@@ -368,7 +363,6 @@ function ValidationCheck({ label, passed, detail }) {
 
 // Main Page
 export function SerpIntelligencePage() {
-    const [searchParams] = useSearchParams();
     const [activeTab, setActiveTab] = useState('serp');
 
     return (

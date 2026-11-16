@@ -4,7 +4,7 @@
  * Displays prioritized list of SEO issues
  */
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AlertCircle, AlertTriangle, CheckCircle, Info, ChevronDown, ChevronUp, Sparkles, Loader2, Copy } from 'lucide-react';
 import aiService from '@/services/aiService';

@@ -2,12 +2,10 @@
 // Individual contributor profile page at /contributors/:slug
 // Shows full bio card + all published articles by that contributor.
 
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useParams, Link } from 'react-router-dom';
-import {
-  ArrowLeft, FileText, ArrowRight, Loader2, XCircle, Calendar, Clock
-} from 'lucide-react';
+import { ArrowLeft, FileText, ArrowRight, Loader2, XCircle } from 'lucide-react';
 import AuthorBioCard from '@/components/AuthorBioCard';
 import MetaTags from '@/components/SEO/MetaTags';
 import PostCard from '@/components/PostCard';

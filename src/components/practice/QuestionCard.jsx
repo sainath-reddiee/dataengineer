@@ -1,5 +1,4 @@
 // src/components/practice/QuestionCard.jsx
-import React from 'react';
 import { Check, X, Circle, CheckSquare, Square } from 'lucide-react';
 import BookmarkButton from './BookmarkButton';
 

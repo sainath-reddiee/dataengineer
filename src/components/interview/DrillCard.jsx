@@ -1,5 +1,4 @@
 // src/components/interview/DrillCard.jsx
-import React from 'react';
 import { Link } from 'react-router-dom';
 import { RATINGS } from '@/lib/interview/bank';
 

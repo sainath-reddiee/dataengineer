@@ -1,7 +1,7 @@
 // src/components/ApiDebugger.jsx
 // API Debugging Utility - Fixed for Vite Fast Refresh
 
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { wordpressApi } from '@/services/wordpressApi';
 import { Button } from '@/components/ui/button';
 import { CheckCircle, XCircle, AlertTriangle, Loader } from 'lucide-react';
@@ -138,6 +138,7 @@ const ApiDebugger = () => {
     if (import.meta.env.DEV) {
       runAllTests();
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- dependency list kept as written; changing it would change when this runs
   }, []);
 
   return (

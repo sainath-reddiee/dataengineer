@@ -1,5 +1,5 @@
 // src/pages/PracticeHubPage.jsx
-import React, { useMemo, useState, useEffect, useRef } from 'react';
+import { useMemo, useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { BookOpen, Cloud, Database, Flame, Sparkles, Search, Link2, Check, ChevronDown } from 'lucide-react';

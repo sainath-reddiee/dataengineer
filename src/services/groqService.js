@@ -49,7 +49,7 @@ class GroqService {
     // Legacy single-key facade
     setApiKey(key) {
         const existing = aiKeyRing.getKeys(PROVIDER);
-        existing.forEach((_, i) => aiKeyRing.removeKey(PROVIDER, 0));
+        existing.forEach(() => aiKeyRing.removeKey(PROVIDER, 0));
         if (key) aiKeyRing.addKey(PROVIDER, key);
     }
 

@@ -2,7 +2,7 @@
 // AI-powered internal linking suggestions. Uses Gemini to recommend
 // which articles to link TO and FROM, with exact anchor text.
 
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Sparkles, Loader2, AlertTriangle, ArrowRight, ArrowLeft, Check, ExternalLink, Globe, CheckCircle, Clock } from 'lucide-react';
 import { useSearchParams } from 'react-router-dom';

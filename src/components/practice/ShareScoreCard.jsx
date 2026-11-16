@@ -1,5 +1,5 @@
 // src/components/practice/ShareScoreCard.jsx
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Linkedin, Link as LinkIcon, Check } from 'lucide-react';
 
 const SITE = 'https://dataengineerhub.blog';

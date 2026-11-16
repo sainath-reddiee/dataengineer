@@ -3,9 +3,9 @@
  * AI Suite Page - PSEO, AEO, GEO Analysis
  */
 
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Sparkles, Bot, Mic, Search as SearchIcon, Loader2, Globe, Copy, Check } from 'lucide-react';
+import { Sparkles, Bot, Mic, Loader2, Globe } from 'lucide-react';
 import { useSearchParams } from 'react-router-dom';
 import { PSEOAnalyzer } from '@/utils/seo/pseoAnalyzer';
 import { AEOAnalyzer } from '@/utils/seo/aeoAnalyzer';

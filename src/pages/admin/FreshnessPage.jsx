@@ -1,7 +1,6 @@
 ﻿// src/pages/admin/FreshnessPage.jsx
-import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { Clock, Loader2, AlertTriangle, CheckCircle, RefreshCw, ExternalLink } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Loader2, ExternalLink } from 'lucide-react';
 import wordpressApi from '@/services/wordpressApi';
 
 function daysSince(dateStr) {

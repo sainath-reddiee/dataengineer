@@ -1,5 +1,4 @@
 // src/components/TrendingPosts.jsx - COMPLETE VERSION
-import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { TrendingUp } from 'lucide-react';
 import { reduceMotion } from '@/utils/performance';

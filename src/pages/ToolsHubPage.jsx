@@ -6,7 +6,7 @@
  * Hub-and-spoke model for SEO (like Cheat Sheets and Glossary hubs)
  */
 
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { motion } from 'framer-motion';

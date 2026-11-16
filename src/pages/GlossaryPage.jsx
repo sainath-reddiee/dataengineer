@@ -9,7 +9,7 @@
  * - SEO optimized metadata
  */
 
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { motion } from 'framer-motion';
@@ -217,7 +217,6 @@ export function GlossaryPage() {
     // Calculate word count for read time and thin content detection
     const wordCount = term.fullDefinition ? term.fullDefinition.split(/\s+/).length : 0;
     const readTimeMin = Math.max(1, Math.ceil(wordCount / 200));
-    const isThinContent = wordCount < 250;
 
     // Build BreadcrumbList + FAQPage JSON-LD (previously missing — now emits rich snippets)
     const breadcrumbSchema = Array.isArray(breadcrumbs) && breadcrumbs.length > 0 ? {

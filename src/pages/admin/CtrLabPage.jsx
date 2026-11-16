@@ -2,7 +2,6 @@
 // Dedicated admin page for CTR Lab. Thin wrapper around CtrLabPanel so we can
 // lazy-route it independently from the AI Suite page.
 
-import React from 'react';
 import { CtrLabPanel } from '@/components/admin/CtrLabPanel';
 
 export function CtrLabPage() {

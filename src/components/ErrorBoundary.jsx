@@ -87,7 +87,7 @@ class ErrorBoundary extends React.Component {
     return 'generic';
   };
 
-  getErrorMessage = (errorType, error) => {
+  getErrorMessage = (errorType) => {
     const messages = {
       'chunk-load': {
         title: 'Loading Error',

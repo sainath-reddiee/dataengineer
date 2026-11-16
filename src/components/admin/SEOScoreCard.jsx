@@ -4,7 +4,6 @@
  * Displays score with visual indicator
  */
 
-import React from 'react';
 import { motion } from 'framer-motion';
 
 export function SEOScoreCard({ title, score, subtitle, icon: Icon, color = 'blue' }) {

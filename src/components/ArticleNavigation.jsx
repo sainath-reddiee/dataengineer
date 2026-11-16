@@ -1,5 +1,5 @@
 // src/components/ArticleNavigation.jsx
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowLeft, ArrowRight, Calendar, Clock } from 'lucide-react';

@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+/* eslint-disable react-refresh/only-export-components -- exports helpers/hooks alongside components on purpose */
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Lock, User, Eye, EyeOff, AlertCircle } from 'lucide-react';
 

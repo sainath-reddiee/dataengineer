@@ -3,12 +3,8 @@
 // analysis, and content optimization in parallel, then displays a consolidated
 // health score with prioritized actions.
 
-import React, { useEffect, useState, useMemo } from 'react';
-import {
-    Loader2, AlertTriangle, Sparkles, Copy, Check, BarChart3,
-    TrendingUp, FileText, Target, Zap, ArrowRight, RefreshCw,
-    MousePointerClick, Eye, BookOpen, ChevronDown, ChevronRight,
-} from 'lucide-react';
+import { useEffect, useState, useMemo } from 'react';
+import { Loader2, AlertTriangle, Sparkles, Copy, Check, BarChart3, TrendingUp, Target, Zap, ArrowRight, RefreshCw, MousePointerClick, Eye, BookOpen, ChevronDown, ChevronRight } from 'lucide-react';
 import { Link, useSearchParams } from 'react-router-dom';
 import gscService from '@/services/gscService';
 import wordpressApi from '@/services/wordpressApi';
@@ -128,6 +124,7 @@ export function ArticleOptimizerPage() {
     // Run analysis when article changes (and posts have loaded)
     useEffect(() => {
         if (selectedSlug && posts.length > 0) runAnalysis(selectedSlug);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- dependency list kept as written; changing it would change when this runs
     }, [selectedSlug, posts.length]);
 
     async function runAnalysis(slug) {

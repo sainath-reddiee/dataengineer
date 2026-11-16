@@ -1,5 +1,5 @@
 // src/pages/ComparisonPage.jsx
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { motion } from 'framer-motion';
@@ -128,12 +128,6 @@ const ComparisonPage = () => {
             </div>
         );
     }
-
-    const {
-        toolA, toolB, category, winner,
-        shortVerdict, features, pros, cons,
-        finalVerdict, intro, lastUpdated
-    } = comparison;
 
     const { meta, canonical } = derivedData;
 

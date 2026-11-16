@@ -2,7 +2,7 @@
 // Trend Intelligence — discover what to write, what to update, and what competitors are doing.
 // Uses TinyFish FREE Search + GSC + AI for comprehensive content strategy.
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import {
     TrendingUp, Loader2, RefreshCw, Sparkles, Copy, Check,
     Search, Users, Target, ExternalLink, ArrowUpRight, Clock,

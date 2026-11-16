@@ -1,5 +1,4 @@
 // src/components/certifications/CertificationCardSkeleton.jsx - NEW FILE
-import React from 'react';
 
 const CertificationCardSkeleton = () => {
   return (

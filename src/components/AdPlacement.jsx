@@ -13,7 +13,7 @@
 //   5. Redeploy → this component renders the real <ins> unit
 //
 // Without both vars set in production, falls back to Auto Ads via index.html script.
-import React, { useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { isAdSenseNoindexPath } from '@/data/adsenseQualityGate';
 
 const CLIENT_ID   = 'ca-pub-8624144810216728';
@@ -34,6 +34,7 @@ const AdPlacement = ({ className = '', format = 'auto', style = {} }) => {
     } catch (_) {
       // adsbygoogle not yet loaded — Auto Ads covers it
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- dependency list kept as written; changing it would change when this runs
   }, []);
 
   if (heldOut) return null;

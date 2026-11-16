@@ -3,7 +3,7 @@
  * Admin Layout with Sidebar Navigation (responsive: desktop sidebar + mobile drawer)
  */
 
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { Link, Outlet, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';

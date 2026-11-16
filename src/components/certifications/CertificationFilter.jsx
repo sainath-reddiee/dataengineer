@@ -1,5 +1,4 @@
 // src/components/certifications/CertificationFilter.jsx - FINAL VERSION WITH MODERN UI
-import React from 'react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Search } from 'lucide-react';

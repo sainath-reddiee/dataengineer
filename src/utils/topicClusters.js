@@ -208,7 +208,7 @@ export function suggestMissingTopics(cluster, allPosts) {
     });
 
     return Object.entries(outsideKeywords)
-        .filter(([_, count]) => count >= 2)
+        .filter(([, count]) => count >= 2)
         .sort((a, b) => b[1] - a[1])
         .slice(0, 5)
         .map(([word, count]) => ({ topic: word, frequency: count }));

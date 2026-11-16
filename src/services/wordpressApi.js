@@ -650,7 +650,7 @@ class WordPressAPI {
   async healthCheck() {
     try {
       console.log('🏥 Performing health check...');
-      const result = await this.makeRequest('/posts?per_page=1&_fields=id');
+      await this.makeRequest('/posts?per_page=1&_fields=id');
       console.log('✅ API health check passed');
       return true;
     } catch (error) {

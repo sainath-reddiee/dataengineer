@@ -84,7 +84,7 @@ class ContentOptimizerService {
 
     // Generate competitor suggestions
     generateCompetitorSuggestions(keywords, currentUrl) {
-        const domain = this.getDomain(currentUrl);
+        this.getDomain(currentUrl);
         const suggestions = [];
 
         // Common competitor domains for different niches
@@ -295,7 +295,7 @@ class ContentOptimizerService {
         }
 
         // 5. Check for FAQ section or Q&A format
-        const hasQuestions = /<h[2-3][^>]*>[^<]*\?[^<]*<\/h[2-3]>/gi.test(html);
+        /<h[2-3][^>]*>[^<]*\?[^<]*<\/h[2-3]>/gi.test(html);
         const questionCount = (html.match(/<h[2-3][^>]*>[^<]*\?[^<]*<\/h[2-3]>/gi) || []).length;
 
         if (questionCount === 0) {

@@ -1,5 +1,4 @@
 // src/pages/DisclaimerPage.jsx
-import React from 'react';
 import MetaTags from '@/components/SEO/MetaTags';
 
 const DisclaimerPage = () => {

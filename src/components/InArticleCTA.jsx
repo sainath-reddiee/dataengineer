@@ -1,4 +1,3 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
 import { BookOpen, ArrowRight, Layers, Wrench, GraduationCap } from 'lucide-react';
 import { ADSENSE_REVIEW_MODE } from '@/data/adsenseQualityGate';

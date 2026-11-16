@@ -278,6 +278,7 @@ const RouteChangeTracker = ({ onRouteChange }) => {
     }, 100);
 
     return () => clearTimeout(timer);
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- dependency list kept as written; changing it would change when this runs
   }, [location.pathname, location.search]);
 
   return null;

@@ -187,7 +187,6 @@ export default function FormatConverterPage() {
   const dropRef = useRef(null);
 
   const isBinarySource = sourceFormat === 'Parquet' || sourceFormat === 'Avro';
-  const isBinaryOutput = targetFormat === 'Parquet' || targetFormat === 'Avro';
 
   // Swap formats
   const handleSwap = useCallback(() => {

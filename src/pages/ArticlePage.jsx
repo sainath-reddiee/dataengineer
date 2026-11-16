@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components -- exports helpers/hooks alongside components on purpose */
 // src/pages/ArticlePage.jsx - ENHANCED WITH BREADCRUMBS, SEO, AND PHASE 4 READER POLISH
 import React, { Suspense, useEffect, useMemo, useState } from 'react';
 import { useParams, Link, useNavigate, useLocation } from 'react-router-dom';

@@ -3,7 +3,7 @@
 // Run an on-demand scan (same-origin fetch of each article URL) and show a
 // gap matrix + prioritized list of the biggest lift-unlocks per page.
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Award, Play, Check, X as XIcon, AlertTriangle, ExternalLink } from 'lucide-react';
 import wordpressApi from '@/services/wordpressApi';
 import { auditBatch, SERP_FEATURE_LIFTS } from '@/utils/serpFeatureAudit';

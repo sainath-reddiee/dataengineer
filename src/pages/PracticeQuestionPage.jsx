@@ -1,7 +1,6 @@
 // src/pages/PracticeQuestionPage.jsx
 // Deep-linkable single question page - optimized for SEO and LinkedIn shares.
 
-import React from 'react';
 import { Link, Navigate, useParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import MetaTags from '@/components/SEO/MetaTags';

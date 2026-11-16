@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Search, Globe, Loader2, RefreshCw, History, Clock, ArrowRight, Trash2 } from 'lucide-react';
@@ -29,6 +29,7 @@ export function ScannerPage() {
             setUrl(urlParam);
             handleScan(urlParam);
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- dependency list kept as written; changing it would change when this runs
     }, [searchParams]);
 
     const handleScan = async (scanUrl = url) => {

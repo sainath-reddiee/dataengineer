@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components -- exports helpers/hooks alongside components on purpose */
 import { cn } from '@/lib/utils';
 import { Slot } from '@radix-ui/react-slot';
 import { cva } from 'class-variance-authority';

@@ -1,5 +1,4 @@
 // src/components/practice/QuizModeSelector.jsx
-import React from 'react';
 import { GraduationCap, Timer as TimerIcon, Target, Bookmark } from 'lucide-react';
 
 const MODES = [

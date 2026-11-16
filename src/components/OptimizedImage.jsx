@@ -1,6 +1,6 @@
 // src/components/OptimizedImage.jsx
 // Lazy loading images with blur placeholder
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 
 const OptimizedImage = ({ 
   src, 

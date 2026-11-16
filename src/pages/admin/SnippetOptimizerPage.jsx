@@ -1,14 +1,14 @@
 ﻿// src/pages/admin/SnippetOptimizerPage.jsx
 // Analyzes articles for featured snippet / PAA readiness and helps reformat content.
 
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Award, Loader2, RefreshCw, Sparkles, CheckCircle, XCircle } from 'lucide-react';
 import wordpressApi from '@/services/wordpressApi';
 import aiService from '@/services/aiService';
 
 function analyzeSnippetReadiness(content) {
     const html = content || '';
-    const text = html.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+    html.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
 
     // Definition snippet: clear "X is Y" pattern in first 300 chars
     const firstParagraphMatch = html.match(/<p[^>]*>([\s\S]*?)<\/p>/i);

@@ -56,7 +56,7 @@ class GeminiService {
     setApiKey(key) {
         // Replace whole ring with this single key (called from one-shot UI)
         const existing = aiKeyRing.getKeys(PROVIDER);
-        existing.forEach((_, i) => aiKeyRing.removeKey(PROVIDER, 0));
+        existing.forEach(() => aiKeyRing.removeKey(PROVIDER, 0));
         if (key) aiKeyRing.addKey(PROVIDER, key);
     }
     setModel(/* modelId */) { /* no-op — model now comes per-call from registry */ }

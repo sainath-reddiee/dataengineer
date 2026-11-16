@@ -1,7 +1,7 @@
 // White-Label Settings Component
 // Toggle branding on/off for PDF exports and reports
 
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Eye, EyeOff, Save, CheckCircle } from 'lucide-react';
 import pdfExportService from '../../services/pdfExportService';
 

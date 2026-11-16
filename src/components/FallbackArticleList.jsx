@@ -1,4 +1,3 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
 import { ADSENSE_REVIEW_MODE } from '@/data/adsenseQualityGate';
 import { getFallbackArticles } from '@/data/fallbackArticles';

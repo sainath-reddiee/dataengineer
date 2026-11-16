@@ -22,10 +22,6 @@ function escapeRegex(string) {
     return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
-function escapeHtmlAttr(str) {
-    if (!str) return '';
-    return String(str).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-}
 
 function isAlreadyLinked(html, keyword) {
     const anchorRegex = new RegExp(`<a[^>]*>[^<]*${escapeRegex(keyword)}[^<]*</a>`, 'i');

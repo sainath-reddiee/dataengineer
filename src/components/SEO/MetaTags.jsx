@@ -1,18 +1,6 @@
 // src/components/SEO/MetaTags.jsx - ENHANCED WITH CTR OPTIMIZATION
-import React from 'react';
 import { Helmet } from 'react-helmet-async';
-import {
-  SITE_CONFIG,
-  formatTitle,
-  formatDescription,
-  generateKeywords,
-  getCanonicalUrl,
-  ensureAbsoluteUrl,
-  getImageUrl,
-  formatDate,
-  getArticleSchema,
-  getBreadcrumbSchema,
-} from '@/lib/seoConfig';
+import { SITE_CONFIG, formatTitle, formatDescription, generateKeywords, ensureAbsoluteUrl, getImageUrl, formatDate, getArticleSchema, getBreadcrumbSchema } from '@/lib/seoConfig';
 import { optimizeMetaDescription } from '@/lib/metaDescriptionOptimizer';
 import { isAdSenseNoindexPath } from '@/data/adsenseQualityGate';
 

@@ -1,5 +1,4 @@
 // src/components/practice/StreakBadge.jsx
-import React from 'react';
 import { Flame } from 'lucide-react';
 
 const StreakBadge = ({ current = 0, longest = 0, compact = false }) => {

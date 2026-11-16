@@ -1,9 +1,7 @@
 // src/pages/PracticeTopicPage.jsx
 // SEO page: lists all questions in a topic with explanations (read-only study guide).
 
-import React from 'react';
 import { Link, Navigate, useParams } from 'react-router-dom';
-import { Helmet } from 'react-helmet-async';
 import MetaTags from '@/components/SEO/MetaTags';
 import Breadcrumbs from '@/components/SEO/Breadcrumbs';
 import { getQuiz, getTopicBySlug, getQuestionsForTopic } from '@/data/practice';

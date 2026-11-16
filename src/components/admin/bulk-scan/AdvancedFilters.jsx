@@ -1,7 +1,6 @@
 // Advanced Filters Component
 // Filter articles by search, category, score range, and issue type
 
-import React from 'react';
 import { Search, Filter, X, ChevronDown } from 'lucide-react';
 
 export function AdvancedFilters({ filters, onFiltersChange, categories = [] }) {

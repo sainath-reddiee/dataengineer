@@ -1,5 +1,4 @@
 // src/components/practice/Timer.jsx
-import React from 'react';
 import { Clock } from 'lucide-react';
 
 function fmt(sec) {

@@ -2,12 +2,8 @@
 // People Also Ask Optimizer — discovers question keywords from GSC data,
 // predicts additional PAA questions via AI, and generates snippet-optimized answers.
 
-import React, { useEffect, useState, useMemo } from 'react';
-import {
-    Loader2, AlertTriangle, RefreshCw, Sparkles, Copy, Check,
-    HelpCircle, ChevronDown, ChevronRight, CheckCircle, XCircle,
-    MessageCircle, Search, Code,
-} from 'lucide-react';
+import { useEffect, useState, useMemo } from 'react';
+import { Loader2, AlertTriangle, Sparkles, Copy, Check, HelpCircle, ChevronDown, ChevronRight, CheckCircle, XCircle, MessageCircle, Code } from 'lucide-react';
 import { useSearchParams } from 'react-router-dom';
 import gscService from '@/services/gscService';
 import wordpressApi from '@/services/wordpressApi';
@@ -186,6 +182,7 @@ export function PAAOptimizerPage() {
     // Analyze when article changes
     useEffect(() => {
         if (selectedSlug) analyzeArticle(selectedSlug);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- dependency list kept as written; changing it would change when this runs
     }, [selectedSlug]);
 
     async function analyzeArticle(slug) {

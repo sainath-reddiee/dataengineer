@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Check, Copy, ExternalLink, Quote } from 'lucide-react';
 import { SITE_CONFIG } from '@/lib/seoConfig';
 import { trackEvent } from '@/utils/analytics';

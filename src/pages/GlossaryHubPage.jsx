@@ -5,18 +5,11 @@
  * Acts as the "hub" in hub-and-spoke internal linking model
  */
 
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { motion } from 'framer-motion';
-import {
-    BookOpen,
-    Search,
-    ChevronRight,
-    Sparkles,
-    Filter,
-    X,
-} from 'lucide-react';
+import { BookOpen, Search, ChevronRight, Sparkles, X } from 'lucide-react';
 
 // Data - Use searchIndex for efficient search
 import searchIndex from '@/data/searchIndex.json';

@@ -1,5 +1,5 @@
 // src/components/TechCategories.jsx - FINAL VERSION WITH MOBILE FIXES
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { Zap, RefreshCw } from 'lucide-react';

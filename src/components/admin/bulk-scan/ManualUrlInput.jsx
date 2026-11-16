@@ -1,7 +1,7 @@
 // Manual URL Input Component
 // Textarea for pasting URLs to scan
 
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, Trash2, Check, AlertCircle } from 'lucide-react';
 
 export function ManualUrlInput({ onUrlsLoad, initialUrls = [] }) {
@@ -14,6 +14,7 @@ export function ManualUrlInput({ onUrlsLoad, initialUrls = [] }) {
             setInput(initialUrls.join('\n'));
             setUrls(initialUrls);
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- dependency list kept as written; changing it would change when this runs
     }, []);
 
     const parseUrls = (text) => {

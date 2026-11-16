@@ -1,7 +1,7 @@
 // src/pages/InterviewDrillPage.jsx
 // Drill mode: one question at a time, reveal, rate yourself, and the rating
 // schedules the next review (SM-2). Keyboard-first.
-import React, { useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import MetaTags from '@/components/SEO/MetaTags';
 import DrillCard from '@/components/interview/DrillCard';

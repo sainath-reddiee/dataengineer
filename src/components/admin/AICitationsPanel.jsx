@@ -11,7 +11,7 @@
 // No backend required. Per-device counter. GA4 provides the cross-device view
 // via the `ai_referral` custom event.
 
-import React, { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { Bot, RefreshCw, Trash2, ExternalLink, TrendingUp } from 'lucide-react';
 import {
     getLocalReferralStats,
@@ -57,6 +57,7 @@ export function AICitationsPanel() {
         setStats(getLocalReferralStats());
     }, [tick]);
 
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- dependency list kept as written; changing it would change when this runs
     const last30 = useMemo(() => getLastNDays(30), [tick]);
     const last30Total = useMemo(
         () => last30.reduce((acc, d) => acc + d.count, 0),
@@ -169,7 +170,7 @@ export function AICitationsPanel() {
                     <span className="text-xs text-gray-500">Peak: {sparkMax}</span>
                 </div>
                 <div className="flex items-end gap-[2px] h-16 bg-slate-900/40 rounded-lg p-2">
-                    {last30.map((d, i) => {
+                    {last30.map((d) => {
                         const h = Math.max(2, Math.round((d.count / sparkMax) * 56));
                         return (
                             <div

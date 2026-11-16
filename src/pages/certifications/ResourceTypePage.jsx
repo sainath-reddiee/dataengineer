@@ -1,11 +1,10 @@
 // src/pages/certifications/ResourceTypePage.jsx - NEW FILE
-import React from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useCertifications, useResourceTypes } from '@/hooks/useCertifications';
 import CertificationCard from '@/components/certifications/CertificationCard';
 import CertificationCardSkeleton from '@/components/certifications/CertificationCardSkeleton';
 import MetaTags from '@/components/SEO/MetaTags';
-import { ArrowLeft, Loader, ServerCrash, FileText } from 'lucide-react';
+import { ArrowLeft, ServerCrash, FileText } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 const ResourceTypePage = () => {

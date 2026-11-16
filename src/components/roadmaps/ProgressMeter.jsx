@@ -1,7 +1,6 @@
 // src/components/roadmaps/ProgressMeter.jsx
 // Fixed-height progress row: the same size before and after progress loads,
 // so the page never shifts.
-import React from 'react';
 
 const ProgressMeter = ({ done, total, percent, label = 'Progress' }) => (
   <div className="h-12" aria-label={`${label}: ${done} of ${total} skills done`}>

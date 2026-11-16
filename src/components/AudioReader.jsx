@@ -117,6 +117,7 @@ const AudioReader = ({ content, title }) => {
     loadVoices();
     speechSynthesis.addEventListener('voiceschanged', loadVoices);
     return () => speechSynthesis.removeEventListener('voiceschanged', loadVoices);
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- dependency list kept as written; changing it would change when this runs
   }, []);
 
   // ── cleanup on unmount ───────────────────────────────────────────────────

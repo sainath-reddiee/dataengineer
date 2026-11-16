@@ -1,5 +1,5 @@
 // src/pages/TagsArchivePage.jsx - NEW FILE
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { Tag, Search, ArrowRight, Loader } from 'lucide-react';

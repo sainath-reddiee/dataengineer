@@ -150,7 +150,7 @@ class PDFExportService {
 
             doc.setFontSize(9);
             doc.setTextColor(0);
-            result.strengths.forEach((strength, idx) => {
+            result.strengths.forEach((strength) => {
                 if (yPos > 280) {
                     doc.addPage();
                     yPos = 20;
@@ -175,7 +175,7 @@ class PDFExportService {
 
             doc.setFontSize(9);
             doc.setTextColor(0);
-            result.issues.forEach((issue, idx) => {
+            result.issues.forEach((issue) => {
                 if (yPos > 280) {
                     doc.addPage();
                     yPos = 20;
@@ -196,7 +196,7 @@ class PDFExportService {
             doc.text('Recommendations', 20, yPos);
             yPos += 10;
 
-            result.recommendations.forEach((rec, idx) => {
+            result.recommendations.forEach((rec) => {
                 if (yPos > 260) {
                     doc.addPage();
                     yPos = 20;

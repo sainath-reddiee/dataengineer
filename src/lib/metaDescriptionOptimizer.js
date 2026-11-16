@@ -7,34 +7,14 @@
 /**
  * Action words that increase CTR
  */
-const ACTION_WORDS = {
-  learn: ['Master', 'Learn', 'Discover', 'Unlock'],
-  build: ['Build', 'Create', 'Develop', 'Implement'],
-  guide: ['Complete Guide', 'Step-by-Step Guide', 'Ultimate Guide', 'Comprehensive Tutorial'],
-  quick: ['Quick', 'Fast', 'Easy', 'Simple'],
-  advanced: ['Advanced', 'Expert', 'Pro', 'Professional'],
-  free: ['Free', 'Open Source', 'No Cost'],
-};
 
 /**
  * Power words that increase engagement
  */
-const POWER_WORDS = [
-  'proven', 'essential', 'ultimate', 'complete', 'comprehensive',
-  'practical', 'real-world', 'production-ready', 'battle-tested',
-  'expert', 'professional', 'industry-standard', 'best practices'
-];
 
 /**
  * Call-to-action phrases
  */
-const CTA_PHRASES = [
-  'With real examples and production tips.',
-  'Practical guide with code examples.',
-  'Includes step-by-step examples.',
-  'Production-tested approach with SQL examples.',
-  'Full guide with working code.',
-];
 
 /**
  * Optimize meta description for better CTR
@@ -49,7 +29,6 @@ const CTA_PHRASES = [
 export function optimizeMetaDescription({
   title,
   excerpt,
-  category,
   tags = [],
   readTime = 5
 }) {
@@ -122,7 +101,7 @@ function isInterviewArticle(title, tags) {
 /**
  * Generate tutorial description
  */
-function generateTutorialDescription({ title, excerpt, readTime }) {
+function generateTutorialDescription({ title, excerpt }) {
   const cleanExcerpt = cleanText(excerpt);
   // Use the excerpt directly — it reads naturally and avoids generic template patterns
   if (cleanExcerpt && cleanExcerpt.length > 60) {
@@ -158,7 +137,7 @@ function selectPowerWord(topic) {
 /**
  * Generate comparison description
  */
-function generateComparisonDescription({ title, excerpt }) {
+function generateComparisonDescription({ excerpt }) {
   const cleanExcerpt = cleanText(excerpt);
   if (cleanExcerpt && cleanExcerpt.length > 60) {
     return truncateToLimit(cleanExcerpt, 155);
@@ -169,7 +148,7 @@ function generateComparisonDescription({ title, excerpt }) {
 /**
  * Generate how-to description
  */
-function generateHowToDescription({ title, excerpt, readTime }) {
+function generateHowToDescription({ excerpt, readTime }) {
   const cleanExcerpt = cleanText(excerpt);
   if (cleanExcerpt && cleanExcerpt.length > 60) {
     return truncateToLimit(cleanExcerpt, 155);
@@ -180,7 +159,7 @@ function generateHowToDescription({ title, excerpt, readTime }) {
 /**
  * Generate interview description
  */
-function generateInterviewDescription({ title, excerpt }) {
+function generateInterviewDescription({ excerpt }) {
   const cleanExcerpt = cleanText(excerpt);
   if (cleanExcerpt && cleanExcerpt.length > 60) {
     return truncateToLimit(cleanExcerpt, 155);
@@ -191,7 +170,7 @@ function generateInterviewDescription({ title, excerpt }) {
 /**
  * Generate default description
  */
-function generateDefaultDescription({ title, excerpt, readTime }) {
+function generateDefaultDescription({ title, excerpt }) {
   const cleanExcerpt = cleanText(excerpt);
   // Use the excerpt directly — it's real content and avoids template-like patterns
   // that trigger Google's programmatic content detection

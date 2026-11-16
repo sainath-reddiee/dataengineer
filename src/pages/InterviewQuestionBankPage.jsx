@@ -1,7 +1,7 @@
 // src/pages/InterviewQuestionBankPage.jsx
 // Filterable interview question bank with hidden answers and spaced-
 // repetition status, built from the Q&A in the cheat sheets.
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import MetaTags from '@/components/SEO/MetaTags';
 import Breadcrumbs from '@/components/SEO/Breadcrumbs';

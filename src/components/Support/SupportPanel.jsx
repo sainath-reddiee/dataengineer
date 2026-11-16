@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Check, Coffee, Copy, ExternalLink, Globe, Mail, MapPin } from 'lucide-react';
 import { SUPPORT_CONFIG } from '@/data/supportConfig';
 import { copyToClipboard } from '@/utils/seo/exportUtils';

@@ -3,7 +3,7 @@
 // Surfaces interview cheat sheets + interview articles + a structured study plan,
 // organized by track (SQL, Snowflake, Databricks/Spark, AWS, Azure, dbt, Airflow,
 // Python/PySpark, Modeling, System Design).
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { motion } from 'framer-motion';
@@ -327,11 +327,6 @@ const FAQ = [
   },
 ];
 
-const DIFFICULTY_COLORS = {
-  Beginner: 'bg-green-500/20 text-green-300 border-green-500/30',
-  Intermediate: 'bg-blue-500/20 text-blue-300 border-blue-500/30',
-  Advanced: 'bg-orange-500/20 text-orange-300 border-orange-500/30',
-};
 
 export default function InterviewPrepHubPage() {
   // Lookup tables for cheat-sheet + article metadata referenced by TRACKS.
@@ -376,7 +371,6 @@ export default function InterviewPrepHubPage() {
 
   const sheetCount = allTrackSlugs.length;
   const trackCount = TRACKS.length;
-  const pageUrl = `${SITE_CONFIG.url}/interview-prep`;
 
   const itemListSchema = {
     '@context': 'https://schema.org',

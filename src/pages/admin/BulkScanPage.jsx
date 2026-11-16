@@ -130,6 +130,7 @@ export function BulkScanPage() {
         }
 
         return items;
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- dependency list kept as written; changing it would change when this runs
     }, [scanSource, articles, manualUrls, feedUrls, filters]);
 
     // Get unique categories

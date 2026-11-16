@@ -1,6 +1,5 @@
 // src/components/practice/MockExamNavigator.jsx
 // Grid of question numbers: answered, flagged and current at a glance.
-import React from 'react';
 
 const MockExamNavigator = ({ questions, answers, flags, current, onGo }) => (
   <nav aria-label="Questions" className="bg-slate-900/60 border border-slate-800 rounded-xl p-4">

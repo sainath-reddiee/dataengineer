@@ -1,5 +1,5 @@
 // src/components/RecentPosts.jsx - FIXED VERSION WITH ACCESSIBILITY
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { RefreshCw, AlertCircle, ChevronDown, Grid, List } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -30,7 +30,7 @@ const RecentPosts = ({
   const [currentPage, setCurrentPage] = useState(1);
   const [sortOrder, setSortOrder] = useState('desc');
   const [viewMode, setViewMode] = useState('grid');
-  const shouldReduceMotion = reduceMotion();
+  reduceMotion();
 
   const postsPerPage = initialLimit;
 
@@ -38,7 +38,6 @@ const RecentPosts = ({
     posts,
     loading,
     error,
-    totalPages,
     totalPosts,
     hasMore,
     refresh

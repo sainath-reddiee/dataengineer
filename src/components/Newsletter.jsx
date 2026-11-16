@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Mail, Send, CheckCircle, Rss, Sparkles, BookOpen, AlertCircle, Loader2, Clock } from 'lucide-react';
 import { useIntersectionObserver } from '@/hooks/useIntersectionObserver';

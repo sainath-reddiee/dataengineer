@@ -2,8 +2,8 @@
 // AdSense revenue potential calculator — shows current vs projected
 // earnings per article based on view counts and rank potential.
 
-import React, { useState, useEffect, useMemo } from 'react';
-import { DollarSign, Loader2, TrendingUp, ExternalLink } from 'lucide-react';
+import { useState, useEffect, useMemo } from 'react';
+import { DollarSign, Loader2, TrendingUp } from 'lucide-react';
 import wordpressApi from '@/services/wordpressApi';
 import { scoreArticlesBatch } from '@/utils/rankIntelligence';
 import advertiseConfig from '@/data/advertiseConfig.json';

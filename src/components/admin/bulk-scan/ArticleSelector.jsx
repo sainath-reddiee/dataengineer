@@ -1,7 +1,6 @@
 // Article Selector Component
 // Checkbox list for selecting articles to scan
 
-import React from 'react';
 import { CheckSquare, Square, MinusSquare } from 'lucide-react';
 
 export function ArticleSelector({ articles, selected, onSelectionChange, disabled }) {

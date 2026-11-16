@@ -56,7 +56,7 @@ function expandField(expr, min, max, names = null) {
   return [...result].sort((a, b) => a - b);
 }
 
-function parseNumberOrName(s, names, min, max) {
+function parseNumberOrName(s, names, min) {
   const n = Number(s);
   if (isFinite(n)) return n;
   if (names) {
@@ -182,7 +182,7 @@ export default function CronBuilderPage() {
     return () => clearTimeout(t);
   }, [expr, setSearchParams]);
 
-  const { parsed, error, human, upcoming } = useMemo(() => {
+  const { error, human, upcoming } = useMemo(() => {
     try {
       const p = parseCron(expr);
       return {

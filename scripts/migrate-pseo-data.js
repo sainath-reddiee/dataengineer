@@ -54,38 +54,10 @@ function writeJSON(filePath, data) {
  * Parse the glossaryData.js file to extract terms and categories
  * Uses regex to handle ES module exports
  */
-function parseGlossaryData() {
-    const filePath = path.join(DATA_DIR, 'glossaryData.js');
-    const content = fs.readFileSync(filePath, 'utf-8');
-
-    // Extract GLOSSARY_CATEGORIES
-    const categoriesMatch = content.match(/export const GLOSSARY_CATEGORIES\s*=\s*\[([\s\S]*?)\];/);
-    const categories = [];
-    
-    if (categoriesMatch) {
-        const catRegex = /{\s*id:\s*['"]([^'"]+)['"],\s*name:\s*['"]([^'"]+)['"],\s*icon:\s*['"]([^'"]+)['"]\s*}/g;
-        let match;
-        while ((match = catRegex.exec(categoriesMatch[1])) !== null) {
-            categories.push({
-                id: match[1],
-                name: match[2],
-                icon: match[3]
-            });
-        }
-    }
-
-    // Extract glossaryTerms - this is more complex due to template literals
-    // We'll use dynamic import instead for accuracy
-    return { categories, filePath };
-}
 
 /**
  * Parse comparison data
  */
-function parseComparisonData() {
-    const filePath = path.join(DATA_DIR, 'comparisonData.js');
-    return { filePath };
-}
 
 // =============================================================================
 // MAIN MIGRATION LOGIC

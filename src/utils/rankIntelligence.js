@@ -28,7 +28,7 @@ function getStoredViews() {
  * @returns {Object} RankIntelligence result
  */
 export function scoreArticle(post, options = {}) {
-    const { engagement = null, aiReferrals = null, rankData = null } = options;
+    const { engagement = null, rankData = null } = options;
 
     const content = post.content || '';
     const title = post.title || '';
@@ -240,7 +240,7 @@ function scoreFreshness(dateStr) {
 
 // ─── Action Generator ───────────────────────────────────────────
 
-function generateActions(pillarScores, post, ctrResult) {
+function generateActions(pillarScores, post) {
     const actions = [];
     const slug = post.slug || '';
     const titleParam = encodeURIComponent((post.title || '').substring(0, 80));
@@ -311,7 +311,7 @@ function generateActions(pillarScores, post, ctrResult) {
 
 // ─── Revenue Projection ─────────────────────────────────────────
 
-function projectRevenue(post, articleHealth, engagementScore) {
+function projectRevenue(post, articleHealth) {
     // Conservative tech-blog RPM (revenue per 1000 pageviews): $3
     const RPM = 3;
 

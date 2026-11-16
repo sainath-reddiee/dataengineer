@@ -1,7 +1,7 @@
 ﻿// src/pages/admin/ContentCalendarPage.jsx
 // Content calendar with AI-free auto-suggestions based on article analysis.
 
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Calendar, Plus, Trash2, Check, Clock, AlertTriangle, Sparkles, Loader2, ExternalLink } from 'lucide-react';
 import wordpressApi from '@/services/wordpressApi';

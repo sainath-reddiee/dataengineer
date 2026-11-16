@@ -1,7 +1,7 @@
 // src/components/admin/AIOutputSections.jsx
 // Parses AI-generated fix/suggestion text into structured sections with per-section copy buttons.
 
-import React, { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Copy, Check, ChevronDown, ChevronRight } from 'lucide-react';
 
 /**

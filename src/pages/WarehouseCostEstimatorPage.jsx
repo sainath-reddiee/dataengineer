@@ -2,7 +2,7 @@
 // Warehouse cost estimator v2: one workload, four platforms, every unit and
 // unit price visible and sourced. Describes the lowest list-price estimate;
 // it never recommends a platform.
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import MetaTags from '@/components/SEO/MetaTags';
 import StickyToolTotal from '@/components/StickyToolTotal';

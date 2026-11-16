@@ -1,5 +1,4 @@
 // src/components/roadmaps/RoadmapStage.jsx
-import React from 'react';
 import SkillItem from './SkillItem';
 
 const RoadmapStage = ({ stage, index, isDone, onToggle }) => {

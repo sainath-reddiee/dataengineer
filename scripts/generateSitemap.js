@@ -548,7 +548,7 @@ async function generateSitemap() {
       }
 
       const postDate = formatDate(post.modified || post.date || new Date());
-      const publishDate = new Date(post.date);
+      new Date(post.date);
 
       // Extract featured image URL from _embedded if available
       let imageUrl = null;

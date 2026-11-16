@@ -1,5 +1,5 @@
 // src/components/PostListItem.jsx - FINAL VERSION WITH COMBINED "TRINITY" ANIMATION
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Calendar, Clock, ArrowRight } from 'lucide-react';

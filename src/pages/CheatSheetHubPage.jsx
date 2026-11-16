@@ -9,15 +9,7 @@ import React, { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { motion } from 'framer-motion';
-import {
-  FileText,
-  Search,
-  ChevronRight,
-  Sparkles,
-  X,
-  BookOpen,
-  Download,
-} from 'lucide-react';
+import { FileText, Search, ChevronRight, Sparkles, X, BookOpen } from 'lucide-react';
 
 import { cheatsheets, CHEATSHEET_CATEGORIES } from '@/data/cheatsheetData';
 import { SITE_CONFIG } from '@/lib/seoConfig';

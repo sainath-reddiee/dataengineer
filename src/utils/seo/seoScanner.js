@@ -764,7 +764,7 @@ export class SEOScanner {
   checkDoctype() {
     const html = this.doc.documentElement;
     // Check for HTML5 doctype (DOMParser doesn't preserve doctype well)
-    const hasProperDoctype = html?.getAttribute('lang') || html?.querySelectorAll('*').length > 0;
+    html?.getAttribute('lang') || html?.querySelectorAll('*').length > 0;
 
     this.addCheck(
       'HTML Doctype',
@@ -908,7 +908,7 @@ export class SEOScanner {
     const missing = [];
 
     required.forEach(tag => {
-      const prop = tag.replace('og:', '');
+      tag.replace('og:', '');
       const el = this.doc.querySelector(`meta[property="${tag}"]`);
       if (el?.content) {
         found.push(tag);
@@ -1148,8 +1148,8 @@ export class SEOScanner {
     // Check for duplicate meta descriptions or titles (simple check)
     const title = this.doc.querySelector('title')?.textContent?.trim();
     const metaDesc = this.doc.querySelector('meta[name="description"]')?.content?.trim();
-    const ogTitle = this.doc.querySelector('meta[property="og:title"]')?.content?.trim();
-    const ogDesc = this.doc.querySelector('meta[property="og:description"]')?.content?.trim();
+    this.doc.querySelector('meta[property="og:title"]')?.content?.trim();
+    this.doc.querySelector('meta[property="og:description"]')?.content?.trim();
 
     // This is a simple check - real duplicate detection would need multiple pages
     if (title === metaDesc) {
@@ -1271,8 +1271,8 @@ export class SEOScanner {
     };
 
     const criticals = this.checks.filter(c => c.severity === SEVERITY.CRITICAL).length;
-    const warnings = this.checks.filter(c => c.severity === SEVERITY.WARNING).length;
-    const goods = this.checks.filter(c => c.severity === SEVERITY.GOOD).length;
+    this.checks.filter(c => c.severity === SEVERITY.WARNING).length;
+    this.checks.filter(c => c.severity === SEVERITY.GOOD).length;
     const total = this.checks.length;
 
     if (total === 0) {

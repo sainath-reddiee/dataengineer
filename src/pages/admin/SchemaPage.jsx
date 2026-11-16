@@ -3,9 +3,8 @@
  * Schema Generator Page
  */
 
-import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import { Code2, Copy, Check, FileJson, Trash2 } from 'lucide-react';
+import { useState } from 'react';
+import { Copy, Check, FileJson, Trash2 } from 'lucide-react';
 import { copyToClipboard } from '@/utils/seo/exportUtils';
 
 const schemaTypes = [

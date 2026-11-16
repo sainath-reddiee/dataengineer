@@ -109,7 +109,7 @@ export class AEOAnalyzer {
         }
     }
 
-    checkVoiceSearchOptimization(content) {
+    checkVoiceSearchOptimization() {
         const title = this.article.title || '';
         const conversational = /^(how|what|why|when|where|who)\s/i.test(title);
         if (conversational) {

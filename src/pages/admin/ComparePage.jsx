@@ -3,9 +3,9 @@
  * Compare Page - Side-by-side URL comparison with AI citation metrics
  */
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { GitCompare, Loader2, Globe, Trophy, ArrowRight, TrendingUp, TrendingDown, Minus, Link as LinkIcon, Download } from 'lucide-react';
+import { GitCompare, Loader2, Globe, Trophy, ArrowRight, TrendingUp, TrendingDown, Minus, Download } from 'lucide-react';
 import contentOptimizerService from '../../services/contentOptimizerService';
 import pdfExportService from '../../services/pdfExportService';
 

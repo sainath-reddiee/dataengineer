@@ -1,5 +1,4 @@
 // src/components/practice/BookmarkButton.jsx
-import React from 'react';
 import { Bookmark } from 'lucide-react';
 import { useQuizStore } from '@/hooks/useQuizStore';
 

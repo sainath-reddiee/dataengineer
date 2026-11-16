@@ -16,7 +16,6 @@ import { buildCommunityPages } from './lib/communityPages.js';
 const originalWriteFileSync = fs.writeFileSync;
 fs.writeFileSync = function(filePath, data, options) {
   if (typeof filePath === 'string' && filePath.endsWith('.html') && typeof data === 'string') {
-    const original = data;
     data = data
       .replace(/\u00e2\u20ac\u00ba/g, '&rsaquo;') // ›
       .replace(/\u00e2\u2020\u0090/g, '&larr;')  // ←
@@ -116,17 +115,7 @@ const CONSENT_MODE_V2_HTML = `    <!-- Google Consent Mode v2: region-gated. Res
 // SEO overrides for CTR-optimized titles and descriptions
 import seoOverrides, { getSEOOverride } from '../src/data/seoOverrides.js';
 import { THIN_TAG_SLUGS, MIN_INDEXABLE_TAG_COUNT, MIN_INDEXABLE_CATEGORY_COUNT, MIN_INDEXABLE_WORD_COUNT } from '../src/data/thinTags.js';
-import {
-  isAdSenseNoindexPath,
-  isReviewAllowlistedTool,
-  isReviewAllowlistedCheatsheet,
-  ADSENSE_REVIEW_ROBOTS,
-  ADSENSE_INDEX_ROBOTS,
-  ADSENSE_GATE_VERSION,
-  ADSENSE_REVIEW_MODE,
-  getCheatsheetIndexableWordCount,
-  countIndexableWords,
-} from '../src/data/adsenseQualityGate.js';
+import { isAdSenseNoindexPath, isReviewAllowlistedCheatsheet, ADSENSE_REVIEW_ROBOTS, ADSENSE_INDEX_ROBOTS, ADSENSE_GATE_VERSION, ADSENSE_REVIEW_MODE, getCheatsheetIndexableWordCount, countIndexableWords } from '../src/data/adsenseQualityGate.js';
 import { pruneSitemaps } from './pruneSitemapNoindex.js';
 import { isListableArticle } from '../src/data/listingHoldouts.js';
 
@@ -158,99 +147,10 @@ function robotsForWordCount(wordCount, pathname) {
  * Extract HowTo steps from HTML content (SSG-compatible version)
  * Uses regex patterns to detect step-based content for HowTo schema
  */
-function extractHowToStepsSSG(html) {
-  if (!html || typeof html !== 'string') return [];
-
-  const steps = [];
-
-  try {
-    // Strategy 1: Headings with "Step N:" pattern
-    const stepHeadingPattern = /<h[23][^>]*>([^<]*step\s+\d+\s*[:\-–—]\s*[^<]*)<\/h[23]>/gi;
-    const headings = [...html.matchAll(stepHeadingPattern)];
-
-    for (const match of headings) {
-      const headingHtml = match[0];
-      const headingText = match[1].replace(/<[^>]+>/g, '').trim();
-      const stepName = headingText.replace(/^step\s+\d+\s*[:\-–—]\s*/i, '').trim() || headingText;
-
-      // Find content after this heading until next heading
-      const afterHeading = html.substring(match.index + headingHtml.length);
-      const nextHeadingIdx = afterHeading.search(/<h[1-6][^>]*>/i);
-      const stepContent = nextHeadingIdx >= 0 ? afterHeading.substring(0, nextHeadingIdx) : afterHeading.substring(0, 2000);
-
-      // Extract text from paragraphs, lists, code blocks
-      let stepText = stepContent
-        .replace(/<pre\b[^>]*>[\s\S]*?<\/pre>/gi, (m) => m.replace(/<[^>]+>/g, '').substring(0, 200))
-        .replace(/<code\b[^>]*>[\s\S]*?<\/code>/gi, (m) => m.replace(/<[^>]+>/g, '').substring(0, 200))
-        .replace(/<li[^>]*>([\s\S]*?)<\/li>/gi, '$1. ')
-        .replace(/<p[^>]*>([\s\S]*?)<\/p>/gi, '$1 ')
-        .replace(/<[^>]+>/g, ' ')
-        .replace(/\s+/g, ' ')
-        .trim()
-        .substring(0, 500);
-
-      if (stepText.length > 20) {
-        steps.push({ name: stepName, text: stepText });
-      }
-    }
-
-    // Strategy 2: Ordered list under "how to" / "steps" / "tutorial" section
-    if (steps.length < 2) {
-      const sectionPattern = /<h[23][^>]*>([^<]*(?:how\s+to|steps|tutorial|getting\s+started|setup\s+guide|installation)[^<]*)<\/h[23]>/gi;
-      const sections = [...html.matchAll(sectionPattern)];
-
-      for (const match of sections) {
-        if (steps.length >= 2) break;
-        const afterSection = html.substring(match.index + match[0].length);
-        const nextHeadingIdx = afterSection.search(/<h[1-3][^>]*>/i);
-        const sectionContent = nextHeadingIdx >= 0 ? afterSection.substring(0, nextHeadingIdx) : afterSection.substring(0, 3000);
-
-        const olMatch = sectionContent.match(/<ol[^>]*>([\s\S]*?)<\/ol>/i);
-        if (olMatch) {
-          const listContent = olMatch[1];
-          const items = [...listContent.matchAll(/<li[^>]*>([\s\S]*?)<\/li>/gi)];
-          for (const item of items) {
-            const itemText = item[1].replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
-            if (itemText.length > 15) {
-              const dotIndex = itemText.indexOf('. ');
-              const name = dotIndex > 0 ? itemText.substring(0, dotIndex) : itemText.substring(0, 80);
-              const desc = dotIndex > 0 ? itemText.substring(dotIndex + 2) : itemText;
-              steps.push({ name, text: desc.substring(0, 500) });
-            }
-          }
-        }
-      }
-    }
-  } catch (error) {
-    console.warn('HowTo extraction failed:', error.message);
-    return [];
-  }
-
-  return steps.length >= 2 ? steps.slice(0, 10) : [];
-}
 
 /**
  * Generate HowTo schema JSON-LD
  */
-function generateHowToSchemaSSG(steps, title, description, imageUrl) {
-  if (!steps || steps.length < 2) return null;
-
-  return {
-    '@context': 'https://schema.org',
-    '@type': 'HowTo',
-    name: title,
-    description: description,
-    image: imageUrl ? { '@type': 'ImageObject', url: imageUrl } : undefined,
-    step: steps.map((step, index) => ({
-      '@type': 'HowToStep',
-      position: index + 1,
-      name: step.name,
-      text: step.text,
-      ...(step.image && { image: { '@type': 'ImageObject', url: step.image } })
-    })),
-    totalTime: undefined // Could be calculated from readTime
-  };
-}
 
 /** Belt-and-suspenders: rewrite leftover dist HTML so held-out URLs cannot ship with index. */
 function stampHeldOutRobots(distDir) {
@@ -3153,7 +3053,7 @@ function generateFullArticleHTML(pageData, bundleFiles, relatedArticles = []) {
   const descriptionJsonLd = escapeJsonLd(decodeHtmlEntities(rawDescription));
 
   // 🔥 CRITICAL: Use relative paths from article subdirectory
-  const depth = pagePath.split('/').filter(Boolean).length;
+  pagePath.split('/').filter(Boolean).length;
   // Root-absolute: the page is served from its own directory, so ../../ paths
   // are fragile (they break if the page is ever served at another depth).
   const relativePrefix = '/';
@@ -4417,47 +4317,6 @@ ${relativeModulePreload}
 }
 
 // Simplified HTML for categories/tags (they don't need full content)
-function generateSimpleHTML(pageData, bundleFiles) {
-  const { title: rawTitle, description: rawDescription, path: pagePath } = pageData;
-  const { jsFile, cssFile } = bundleFiles;
-
-  // ðŸ›¡ï¸ Sanitize user-supplied strings
-  const title = escapeHtml(rawTitle);
-  const description = escapeHtml(rawDescription);
-
-  const depth = pagePath.split('/').filter(Boolean).length;
-  const relativePrefix = '../'.repeat(depth);
-
-  const productionJsFile = jsFile;
-  const productionCssFile = cssFile;
-
-  return `<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>${smartTitle(title)}</title>
-    <meta name="description" content="${description}" />
-    <link rel="canonical" href="${canonicalUrl(pagePath)}" />
-    ${productionCssFile ? `<link rel="stylesheet" crossorigin href="${productionCssFile}">` : ''}
-
-    <style>
-      ${getSiteNavCSS()}
-    </style>
-  </head>
-  <body>
-    <div id="root">
-      ${getSiteNavHTML()}
-      <div style="padding: 60px 20px; text-align: center;">
-        <h1>${title}</h1>
-        <p>${description}</p>
-      </div>
-      ${getSiteFooterHTML()}
-    </div>
-    ${productionJsFile ? `<script type="module" crossorigin src="${productionJsFile}"></script>` : ''}
-  </body>
-</html>`;
-}
 
 // ============================================================================
 // HOMEPAGE HTML ENHANCEMENT - Inject article listings for 500+ words
@@ -4528,7 +4387,7 @@ function generateArticlesListingHTML(allArticleSummaries, categories, bundleFile
   const productionJsFile = jsFile;
   const productionCssFile = cssFile;
 
-  const buildTimestamp = new Date().toISOString();
+  new Date().toISOString();
 
   // Build category-to-name map
   const catMap = {};
@@ -4758,12 +4617,12 @@ function generateCategoryPageHTML(category, categoryArticles, bundleFiles) {
   const safeNameJsonLd = escapeJsonLd(category.name);
 
   const depth = pagePath.split('/').filter(Boolean).length;
-  const relativePrefix = '../'.repeat(depth);
+  '../'.repeat(depth);
 
   const productionJsFile = jsFile;
   const productionCssFile = cssFile;
 
-  const buildTimestamp = new Date().toISOString();
+  new Date().toISOString();
   const catDescription = stripHTML(category.description || '').trim();
 
   // Automatic default descriptions based on category slug to enrich listing pages for crawlers
@@ -5024,7 +4883,7 @@ function generateGlossaryHubPageHTML(allGlossaryTerms, bundleFiles) {
   var productionJsFile = jsFile;
   var productionCssFile = cssFile;
 
-  var buildTimestamp = new Date().toISOString();
+  new Date().toISOString();
 
   // Group terms by category
   var categoryMap = {};
@@ -5291,12 +5150,12 @@ function generateGlossaryPageHTML(term, allGlossaryTerms, bundleFiles, allArticl
   var pagePath = '/glossary/' + term.slug;
 
   var depth = pagePath.split('/').filter(Boolean).length;
-  var relativePrefix = '../'.repeat(depth);
+  '../'.repeat(depth);
 
   var productionJsFile = jsFile;
   var productionCssFile = cssFile;
 
-  var buildTimestamp = new Date().toISOString();
+  new Date().toISOString();
 
   // Build key points HTML
   var keyPointsHTML = '';
@@ -5632,7 +5491,7 @@ function generateCompareHubPageHTML(allComparisons, bundleFiles) {
   var productionJsFile = jsFile;
   var productionCssFile = cssFile;
 
-  var buildTimestamp = new Date().toISOString();
+  new Date().toISOString();
 
   // Group comparisons by category
   var categoryMap = {};
@@ -5908,12 +5767,12 @@ function generateComparePageHTML(comparison, allComparisons, bundleFiles) {
   var pagePath = '/compare/' + comparison.slug;
 
   var depth = pagePath.split('/').filter(Boolean).length;
-  var relativePrefix = '../'.repeat(depth);
+  '../'.repeat(depth);
 
   var productionJsFile = jsFile;
   var productionCssFile = cssFile;
 
-  var buildTimestamp = new Date().toISOString();
+  new Date().toISOString();
 
   // Build feature comparison table
   var featureTableHTML = '';
@@ -6248,7 +6107,7 @@ function generateCheatsheetHubPageHTML(allCheatsheets, categories, bundleFiles) 
   var cssFile = bundleFiles.cssFile;
   var productionJsFile = jsFile;
   var productionCssFile = cssFile;
-  var buildTimestamp = new Date().toISOString();
+  new Date().toISOString();
   var visibleCheatsheets = ADSENSE_REVIEW_MODE
     ? allCheatsheets.filter(function(cs) { return isReviewAllowlistedCheatsheet(cs.slug); })
     : allCheatsheets;
@@ -6454,7 +6313,7 @@ function generateCheatsheetPageHTML(sheet, allCheatsheets, bundleFiles) {
   var cssFile = bundleFiles.cssFile;
   var productionJsFile = jsFile;
   var productionCssFile = cssFile;
-  var buildTimestamp = new Date().toISOString();
+  new Date().toISOString();
   var pagePath = '/cheatsheets/' + sheet.slug;
 
   var sections = sheet.sections || [];
@@ -6706,12 +6565,12 @@ function generateTagPageHTML(tag, tagArticles, bundleFiles) {
   const pagePath = '/tag/' + tag.slug;
 
   const depth = pagePath.split('/').filter(Boolean).length;
-  const relativePrefix = '../'.repeat(depth);
+  '../'.repeat(depth);
 
   const productionJsFile = jsFile;
   const productionCssFile = cssFile;
 
-  const buildTimestamp = new Date().toISOString();
+  new Date().toISOString();
   const tagDescription = stripHTML(tag.description || '').trim();
 
   // Build article list HTML
@@ -6862,12 +6721,12 @@ function generateEssentialPageHTML(pageData, bundleFiles) {
 
   // Essential pages are at root level (depth = 0), so no relative prefix needed
   const depth = pagePath.split('/').filter(Boolean).length;
-  const relativePrefix = depth > 0 ? '../'.repeat(depth) : './';
+  depth > 0 ? '../'.repeat(depth) : './';
 
   const productionJsFile = jsFile;
   const productionCssFile = cssFile;
 
-  const buildTimestamp = new Date().toISOString();
+  new Date().toISOString();
 
   const pageRobots = pageData.noindex
     ? 'noindex, follow'
@@ -7587,7 +7446,7 @@ async function buildIncremental(options = {}) {
     console.log(`   ðŸ“Š Verified: ${finalArticleCount} article directories in dist/articles/`);
 
     // ðŸ“ SEO Override Coverage Report
-    const overrideKeys = Object.keys(seoOverrides);
+    Object.keys(seoOverrides);
     const articleSlugs = posts.map(p => p.slug);
     const coveredSlugs = articleSlugs.filter(slug => seoOverrides[slug]);
     const missingSlugs = articleSlugs.filter(slug => !seoOverrides[slug]);

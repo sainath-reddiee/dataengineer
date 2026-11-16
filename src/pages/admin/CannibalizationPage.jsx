@@ -2,11 +2,8 @@
 // Keyword Cannibalization Detector — finds keywords ranking on multiple pages
 // and recommends consolidation strategies via AI.
 
-import React, { useEffect, useState, useMemo } from 'react';
-import {
-    Loader2, AlertTriangle, RefreshCw, Sparkles, Copy, Check,
-    Split, ChevronDown, ChevronRight, TrendingUp, FileText,
-} from 'lucide-react';
+import { useEffect, useState, useMemo } from 'react';
+import { Loader2, AlertTriangle, RefreshCw, Sparkles, Copy, Check, Split, ChevronDown, ChevronRight, FileText } from 'lucide-react';
 import { useSearchParams } from 'react-router-dom';
 import gscService from '@/services/gscService';
 import wordpressApi from '@/services/wordpressApi';

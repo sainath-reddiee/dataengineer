@@ -1,7 +1,7 @@
 // src/components/EmptyCategoryState.jsx
 // Shown when a known category has no published posts yet.
 // Must not read as "under construction" / "coming soon" (AdSense low-value flag).
-import React, { useEffect, useRef } from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 
@@ -32,7 +32,7 @@ const Particle = ({ delay, x, y, size, color, duration }) => (
 );
 
 // ── orbiting dot ─────────────────────────────────────────────────────────────
-const OrbitDot = ({ radius, speed, dotColor, size = 6, startAngle = 0 }) => (
+const OrbitDot = ({ radius, speed, dotColor, size = 6 }) => (
   <motion.div
     className="absolute top-1/2 left-1/2 pointer-events-none"
     style={{ width: radius * 2, height: radius * 2, marginLeft: -radius, marginTop: -radius }}

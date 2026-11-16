@@ -418,7 +418,6 @@ export class PSEOAnalyzer {
 
     checkURLTemplating() {
         const slug = this.article.slug || '';
-        const category = this.article.category || '';
 
         // Check URL structure
         const hasHyphens = slug.includes('-');
@@ -464,7 +463,7 @@ export class PSEOAnalyzer {
         const wordCount = content.split(/\s+/).length;
         const hasExcerpt = excerpt.length > 50;
         const hasImages = /<img/.test(content);
-        const hasSchema = this.article.schema || content.includes('application/ld+json');
+        this.article.schema || content.includes('application/ld+json');
 
         const qualityScore = [
             wordCount >= 500,

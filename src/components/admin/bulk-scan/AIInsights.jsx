@@ -1,8 +1,8 @@
 // AI Insights Component
 // Analyze patterns across all scanned articles
 
-import React, { useMemo } from 'react';
-import { Sparkles, TrendingUp, AlertTriangle, CheckCircle, Lightbulb, ArrowRight } from 'lucide-react';
+import { useMemo } from 'react';
+import { Sparkles, AlertTriangle, Lightbulb, ArrowRight } from 'lucide-react';
 
 export function AIInsights({ results }) {
     const insights = useMemo(() => {
@@ -12,11 +12,9 @@ export function AIInsights({ results }) {
         const issueCount = {};
         const strengthCount = {};
         let totalScore = 0;
-        let totalWords = 0;
 
         results.forEach(r => {
             totalScore += r.score || 0;
-            totalWords += r.wordCount || 0;
 
             // Count issues from topIssues
             (r.topIssues || []).forEach(issue => {

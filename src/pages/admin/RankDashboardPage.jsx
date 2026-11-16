@@ -3,13 +3,8 @@
 // Combines SEO, AEO, CTR, AI visibility, engagement, and freshness signals
 // into a single health score per article, with prioritized actions.
 
-import React, { useEffect, useState, useMemo } from 'react';
-import { motion } from 'framer-motion';
-import {
-    TrendingUp, Target, AlertTriangle, Zap, ChevronDown, ChevronRight,
-    ExternalLink, RefreshCw, Award, Loader2,
-    Activity, BookOpen, DollarSign, BarChart3, Sparkles
-} from 'lucide-react';
+import { useEffect, useState, useMemo } from 'react';
+import { TrendingUp, Target, AlertTriangle, Zap, ChevronDown, ChevronRight, ExternalLink, RefreshCw, Award, Loader2, Activity, DollarSign, BarChart3, Sparkles } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import wordpressApi from '@/services/wordpressApi';
 import { scoreArticlesBatch } from '@/utils/rankIntelligence';
@@ -44,7 +39,7 @@ export function RankDashboardPage() {
     const [rankStats, setRankStats] = useState({});
     const [sortBy, setSortBy] = useState('opportunity'); // 'opportunity' | 'health' | 'rank'
     const [gscData, setGscData] = useState(null);
-    const [gscError, setGscError] = useState('');
+    const [, setGscError] = useState('');
 
     useEffect(() => {
         loadData();
@@ -110,7 +105,7 @@ export function RankDashboardPage() {
         (s, a) => s + (a.revenueProjection.potentialMonthly - a.revenueProjection.currentMonthly),
         0
     );
-    const aiRefs = getLocalReferralStats();
+    getLocalReferralStats();
 
     // Map GSC data to article slugs for per-article display
     const gscBySlug = useMemo(() => {

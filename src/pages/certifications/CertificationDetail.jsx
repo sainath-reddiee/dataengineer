@@ -1,10 +1,9 @@
 // src/pages/certifications/CertificationDetail.jsx
-import React from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useCertification } from '@/hooks/useCertifications';
 import MetaTags from '@/components/SEO/MetaTags';
 import DOMPurify from 'dompurify';
-import { Loader, ArrowLeft, Download, Star } from 'lucide-react';
+import { Loader, ArrowLeft, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 const CertificationDetail = () => {

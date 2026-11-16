@@ -49,7 +49,7 @@ function parseCreateTable(sql) {
   return { tableName: rawName, columns, error: columns.length ? null : 'No columns parsed.' };
 }
 
-function describeColumn(name, type) {
+function describeColumn(name) {
   const n = name.toLowerCase();
   if (/_id$|^id$/.test(n)) return `Unique identifier${n === 'id' ? ' for the row' : ` (foreign key to ${n.replace(/_id$/, '')})`}.`;
   if (/_at$|_date$|_time$|_timestamp$/.test(n)) return `Timestamp indicating when the event occurred.`;

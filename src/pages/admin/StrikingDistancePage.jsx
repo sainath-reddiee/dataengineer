@@ -1,7 +1,7 @@
 ﻿// src/pages/admin/StrikingDistancePage.jsx
 // Finds keywords where you rank #8-20 with high impressions — low-hanging fruit for page 1.
 
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Target, Loader2, AlertTriangle, RefreshCw, Sparkles } from 'lucide-react';
 import gscService from '@/services/gscService';
 import aiService from '@/services/aiService';

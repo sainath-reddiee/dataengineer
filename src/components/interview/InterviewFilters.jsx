@@ -1,5 +1,4 @@
 // src/components/interview/InterviewFilters.jsx
-import React from 'react';
 import { STACKS } from '@/lib/interview/bank';
 
 const selectClass = 'w-full rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-slate-100';

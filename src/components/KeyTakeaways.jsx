@@ -1,4 +1,3 @@
-import React from 'react';
 
 /**
  * TL;DR / Key Takeaways card for AEO and readers.

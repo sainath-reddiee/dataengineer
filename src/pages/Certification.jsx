@@ -1,4 +1,3 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { Award, BookOpen, Target, Calendar, CheckCircle2, AlertTriangle, ExternalLink } from 'lucide-react';

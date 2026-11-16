@@ -1,8 +1,7 @@
 ﻿// src/pages/admin/TopicClustersPage.jsx
 // Visualizes content clusters and suggests missing sub-topics.
 
-import React, { useState, useEffect, useMemo } from 'react';
-import { motion } from 'framer-motion';
+import { useState, useEffect, useMemo } from 'react';
 import { Network, Loader2, Award, AlertTriangle, Lightbulb, ChevronDown, ChevronRight } from 'lucide-react';
 import wordpressApi from '@/services/wordpressApi';
 import { clusterArticles, suggestMissingTopics } from '@/utils/topicClusters';

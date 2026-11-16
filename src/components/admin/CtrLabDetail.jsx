@@ -3,11 +3,8 @@
 // keyword map, quick-action buttons, AI variant generator, before/after diff.
 // Designed to answer: "Why is this article's CTR bad, and exactly what do I fix?"
 
-import React, { useState, useMemo, useCallback, useEffect } from 'react';
-import {
-    Sparkles, Loader2, Copy, Check, X, Search, Zap,
-    ChevronRight, ExternalLink, AlertTriangle,
-} from 'lucide-react';
+import { useState, useMemo, useCallback, useEffect } from 'react';
+import { Sparkles, Loader2, Copy, Check, X, Search, Zap, ChevronRight } from 'lucide-react';
 import aiService from '@/services/aiService';
 import tinyfishService from '@/services/tinyfishService';
 import gscService from '@/services/gscService';
@@ -60,10 +57,10 @@ function getPositionTip(position) {
 
 // ─── Quick Actions ──────────────────────────────────────────────
 
-function QuickActions({ title, setTitle, description, setDesc, topKeyword, currentScore }) {
+function QuickActions({ title, setTitle, topKeyword }) {
     const year = new Date().getFullYear();
     const hasYear = new RegExp(`\\b(${year - 1}|${year}|${year + 1})\\b`).test(title);
-    const hasNumber = /\d/.test(title);
+    /\d/.test(title);
     const hasKeywordFront = topKeyword && title.toLowerCase().startsWith(topKeyword.toLowerCase().slice(0, 8));
 
     const actions = [
@@ -225,6 +222,7 @@ export function CtrLabDetail({ row, onClose }) {
             .then(data => setKeywords(data.sort((a, b) => b.impressions - a.impressions)))
             .catch(() => {})
             .finally(() => setKwLoading(false));
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- dependency list kept as written; changing it would change when this runs
     }, [row.slug]);
 
     const topKeyword = keywords[0]?.query;
@@ -246,6 +244,7 @@ export function CtrLabDetail({ row, onClose }) {
     // Auto-fetch competitors once keyword available
     useEffect(() => {
         if (topKeyword && tinyfishService.isEnabled && !competitors) fetchCompetitors();
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- dependency list kept as written; changing it would change when this runs
     }, [topKeyword, fetchCompetitors]);
 
     // AI variant generation

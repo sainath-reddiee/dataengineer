@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Inbox, Mail } from 'lucide-react';
 import { EDITORIAL_BRIEFS } from '@/data/editorialBriefs';

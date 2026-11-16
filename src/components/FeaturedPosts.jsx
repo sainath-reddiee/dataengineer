@@ -1,5 +1,4 @@
 // src/components/FeaturedPosts.jsx - FIXED CLS VERSION
-import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLocation } from 'react-router-dom';
 import { Link } from 'react-router-dom';

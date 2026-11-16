@@ -1,7 +1,7 @@
 // Competitor Comparison Component
 // Compare your site against competitor sites
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Trophy, TrendingUp, TrendingDown, Minus, Loader2, AlertCircle, Target } from 'lucide-react';
 
 export function CompetitorComparison({ yourResults, competitorResults, onLoadCompetitor }) {

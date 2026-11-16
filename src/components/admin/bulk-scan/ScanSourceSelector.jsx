@@ -1,7 +1,6 @@
 // Scan Source Selector Component
 // Tab navigation for choosing scan source
 
-import React from 'react';
 import { Globe, Edit3, Rss } from 'lucide-react';
 
 export function ScanSourceSelector({ source, onChange, counts }) {

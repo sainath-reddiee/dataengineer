@@ -1,11 +1,10 @@
 ﻿// src/pages/admin/InternalLinksPage.jsx
-import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { useState, useEffect } from 'react';
 import { Link2, Loader2, AlertTriangle, ExternalLink, TrendingUp } from 'lucide-react';
 import wordpressApi from '@/services/wordpressApi';
 
 export function InternalLinksPage() {
-    const [articles, setArticles] = useState([]);
+    const [, setArticles] = useState([]);
     const [loading, setLoading] = useState(true);
     const [analysis, setAnalysis] = useState(null);
 

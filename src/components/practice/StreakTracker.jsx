@@ -2,7 +2,7 @@
 // Richer streak + weekly-activity panel. Complements StreakBadge (compact
 // header chip) with a grid that shows the last 7 days of practice.
 
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { Flame, Calendar, TrendingUp } from 'lucide-react';
 
 const DAY_MS = 24 * 60 * 60 * 1000;

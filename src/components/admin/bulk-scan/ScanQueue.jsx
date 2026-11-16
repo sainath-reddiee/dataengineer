@@ -1,13 +1,11 @@
 // Scan Queue Component
 // Queue management with pause, resume, and progress tracking
 
-import React from 'react';
 import { Play, Pause, Square, Trash2, CheckCircle, Loader2, Clock, AlertCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 export function ScanQueue({
     queue,
-    currentIndex,
     status, // 'idle' | 'running' | 'paused' | 'completed'
     onStart,
     onPause,
