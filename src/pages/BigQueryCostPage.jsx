@@ -247,7 +247,7 @@ export default function BigQueryCostPage() {
             </div>
             <div className="bg-rose-950/30 border border-rose-800/50 rounded-xl p-5">
               <h3 className="text-rose-300 font-semibold mb-3 flex items-center gap-2">
-                <span aria-hidden="true">âš </span> Don't rely on it when
+                <span aria-hidden="true">⚠️</span> Don't rely on it when
               </h3>
               <ul className="space-y-2 text-sm text-gray-300">
                 {WHEN_TO_USE.avoid.map((item, i) => (

@@ -255,7 +255,7 @@ export function KeywordTargetPage() {
             try {
                 const data = await wordpressApi.getAllPosts(1, 100);
                 setPosts(data.posts || []);
-            } catch {}
+            } catch { /* keep the empty list; the page shows its own empty state */ }
             setPostsLoading(false);
         }
         load();

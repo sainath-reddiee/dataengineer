@@ -122,13 +122,13 @@ function extractInlineQa(html, limit, seen) {
   const blocks = String(html || '').split(/<\/p>/i);
   for (let i = 0; i < blocks.length; i += 1) {
     const text = stripTags(`${blocks[i]}</p>`);
-    const qMatch = text.match(/^Q\s*[:\-]\s*(.+)$/i);
+    const qMatch = text.match(/^Q\s*[:-]\s*(.+)$/i);
     if (!qMatch) continue;
     let answer = '';
     for (let j = i + 1; j < blocks.length && answer.length < 520; j += 1) {
       const next = stripTags(`${blocks[j]}</p>`);
-      if (/^Q\s*[:\-]/i.test(next)) break;
-      answer += ` ${next.replace(/^A\s*[:\-]\s*/i, '')}`;
+      if (/^Q\s*[:-]/i.test(next)) break;
+      answer += ` ${next.replace(/^A\s*[:-]\s*/i, '')}`;
     }
     if (addPair(pairs, seen, qMatch[1], answer, limit)) break;
   }

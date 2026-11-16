@@ -44,7 +44,7 @@ if (existsSync(jsDir)) {
   assert(idxFile, 'dist/assets/js/index-*.js must exist');
 
   const visited = new Set();
-  function collectStaticDeps(filename) {
+  const collectStaticDeps = (filename) => {
     if (!filename || visited.has(filename)) return;
     const full = join(jsDir, filename);
     if (!existsSync(full)) return;
@@ -59,7 +59,7 @@ if (existsSync(jsDir)) {
       }
       collectStaticDeps(match[1]);
     }
-  }
+  };
 
   collectStaticDeps(idxFile);
 

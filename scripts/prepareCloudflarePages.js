@@ -79,7 +79,7 @@ if (/^\s*\/\* \/index\.html 200\s*$/m.test(redirects)) {
 if (!redirects.includes('/.well-known/* /well-known/:splat 200')) {
   fail('_redirects must map /.well-known/* onto /well-known/');
 }
-if (/^\s*\/\*\/ \/\:splat 301\s*$/m.test(redirects)) {
+if (/^\s*\/\*\/ \/:splat 301\s*$/m.test(redirects)) {
   fail('_redirects must not strip trailing slashes; Pages 308s directories onto a slash and the pair loops');
 }
 

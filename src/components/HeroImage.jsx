@@ -9,6 +9,8 @@ const HeroImage = () => {
         width={1200}
         height={630}
         loading="eager"
+        // React 18.2 only forwards the lowercase attribute; camelCase needs 18.3+.
+        // eslint-disable-next-line react/no-unknown-property
         fetchpriority="high"
       />
     </div>

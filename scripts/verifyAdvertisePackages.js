@@ -1,8 +1,12 @@
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import advertiseConfig from '../src/data/advertiseConfig.json' with { type: 'json' };
 import { EDITORIAL_BRIEFS } from '../src/data/editorialBriefs.js';
+
+// Read the JSON directly: ESLint 8's parser cannot parse `with { type: 'json' }` import attributes.
+const advertiseConfig = JSON.parse(
+  readFileSync(join(dirname(fileURLToPath(import.meta.url)), '../src/data/advertiseConfig.json'), 'utf8')
+);
 
 const advertisePage = readFileSync(
   join(dirname(fileURLToPath(import.meta.url)), '../src/pages/AdvertisePage.jsx'),

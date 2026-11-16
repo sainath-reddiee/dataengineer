@@ -219,7 +219,7 @@ export class GEOAnalyzer {
 
     checkTLDRSummary(content) {
         // Check for TL;DR or summary at beginning (matches inside any HTML tag or plain text)
-        const hasTLDR = /(?:TL;?DR|Key Takeaways?|In Brief)[\s:;<\/]/i.test(content) ||
+        const hasTLDR = /(?:TL;?DR|Key Takeaways?|In Brief)[\s:;</]/i.test(content) ||
             /class="[^"]*(?:key-takeaways|tldr|summary)[^"]*"/i.test(content);
         // Match first paragraph even with inline elements (links, code, strong)
         const firstParagraph = content.match(/<p[^>]*>([\s\S]*?)<\/p>/i);
@@ -334,7 +334,7 @@ export class GEOAnalyzer {
 
     checkLastUpdated(content) {
         // Check for visible last updated date in article content
-        const hasVisibleDate = /(?:last |recently )?updated:?\s*(?:on\s*)?(?:\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4}|\w+\s+\d{1,2},?\s+\d{4}|\d{4}-\d{2}-\d{2})/i.test(content);
+        const hasVisibleDate = /(?:last |recently )?updated:?\s*(?:on\s*)?(?:\d{1,2}[/-]\d{1,2}[/-]\d{2,4}|\w+\s+\d{1,2},?\s+\d{4}|\d{4}-\d{2}-\d{2})/i.test(content);
         // Check for schema dateModified in document JSON-LD (not article content)
         let hasSchemaDate = false;
         if (this.doc) {

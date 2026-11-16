@@ -94,6 +94,7 @@ function maskCodeBlocks(html) {
     });
 
   const restore = (processed) =>
+    // eslint-disable-next-line no-control-regex -- U+0001 is the private placeholder marker for protected code blocks
     processed.replace(/\u0001PSEO_CODE_BLOCK_(\d+)\u0001/g, (_, i) => blocks[Number(i)] || '');
 
   return { stripped, restore };

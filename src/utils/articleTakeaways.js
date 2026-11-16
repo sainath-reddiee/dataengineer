@@ -57,7 +57,7 @@ function itemsFromParagraphHtml(sectionHtml) {
   if (!firstP) return [];
   const items = [];
   for (const line of firstP[1].split(/<br\s*\/?>|\n/gi)) {
-    const t = cleanLi(line).replace(/^[→•\-\*\s]+/, '').trim();
+    const t = cleanLi(line).replace(/^[→•\-*\s]+/, '').trim();
     if (t.length >= 8 && t.length <= 420) items.push(t);
   }
   return items;
@@ -81,7 +81,7 @@ function itemsFromSectionParagraphs(sectionHtml) {
     if (/^\s*(?:<strong>)?\s*(?:TL;?DR|Key\s*Takeaways|Summary|At\s*a\s*Glance)\b/i.test(raw)) {
       continue;
     }
-    const t = cleanLi(raw).replace(/^[→•\-\*\s]+/, '').trim();
+    const t = cleanLi(raw).replace(/^[→•\-*\s]+/, '').trim();
     if (!t) continue;
     sawParagraph = true;
     if (t.length < 40) {

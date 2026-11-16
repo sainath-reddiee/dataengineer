@@ -7,7 +7,10 @@ module.exports = {
         'plugin:react/jsx-runtime',
         'plugin:react-hooks/recommended',
     ],
-    ignorePatterns: ['dist', '.eslintrc.cjs'],
+    // Build output and vendored third-party bundles are not our source.
+    // dist-pages is the Cloudflare Pages copy of dist; public/duckdb holds the
+    // minified DuckDB-WASM workers copied from node_modules at build time.
+    ignorePatterns: ['dist', 'dist-pages', 'dist-ssr', 'public/duckdb', 'node_modules', '.eslintrc.cjs'],
     parserOptions: { ecmaVersion: 'latest', sourceType: 'module' },
     settings: { react: { version: '18.2' } },
     plugins: ['react-refresh'],

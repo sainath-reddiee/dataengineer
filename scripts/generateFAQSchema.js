@@ -106,7 +106,7 @@ function extractQAPairs(content) {
         // Reject questions that are too long (likely Q+A concatenated)
         if (q.length > 200) return;
         // Reject questions containing embedded answer patterns (e.g., "Q: ... A: ...")
-        if (/\bA\s*[:\-]\s/i.test(q) && /\bQ\s*[:\-]\s/i.test(q)) return;
+        if (/\bA\s*[:-]\s/i.test(q) && /\bQ\s*[:-]\s/i.test(q)) return;
         // Reject if the question contains "A:" after some initial text (Q+A in one field)
         if (/.\s+A\s*:\s/.test(q)) return;
         seenQuestions.add(qLower);
@@ -216,15 +216,15 @@ function extractQAPairs(content) {
     for (let i = 0; i < blocks.length; i++) {
         const block = blocks[i];
         if (block.tag === 'p') {
-            const qMatch = block.text.match(/^Q\s*[:\-]\s*(.+)/i);
+            const qMatch = block.text.match(/^Q\s*[:-]\s*(.+)/i);
             if (qMatch) {
                 let answer = '';
                 let j = i + 1;
                 while (j < blocks.length && answer.length < 400) {
                     const next = blocks[j];
-                    if (next.tag === 'p' && /^Q\s*[:\-]/i.test(next.text)) break;
+                    if (next.tag === 'p' && /^Q\s*[:-]/i.test(next.text)) break;
                     if (next.tag === 'p') {
-                        const aMatch = next.text.match(/^A\s*[:\-]\s*(.*)/i);
+                        const aMatch = next.text.match(/^A\s*[:-]\s*(.*)/i);
                         answer += (aMatch ? aMatch[1] : next.text) + ' ';
                     }
                     j++;

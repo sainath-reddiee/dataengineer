@@ -42,7 +42,7 @@ function parseSections(text) {
     const isHeader = (line) => {
         const trimmed = line.trim();
         if (/^#{1,3}\s+/.test(trimmed)) return trimmed.replace(/^#{1,3}\s+/, '');
-        if (/^\*\*\d+[\.\)]\s*.+\*\*/.test(trimmed)) return trimmed.replace(/\*\*/g, '').replace(/^\d+[\.\)]\s*/, '');
+        if (/^\*\*\d+[.)]\s*.+\*\*/.test(trimmed)) return trimmed.replace(/\*\*/g, '').replace(/^\d+[.)]\s*/, '');
         if (/^---+$/.test(trimmed)) return null; // separator, not a header
         return false;
     };

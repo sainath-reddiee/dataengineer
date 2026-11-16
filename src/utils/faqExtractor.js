@@ -163,9 +163,9 @@ export function extractFAQFromContent(content) {
             const html = p.innerHTML;
 
             // Match patterns like <strong>Q:</strong> or <b>Q:</b> or Q:
-            const qMatch = html.match(/^(?:<(?:strong|b)>)?\s*Q\s*[:\-]\s*(?:<\/(?:strong|b)>)?\s*(.+)/i);
+            const qMatch = html.match(/^(?:<(?:strong|b)>)?\s*Q\s*[:-]\s*(?:<\/(?:strong|b)>)?\s*(.+)/i);
             if (qMatch) {
-                const questionText = p.textContent.replace(/^Q\s*[:\-]\s*/i, '').trim();
+                const questionText = p.textContent.replace(/^Q\s*[:-]\s*/i, '').trim();
 
                 // Look for the answer in the next paragraph(s)
                 let answer = '';
@@ -175,15 +175,15 @@ export function extractFAQFromContent(content) {
                     const nextHtml = nextP.innerHTML;
 
                     // Stop if we hit another Q:
-                    if (/^(?:<(?:strong|b)>)?\s*Q\s*[:\-]/i.test(nextHtml)) break;
+                    if (/^(?:<(?:strong|b)>)?\s*Q\s*[:-]/i.test(nextHtml)) break;
 
                     // Extract A: answer or plain paragraph
-                    const aMatch = nextP.textContent.match(/^A\s*[:\-]\s*(.*)/i);
+                    const aMatch = nextP.textContent.match(/^A\s*[:-]\s*(.*)/i);
                     if (aMatch) {
                         answer += aMatch[1].trim() + ' ';
                     } else {
                         // Skip if it starts with another label
-                        if (!/^(?:Q|A)\s*[:\-]/i.test(nextP.textContent)) {
+                        if (!/^(?:Q|A)\s*[:-]/i.test(nextP.textContent)) {
                             answer += nextP.textContent.trim() + ' ';
                         }
                     }

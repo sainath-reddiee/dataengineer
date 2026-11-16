@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { openPrivacySettings } from './CookieConsent';
+import { openPrivacySettings, revokeConsent } from './CookieConsent';
 import { ADSENSE_REVIEW_MODE } from '@/data/adsenseQualityGate';
 import SupportButton from '@/components/Support/SupportButton';
 import { Github, Linkedin, Mail } from 'lucide-react';

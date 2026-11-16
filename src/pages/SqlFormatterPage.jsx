@@ -286,7 +286,7 @@ export default function SqlFormatterPage() {
           <ol className="list-decimal pl-5 text-gray-300 space-y-2 text-sm leading-relaxed">
             <li>
               <strong className="text-white">Literals + comments are protected first.</strong>{' '}
-              Single-quoted strings and <code>--</code>/<code>/* */</code> comments are tokenized
+              Single-quoted strings and <code>--</code>/<code>{'/* */'}</code> comments are tokenized
               and restored after formatting, so keyword case normalization never touches string
               contents or comment text.
             </li>

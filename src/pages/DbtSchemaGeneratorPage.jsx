@@ -14,9 +14,9 @@ const AdPlacement = React.lazy(() => import('@/components/AdPlacement'));
 function parseCreateTable(sql) {
   if (!sql || !sql.trim()) return { tableName: '', columns: [], error: 'Paste a CREATE TABLE statement.' };
   const cleaned = sql.replace(/--[^\n]*/g, '').replace(/\/\*[\s\S]*?\*\//g, '');
-  const m = cleaned.match(/CREATE\s+(?:OR\s+REPLACE\s+)?(?:TRANSIENT\s+|TEMPORARY\s+|TEMP\s+)?TABLE\s+(?:IF\s+NOT\s+EXISTS\s+)?([a-zA-Z0-9_."`\[\]]+)\s*\(([\s\S]*)\)\s*;?/i);
+  const m = cleaned.match(/CREATE\s+(?:OR\s+REPLACE\s+)?(?:TRANSIENT\s+|TEMPORARY\s+|TEMP\s+)?TABLE\s+(?:IF\s+NOT\s+EXISTS\s+)?([a-zA-Z0-9_."`[\]]+)\s*\(([\s\S]*)\)\s*;?/i);
   if (!m) return { tableName: '', columns: [], error: 'No CREATE TABLE statement detected.' };
-  const rawName = m[1].replace(/["`\[\]]/g, '');
+  const rawName = m[1].replace(/["`[\]]/g, '');
   const bodyRaw = m[2];
 
   // Split columns by top-level commas (ignore parens nested for NUMBER(38,0) etc.)
@@ -38,7 +38,7 @@ function parseCreateTable(sql) {
     if (!line) continue;
     // Skip table-level constraints
     if (/^(PRIMARY\s+KEY|FOREIGN\s+KEY|UNIQUE|CONSTRAINT|CHECK|INDEX)\b/i.test(line)) continue;
-    const cm = line.match(/^["`\[]?([a-zA-Z0-9_]+)["`\]]?\s+([A-Za-z][A-Za-z0-9_]*(?:\s*\([^)]*\))?)/);
+    const cm = line.match(/^["`[]?([a-zA-Z0-9_]+)["`\]]?\s+([A-Za-z][A-Za-z0-9_]*(?:\s*\([^)]*\))?)/);
     if (!cm) continue;
     const name = cm[1];
     const type = cm[2].replace(/\s+/g, '').toUpperCase();
@@ -75,7 +75,7 @@ function inferTests(col) {
 }
 
 function yamlEscape(s) {
-  if (/^[A-Za-z0-9_ .,()\-]+$/.test(s)) return s;
+  if (/^[A-Za-z0-9_ .,()-]+$/.test(s)) return s;
   return "'" + s.replace(/'/g, "''") + "'";
 }
 

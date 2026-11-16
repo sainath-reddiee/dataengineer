@@ -144,7 +144,7 @@ export function InternalLinksPage() {
                         {analysis.orphans.map(o => (
                             <div key={o.slug} className="flex items-center justify-between text-sm py-1.5 px-3 bg-slate-900/50 rounded">
                                 <span className="text-gray-300 truncate flex-1">{o.title}</span>
-                                <a href={`/articles/${o.slug}`} target="_blank" rel="noopener" className="text-blue-400 ml-2">
+                                <a href={`/articles/${o.slug}`} target="_blank" rel="noopener noreferrer" className="text-blue-400 ml-2">
                                     <ExternalLink className="w-3 h-3" />
                                 </a>
                             </div>

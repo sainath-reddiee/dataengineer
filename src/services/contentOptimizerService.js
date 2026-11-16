@@ -218,7 +218,7 @@ class ContentOptimizerService {
         const currentDomain = this.getDomain(url);
 
         // 1. Check for TL;DR / Summary (matches inside headings, divs, paragraphs, or plain text)
-        const hasTLDR = /(?:TL;?DR|Key Takeaways?|In Brief)[\s:;<\/]/i.test(html) ||
+        const hasTLDR = /(?:TL;?DR|Key Takeaways?|In Brief)[\s:;</]/i.test(html) ||
             /class="[^"]*(?:key-takeaways|tldr|summary)[^"]*"/i.test(html);
         if (!hasTLDR) {
             score -= 15;
@@ -279,7 +279,7 @@ class ContentOptimizerService {
         }
 
         // 4. Check for "Last Updated" date
-        const hasLastUpdated = /(?:last |recently )?updated:?\s*(?:on\s*)?(?:\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4}|\w+\s+\d{1,2},?\s+\d{4}|\d{4}-\d{2}-\d{2})/i.test(html);
+        const hasLastUpdated = /(?:last |recently )?updated:?\s*(?:on\s*)?(?:\d{1,2}[/-]\d{1,2}[/-]\d{2,4}|\w+\s+\d{1,2},?\s+\d{4}|\d{4}-\d{2}-\d{2})/i.test(html);
         if (!hasLastUpdated) {
             score -= 12;
             issues.push('Missing "Last Updated" date');

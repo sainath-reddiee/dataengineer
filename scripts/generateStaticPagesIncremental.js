@@ -137,7 +137,7 @@ function countPlainWords(...parts) {
     .map((p) => (typeof p === 'string' ? p : JSON.stringify(p)))
     .join(' ')
     .replace(/<[^>]+>/g, ' ')
-    .replace(/[#*_`\[\]()>]/g, ' ')
+    .replace(/[#*_`[\]()>]/g, ' ')
     .replace(/\s+/g, ' ')
     .trim();
   if (!text) return 0;
@@ -319,7 +319,7 @@ let LINKED_ARTICLES = [];
 try {
   LINKED_ARTICLES = JSON.parse(fs.readFileSync(articlesJsonPath, 'utf-8')) || [];
 } catch (e) {
-  console.warn('âš ï¸  Could not load articles.json for internal linking:', e.message);
+  console.warn('⚠️  Could not load articles.json for internal linking:', e.message);
 }
 
 // ============================================================================
@@ -363,6 +363,7 @@ function maskCodeBlocksSSG(html) {
       return token(i);
     });
   const restore = (processed) =>
+    // eslint-disable-next-line no-control-regex -- U+0001 is the private placeholder marker for protected code blocks
     processed.replace(/\u0001PSEO_CODE_BLOCK_(\d+)\u0001/g, (_, i) => blocks[Number(i)] || '');
   return { stripped, restore };
 }
@@ -556,6 +557,7 @@ function decodeUrlEntities(value) {
 
 function isDangerousUrl(value) {
   // Browsers ignore whitespace and control characters inside the scheme.
+  // eslint-disable-next-line no-control-regex -- strips control characters on purpose
   const compact = decodeUrlEntities(value).replace(/[\u0000- \u007f-\u009f]+/g, '').toLowerCase();
   return compact.startsWith('javascript:') || compact.startsWith('vbscript:') || compact.startsWith('data:');
 }
@@ -2451,7 +2453,7 @@ function loadCache() {
       return cache;
     }
   } catch (e) {
-    console.warn('âš ï¸  Could not load cache:', e.message);
+    console.warn('⚠️  Could not load cache:', e.message);
   }
   return { pages: {}, lastBuild: null, stats: {}, adsenseGateVersion: ADSENSE_GATE_VERSION };
 }
@@ -2509,7 +2511,7 @@ function findBundleFiles(distDir) {
   const indexHtmlPath = path.join(distDir, 'index.html');
 
   if (!fs.existsSync(indexHtmlPath)) {
-    console.warn('âš ï¸  dist/index.html not found');
+    console.warn('⚠️  dist/index.html not found');
     return { jsFile: null, cssFile: null };
   }
 
@@ -2528,7 +2530,7 @@ function findBundleFiles(distDir) {
     const directPath = path.join(distDir, jsFile);
 
     if (!fs.existsSync(directPath)) {
-      console.warn(`âš ï¸  JS file not found at expected path: ${jsFile}`);
+      console.warn(`⚠️  JS file not found at expected path: ${jsFile}`);
 
       // Search strategy 1: Look in /assets/js/ subdirectory
       const jsSubdirPath = path.join(distDir, 'assets', 'js');
@@ -2561,7 +2563,7 @@ function findBundleFiles(distDir) {
     }
   } else {
     // No JS match in index.html - try to find it manually
-    console.warn('âš ï¸  No JS reference found in index.html, searching manually...');
+    console.warn('⚠️  No JS reference found in index.html, searching manually...');
 
     // Check /assets/js/ first
     const jsSubdirPath = path.join(distDir, 'assets', 'js');
@@ -2701,7 +2703,7 @@ async function fetchFromWP(endpoint, fields = '') {
         success = true;
       } catch (error) {
         attempt++;
-        console.warn(`âš ï¸  Fetch failed (Attempt ${attempt}/${RETRY_COUNT}) for ${url}: ${error.message}`);
+        console.warn(`⚠️  Fetch failed (Attempt ${attempt}/${RETRY_COUNT}) for ${url}: ${error.message}`);
         if (attempt < RETRY_COUNT) {
           await new Promise(resolve => setTimeout(resolve, 2000 * attempt)); // Linear backoff
         } else {
@@ -4406,7 +4408,7 @@ ${relativeModulePreload}
       // Fallback: If React doesn't load in 5 seconds, keep static content
       setTimeout(function() {
         if (!document.body.classList.contains('react-loaded')) {
-          console.log('âš ï¸  React not detected - showing static content');
+          console.log('⚠️  React not detected - showing static content');
         }
       }, 5000);
     </script>
@@ -4894,9 +4896,9 @@ function generateCategoryPageHTML(category, categoryArticles, bundleFiles) {
   html += '      "url": "' + canonicalUrl(pagePath) + '",\n';
   html += '      "publisher": { "@type": "Organization", "name": "DataEngineer Hub", "url": "https://dataengineerhub.blog" }\n';
   html += '    }\n';
-  html += '    <\/script>\n\n';
+  html += '    </script>\n\n';
   if (productionJsFile) {
-    html += '    <script type="module" crossorigin src="' + productionJsFile + '"><\/script>\n\n';
+    html += '    <script type="module" crossorigin src="' + productionJsFile + '"></script>\n\n';
   }
   html += '    <script>\n';
   html += '      window.addEventListener("react-mounted", function() {\n';
@@ -4907,7 +4909,7 @@ function generateCategoryPageHTML(category, categoryArticles, bundleFiles) {
   html += '          console.log("React not detected - showing static content");\n';
   html += '        }\n';
   html += '      }, 5000);\n';
-  html += '    <\/script>\n';
+  html += '    </script>\n';
   html += '  </body>\n';
   html += '</html>';
 
@@ -5518,8 +5520,8 @@ function generateGlossaryPageHTML(term, allGlossaryTerms, bundleFiles, allArticl
       html += '        <div style="margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid rgba(27, 26, 23,0.1);">\n';
       html += '          <h2 style="color: #9C3A1A; font-size: 1.3rem; margin-bottom: 1rem;">Related Articles</h2>\n';
       html += '          <ul style="list-style: none; padding: 0;">\n';
-      for (var i = 0; i < matched.length; i++) {
-        html += '            <li style="margin-bottom: 0.6rem;"><a href="/articles/' + matched[i].slug + '" style="color: #B4441F; text-decoration: none; font-weight: 500;">' + escapeHtml(matched[i].title) + '</a></li>\n';
+      for (var ri = 0; ri < matched.length; ri++) {
+        html += '            <li style="margin-bottom: 0.6rem;"><a href="/articles/' + matched[ri].slug + '" style="color: #B4441F; text-decoration: none; font-weight: 500;">' + escapeHtml(matched[ri].title) + '</a></li>\n';
       }
       html += '          </ul>\n';
       html += '        </div>\n\n';
@@ -5549,7 +5551,7 @@ function generateGlossaryPageHTML(term, allGlossaryTerms, bundleFiles, allArticl
   html += '        "url": "https://dataengineerhub.blog/glossary"\n';
   html += '      }\n';
   html += '    }\n';
-  html += '    <\/script>\n\n';
+  html += '    </script>\n\n';
 
   // Article schema for glossary term
   html += '    <script type="application/ld+json">\n';
@@ -5573,7 +5575,7 @@ function generateGlossaryPageHTML(term, allGlossaryTerms, bundleFiles, allArticl
   html += '      "datePublished": "' + toIsoSchemaDate(term.lastUpdated) + '",\n';
   html += '      "dateModified": "' + toIsoSchemaDate(term.lastUpdated) + '"\n';
   html += '    }\n';
-  html += '    <\/script>\n\n';
+  html += '    </script>\n\n';
 
   // FAQ schema
   if (term.faqs && term.faqs.length > 0) {
@@ -5583,7 +5585,7 @@ function generateGlossaryPageHTML(term, allGlossaryTerms, bundleFiles, allArticl
     html += '      "@type": "FAQPage",\n';
     html += '      "mainEntity": [' + faqSchemaItems + ']\n';
     html += '    }\n';
-    html += '    <\/script>\n\n';
+    html += '    </script>\n\n';
   }
 
   // BreadcrumbList schema
@@ -5597,11 +5599,11 @@ function generateGlossaryPageHTML(term, allGlossaryTerms, bundleFiles, allArticl
   html += '        { "@type": "ListItem", "position": 3, "name": "' + term.term.replace(/"/g, '\\"') + '" }\n';
   html += '      ]\n';
   html += '    }\n';
-  html += '    <\/script>\n\n';
+  html += '    </script>\n\n';
 
   // React bootstrap
   if (productionJsFile) {
-    html += '    <script type="module" crossorigin src="' + productionJsFile + '"><\/script>\n\n';
+    html += '    <script type="module" crossorigin src="' + productionJsFile + '"></script>\n\n';
   }
   html += '    <script>\n';
   html += '      window.addEventListener("react-mounted", function() {\n';
@@ -5612,7 +5614,7 @@ function generateGlossaryPageHTML(term, allGlossaryTerms, bundleFiles, allArticl
   html += '          console.log("React not detected - showing static content");\n';
   html += '        }\n';
   html += '      }, 5000);\n';
-  html += '    <\/script>\n';
+  html += '    </script>\n';
   html += '  </body>\n';
   html += '</html>';
 
@@ -5856,8 +5858,8 @@ function generateCompareHubPageHTML(allComparisons, bundleFiles) {
   html += '      "numberOfItems": ' + totalComparisons + ',\n';
   html += '      "itemListElement": [\n';
   for (var ci = 0; ci < allComparisons.length; ci++) {
-    var comp = allComparisons[ci];
-    html += '        { "@type": "ListItem", "position": ' + (ci + 1) + ', "name": "' + (comp.toolA + ' vs ' + comp.toolB).replace(/"/g, '\\"') + '", "url": "https://dataengineerhub.blog/compare/' + comp.slug + '" }';
+    var cmp = allComparisons[ci];
+    html += '        { "@type": "ListItem", "position": ' + (ci + 1) + ', "name": "' + (cmp.toolA + ' vs ' + cmp.toolB).replace(/"/g, '\\"') + '", "url": "https://dataengineerhub.blog/compare/' + cmp.slug + '" }';
     html += (ci < allComparisons.length - 1 ? ',\n' : '\n');
   }
   html += '      ]\n';
@@ -6183,7 +6185,7 @@ function generateComparePageHTML(comparison, allComparisons, bundleFiles) {
   html += '      "datePublished": "' + toIsoSchemaDate(comparison.lastUpdated) + '",\n';
   html += '      "dateModified": "' + toIsoSchemaDate(comparison.lastUpdated) + '"\n';
   html += '    }\n';
-  html += '    <\/script>\n\n';
+  html += '    </script>\n\n';
 
   // BreadcrumbList schema
   html += '    <script type="application/ld+json">\n';
@@ -6196,7 +6198,7 @@ function generateComparePageHTML(comparison, allComparisons, bundleFiles) {
   html += '        { "@type": "ListItem", "position": 3, "name": "' + (comparison.toolA + ' vs ' + comparison.toolB).replace(/"/g, '\\"') + '" }\n';
   html += '      ]\n';
   html += '    }\n';
-  html += '    <\/script>\n\n';
+  html += '    </script>\n\n';
 
   // FAQPage schema (only if faqs exist)
   if (comparison.faqs && comparison.faqs.length > 0) {
@@ -6214,12 +6216,12 @@ function generateComparePageHTML(comparison, allComparisons, bundleFiles) {
     };
     html += '    <script type="application/ld+json">\n';
     html += '    ' + escapeJsonForScript(faqSchema) + '\n';
-    html += '    <\/script>\n\n';
+    html += '    </script>\n\n';
   }
 
   // React bootstrap
   if (productionJsFile) {
-    html += '    <script type="module" crossorigin src="' + productionJsFile + '"><\/script>\n\n';
+    html += '    <script type="module" crossorigin src="' + productionJsFile + '"></script>\n\n';
   }
   html += '    <script>\n';
   html += '      window.addEventListener("react-mounted", function() {\n';
@@ -6230,7 +6232,7 @@ function generateComparePageHTML(comparison, allComparisons, bundleFiles) {
   html += '          console.log("React not detected - showing static content");\n';
   html += '        }\n';
   html += '      }, 5000);\n';
-  html += '    <\/script>\n';
+  html += '    </script>\n';
   html += '  </body>\n';
   html += '</html>';
 
@@ -6824,9 +6826,9 @@ function generateTagPageHTML(tag, tagArticles, bundleFiles) {
   html += '      "url": "' + canonicalUrl(pagePath) + '",\n';
   html += '      "publisher": { "@type": "Organization", "name": "DataEngineer Hub", "url": "https://dataengineerhub.blog" }\n';
   html += '    }\n';
-  html += '    <\/script>\n\n';
+  html += '    </script>\n\n';
   if (productionJsFile) {
-    html += '    <script type="module" crossorigin src="' + productionJsFile + '"><\/script>\n\n';
+    html += '    <script type="module" crossorigin src="' + productionJsFile + '"></script>\n\n';
   }
   html += '    <script>\n';
   html += '      window.addEventListener("react-mounted", function() {\n';
@@ -6837,7 +6839,7 @@ function generateTagPageHTML(tag, tagArticles, bundleFiles) {
   html += '          console.log("React not detected - showing static content");\n';
   html += '        }\n';
   html += '      }, 5000);\n';
-  html += '    <\/script>\n';
+  html += '    </script>\n';
   html += '  </body>\n';
   html += '</html>';
 
@@ -7334,7 +7336,7 @@ async function buildIncremental(options = {}) {
   });
 
   if (!articlesExist && !force) {
-    console.warn('âš ï¸  articles/ directory not found or empty');
+    console.warn('⚠️  articles/ directory not found or empty');
     console.log('ðŸ”¨ Enabling force rebuild…');
     force = true;
   }
@@ -7369,7 +7371,7 @@ async function buildIncremental(options = {}) {
     cats.forEach(c => { catIdToName[c.id] = c.name; });
     console.log(`   Loaded ${cats.length} category names for articleSection mapping`);
   } catch (err) {
-    console.warn('   âš ï¸  Could not fetch categories for articleSection:', err.message);
+    console.warn('   ⚠️  Could not fetch categories for articleSection:', err.message);
   }
 
   // ðŸ·ï¸ Pre-fetch tags for article:tag OG meta
@@ -7379,7 +7381,7 @@ async function buildIncremental(options = {}) {
     tagsData.forEach(t => { tagIdToName[t.id] = t.name; });
     console.log(`   Loaded ${tagsData.length} tag names for article:tag mapping`);
   } catch (err) {
-    console.warn('   âš ï¸  Could not fetch tags for article:tag:', err.message);
+    console.warn('   ⚠️  Could not fetch tags for article:tag:', err.message);
   }
 
   try {
@@ -7405,7 +7407,7 @@ async function buildIncremental(options = {}) {
     }));
 
     if (posts.length === 0) {
-      console.warn('âš ï¸  No posts found from WordPress API!');
+      console.warn('⚠️  No posts found from WordPress API!');
     }
 
     for (const post of posts) {
@@ -7592,7 +7594,7 @@ async function buildIncremental(options = {}) {
     const coverage = articleSlugs.length > 0 ? ((coveredSlugs.length / articleSlugs.length) * 100).toFixed(1) : 0;
     console.log(`   ðŸŽ¯ SEO Override Coverage: ${coveredSlugs.length}/${articleSlugs.length} articles (${coverage}%)`);
     if (missingSlugs.length > 0) {
-      console.log(`   âš ï¸  ${missingSlugs.length} articles missing SEO overrides:`);
+      console.log(`   ⚠️  ${missingSlugs.length} articles missing SEO overrides:`);
       missingSlugs.slice(0, 10).forEach(slug => console.log(`      - ${slug}`));
       if (missingSlugs.length > 10) {
         console.log(`      ... and ${missingSlugs.length - 10} more`);
@@ -7872,7 +7874,7 @@ function buildPracticeQuestionPreview(quizSlug) {
           const fileSizeKB = (fileStats.size / 1024).toFixed(2);
           console.log(`   âœ“ Homepage CSS deferred off first paint (${fileSizeKB} KB)`);
         } else {
-          console.log(`   âš ï¸ dist/index.html not found, skipping homepage enhancement`);
+          console.log(`   ⚠️ dist/index.html not found, skipping homepage enhancement`);
         }
       } catch (err) {
         console.error('   âŒ Error enhancing homepage:', err.message);
@@ -8212,7 +8214,7 @@ function buildPracticeQuestionPreview(quizSlug) {
       var cheatsheetCategories = [];
       var catMatch = cheatsheetRaw.match(/export\s+const\s+CHEATSHEET_CATEGORIES\s*=\s*(\[[\s\S]*?\]);/);
       if (catMatch) {
-        try { cheatsheetCategories = eval(catMatch[1]); } catch(e) { console.warn('   âš ï¸ Could not parse CHEATSHEET_CATEGORIES'); }
+        try { cheatsheetCategories = eval(catMatch[1]); } catch(e) { console.warn('   ⚠️ Could not parse CHEATSHEET_CATEGORIES'); }
       }
 
       // Extract cheatsheets array
@@ -8427,7 +8429,7 @@ function buildPracticeQuestionPreview(quizSlug) {
   console.log('');
 
   if (stats.errors > 0) {
-    console.log('\nâš ï¸  Build completed with errors. Please review the logs above.');
+    console.log('\n⚠️  Build completed with errors. Please review the logs above.');
     process.exit(1);
   }
 }

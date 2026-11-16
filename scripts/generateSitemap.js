@@ -340,7 +340,7 @@ function countPlainWords(...parts) {
     .map((p) => (typeof p === 'string' ? p : JSON.stringify(p)))
     .join(' ')
     .replace(/<[^>]+>/g, ' ')
-    .replace(/[#*_`\[\]()>]/g, ' ')
+    .replace(/[#*_`[\]()>]/g, ' ')
     .replace(/\s+/g, ' ')
     .trim();
   if (!text) return 0;

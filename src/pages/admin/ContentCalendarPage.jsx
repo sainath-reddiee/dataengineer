@@ -320,7 +320,7 @@ export function ContentCalendarPage() {
                                             <a
                                                 href={`https://dataengineerhub.blog/articles/${t.articleSlug}`}
                                                 target="_blank"
-                                                rel="noopener"
+                                                rel="noopener noreferrer"
                                                 className="p-1.5 text-gray-400 hover:text-blue-400"
                                                 title="View article"
                                             >

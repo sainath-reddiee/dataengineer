@@ -23,7 +23,7 @@ function getApplied() {
 
 function saveApplied(data) {
     if (typeof localStorage === 'undefined') return;
-    try { localStorage.setItem(APPLIED_STORAGE_KEY, JSON.stringify(data)); } catch {}
+    try { localStorage.setItem(APPLIED_STORAGE_KEY, JSON.stringify(data)); } catch { /* storage full or blocked: skip persisting */ }
 }
 
 function markApplied(articleSlug, linkKey) {

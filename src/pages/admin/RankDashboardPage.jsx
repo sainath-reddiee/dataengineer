@@ -259,7 +259,7 @@ export function RankDashboardPage() {
                                 </div>
                                 {a.link && (
                                     a.link.startsWith('http') ? (
-                                        <a href={a.link} target="_blank" rel="noopener" className="text-blue-400 hover:text-blue-300 shrink-0">
+                                        <a href={a.link} target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:text-blue-300 shrink-0">
                                             <ExternalLink className="w-3.5 h-3.5" />
                                         </a>
                                     ) : (
@@ -509,7 +509,7 @@ Keep each recommendation to 2-3 sentences max. Be direct and specific to THIS ar
                                     </div>
                                     {a.link && (
                                         a.link.startsWith('http') ? (
-                                            <a href={a.link} target="_blank" rel="noopener" className="text-blue-400 hover:text-blue-300 text-xs">Open â†—</a>
+                                            <a href={a.link} target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:text-blue-300 text-xs">Open â†—</a>
                                         ) : (
                                             <Link
                                                 to={a.link}

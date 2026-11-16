@@ -25,7 +25,7 @@ export const validateContentDepth = (content, faqs = []) => {
     }
 
     // Word count check (stripping HTML/markdown tags roughly)
-    const cleanContent = content.replace(/<[^>]*>/g, ' ').replace(/[#*`_~\[\]()]/g, ' ');
+    const cleanContent = content.replace(/<[^>]*>/g, ' ').replace(/[#*`_~[\]()]/g, ' ');
     const wordCount = cleanContent.split(/\s+/).filter(w => w.length > 0).length;
 
     if (wordCount < MIN_WORD_COUNT) {

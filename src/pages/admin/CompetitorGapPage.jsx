@@ -181,7 +181,7 @@ function StatsCard({ label, stats, highlight = 'blue', url = null }) {
                 {stats.title || '(no title)'}
             </div>
             {url && (
-                <a href={url} target="_blank" rel="noopener" className="text-[11px] text-orange-300 hover:text-orange-200 truncate block mb-2">
+                <a href={url} target="_blank" rel="noopener noreferrer" className="text-[11px] text-orange-300 hover:text-orange-200 truncate block mb-2">
                     {url}
                 </a>
             )}

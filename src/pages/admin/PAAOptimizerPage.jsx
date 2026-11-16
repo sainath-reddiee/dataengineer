@@ -258,7 +258,7 @@ Return the JSON array and nothing else.`;
                         // Fallback: split by newlines
                         aiQuestions = aiResult
                             .split('\n')
-                            .map(line => line.replace(/^\d+[\.\)]\s*/, '').replace(/^[-•]\s*/, '').trim())
+                            .map(line => line.replace(/^\d+[.)]\s*/, '').replace(/^[-•]\s*/, '').trim())
                             .filter(line => line.length > 10 && QUESTION_WORDS.test(line))
                             .slice(0, 10)
                             .map(q => ({

@@ -115,7 +115,7 @@ STRUCTURE (your exact template):
 - ## for H2, ### for H3 — the focus keyphrase MUST appear in at least 2 of the ## headings naturally (e.g., "## How [Keyphrase] Works" or "## Why [Keyphrase] Matters in 2026")
 - → for TL;DR bullets (4-6 bullets, each a standalone insight)
 - Tables: Feature | Option A | Option B (with REAL numbers/versions)
-- âš ï¸ for warnings/gotchas
+- ⚠️ for warnings/gotchas
 - **bold** for key terms on first mention
 - \`inline code\` for commands, functions, file names
 - Code blocks: real syntax, real tools, comments explaining WHY

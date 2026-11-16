@@ -162,8 +162,8 @@ async function generatePages() {
   console.log(`\n✅ Successfully generated ${generated} static HTML pages!`);
   console.log('\nðŸ“Š What was generated:');
   console.log(`   ✅ Article posts: ${posts.length}`);
-  console.log(`   âš ï¸  Categories: Handled by React (no static HTML)`);
-  console.log(`   âš ï¸  Tags: Handled by React (no static HTML)`);
+  console.log(`   ⚠️  Categories: Handled by React (no static HTML)`);
+  console.log(`   ⚠️  Tags: Handled by React (no static HTML)`);
   console.log('\nâœ¨ This is better because:');
   console.log('   - Article pages get full SEO benefits');
   console.log('   - Category/tag pages load instantly with React');

@@ -140,7 +140,7 @@ export function FreshnessPage() {
                                     <a
                                         href={`https://app.dataengineerhub.blog/wp-admin/post.php?post=${article.id}&action=edit`}
                                         target="_blank"
-                                        rel="noopener"
+                                        rel="noopener noreferrer"
                                         className="text-blue-400 hover:text-blue-300"
                                     >
                                         <ExternalLink className="w-3.5 h-3.5 inline" />
