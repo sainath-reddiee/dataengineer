@@ -185,10 +185,6 @@ https://:project.pages.dev/*
 # specific rule override a wildcard), so a wildcard noindex plus a specific
 # 'index' rule sends noindex on the allowed page. Held-out slugs are therefore
 # listed one by one; the allowed slugs below have no noindex rule at all.
-/cheatsheets/snowflake-interview-questions
-  X-Robots-Tag: noindex, follow
-  Cache-Control: no-store, max-age=0, must-revalidate
-
 /cheatsheets/sql-interview-questions/
   X-Robots-Tag: noindex, follow
   Cache-Control: no-store, max-age=0, must-revalidate
@@ -270,6 +266,10 @@ https://:project.pages.dev/*
   Cache-Control: no-store, max-age=0, must-revalidate
 
 /cheatsheets/azure-for-data-engineers/
+  X-Robots-Tag: noindex, follow
+  Cache-Control: no-store, max-age=0, must-revalidate
+
+/cheatsheets/snowflake-interview-questions/
   X-Robots-Tag: noindex, follow
   Cache-Control: no-store, max-age=0, must-revalidate
 

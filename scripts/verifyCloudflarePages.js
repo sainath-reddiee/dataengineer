@@ -1,4 +1,4 @@
-import { readFileSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import {
@@ -73,10 +73,36 @@ for (const slug of ADSENSE_REVIEW_CHEATSHEETS) {
 for (const slug of ADSENSE_REVIEW_TOOLS) {
   assert(!noindexRuleFor(`/tools/${slug}`), `_headers sends noindex for the allowlisted tool ${slug}`);
 }
+// Pages applies a per-page rule only to the exact URL, and the page that returns 200 is the
+// trailing-slash one. A bare-path rule only ever matches the 308 redirect and wastes a rule slot.
+const noindexRuleOnSlash = (path) => headerBlocks.some(
+  (lines) => (lines[0] || '').trim() === `${path}/` && /noindex/i.test(lines.slice(1).join('\n'))
+);
 assert(
-  noindexRuleFor('/tools/csv-to-sql') && noindexRuleFor('/cheatsheets/dbt-best-practices'),
+  noindexRuleOnSlash('/tools/csv-to-sql') && noindexRuleOnSlash('/cheatsheets/dbt-best-practices'),
   '_headers must keep a noindex rule on the trailing-slash URL of held-out tools and cheat sheets'
 );
+const bareRules = headers.match(/^\/(tools|cheatsheets)\/[a-z0-9-]+\r?$/gm) || [];
+assert(
+  bareRules.length === 0,
+  `_headers has bare-path rules that never match the live page (use the trailing-slash form): ${bareRules.join(', ')}`
+);
+// Every built tool / cheat-sheet page that is not allowlisted must carry a noindex rule, so a
+// newly added page is never indexable by header by accident. Needs a build, so skip without dist.
+for (const [section, allowed] of [['tools', ADSENSE_REVIEW_TOOLS], ['cheatsheets', ADSENSE_REVIEW_CHEATSHEETS]]) {
+  const dir = join(root, 'dist', section);
+  if (!existsSync(dir)) continue;
+  const uncovered = readdirSync(dir).filter((slug) =>
+    slug !== 'category' &&
+    !allowed.includes(slug) &&
+    existsSync(join(dir, slug, 'index.html')) &&
+    !noindexRuleOnSlash(`/${section}/${slug}`)
+  );
+  assert(
+    uncovered.length === 0,
+    `_headers has no noindex rule for held-out /${section}/ pages: ${uncovered.join(', ')}`
+  );
+}
 
 assert(duckdb.includes('DUCKDB_NPM_VERSION'), 'DuckDB must pin the npm version used on the CDN fallback');
 assert(duckdb.includes(duckdbVersion), `DuckDB CDN pin must match package.json (${duckdbVersion})`);
