@@ -403,7 +403,8 @@ jobs:
             echo "❌ FATAL: dist/articles/index.html is missing"
             exit 1
           fi
-          if ! grep -q 'rel="canonical" href="https://dataengineerhub.blog/articles"' dist/articles/index.html; then
+          # Pages serves /articles/ and 308s the bare form, so the canonical is the slash form.
+          if ! grep -qE 'rel="canonical" href="https://dataengineerhub.blog/articles/?"' dist/articles/index.html; then
             echo "❌ FATAL: /articles has the wrong canonical"
             exit 1
           fi
