@@ -126,9 +126,6 @@
 
         var meta = document.querySelector('meta[name="description"]');
         if (meta) meta.setAttribute('content', desc);
-        // Note: document.title is managed by React's MetaTags component per route.
-        // The direct assignment was removed to prevent Vite's prerender plugin
-        // from injecting a duplicate <title> tag during SSR pre-rendering.
       })();
     </script>
     <title>Data Engineering Tutorials — Snowflake, Databricks, dbt &amp; AWS</title>

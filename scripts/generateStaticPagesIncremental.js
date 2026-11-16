@@ -3104,6 +3104,8 @@ function generateFullArticleHTML(pageData, bundleFiles, relatedArticles = []) {
   const headline = escapeHtml(decodeHtmlEntities(rawHeadline || rawTitle));
   const description = escapeHtml(decodeHtmlEntities(rawDescription));
   const titleJsonLd = escapeJsonLd(decodeHtmlEntities(rawTitle));
+  // Schema headline must match the visible H1, not the SEO <title> override.
+  const headlineJsonLd = escapeJsonLd(decodeHtmlEntities(rawHeadline || rawTitle));
   const descriptionJsonLd = escapeJsonLd(decodeHtmlEntities(rawDescription));
 
   // 🔥 CRITICAL: Use relative paths from article subdirectory
@@ -3230,6 +3232,12 @@ function generateFullArticleHTML(pageData, bundleFiles, relatedArticles = []) {
   const readingTime = Math.max(1, Math.ceil(readingWordCount / 250));
   const publishDateObj = new Date(effectivePublished);
   const formattedDate = publishDateObj.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+  // Same rule as ArticlePage.jsx: show "Updated" only when the modified date
+  // falls on a different day than the publish date. WordPress stamps a
+  // modified time seconds after publish, which must not read as an update.
+  const modifiedDateObj = new Date(effectiveModified);
+  const formattedModified = modifiedDateObj.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+  const wasUpdated = modifiedDateObj > publishDateObj && formattedModified !== formattedDate;
   const heroHtml = featuredImage
     ? `<div class="article-hero"><img src="${escapeHtml(featuredImage)}" alt="${title}" width="1600" height="900" fetchpriority="high" decoding="async" /></div>`
     : '';
@@ -4017,7 +4025,9 @@ ${CONSENT_MODE_V2_HTML}
             <a href="/about" style="color:#B4441F;text-decoration:none;font-weight:500;">Sainath Reddy</a>
             <span>·</span>
             <time datetime="${effectivePublished}">${formattedDate}</time>
-            <span>·</span>
+${wasUpdated ? `            <span>·</span>
+            <span>Updated <time datetime="${effectiveModified}">${formattedModified}</time></span>
+` : ''}            <span>·</span>
             <span>${readingTime} min read</span>
           </div>
           ${tagNames.some((t) => String(t).toLowerCase() === 'sponsored') ? `<p class="sponsored-disclosure" style="border-left:2px solid #B4441F;background:#F4F0E8;padding:0.75rem 1rem;margin:0 0 1.25rem;font-size:0.95rem;color:#33302B;"><strong style="font-family:'IBM Plex Mono',monospace;font-size:0.7rem;letter-spacing:0.08em;text-transform:uppercase;color:#9C3A1A;">Sponsored</strong> This guide was written in partnership with a sponsor. Our <a href="/editorial-standards" style="color:#9C3A1A;">editorial standards</a> still apply, and links to the sponsor are marked as sponsored.</p>` : ''}
@@ -4172,7 +4182,7 @@ ${CONSENT_MODE_V2_HTML}
     {
       "@context": "https://schema.org",
       "@type": "Article",
-      "headline": "${titleJsonLd}",
+      "headline": "${headlineJsonLd}",
       "description": "${descriptionJsonLd}",
       "image": {
         "@type": "ImageObject",
@@ -4186,6 +4196,7 @@ ${CONSENT_MODE_V2_HTML}
         "name": "Sainath Reddy",
         "url": "https://dataengineerhub.blog/about",
         "jobTitle": "Data Engineer",
+        "knowsAbout": ["Snowflake", "dbt", "Apache Airflow", "Apache Spark", "Databricks", "AWS data engineering", "SQL"],
         "sameAs": [
           "https://www.linkedin.com/in/sainathreddypogaku/",
           "https://github.com/sainath-reddiee/dataengineer"
