@@ -17,6 +17,12 @@ function assert(condition, message) {
 }
 
 const headers = readFileSync(join(root, 'public/_headers'), 'utf8');
+// Cloudflare Pages silently ignores header rules past the first 100.
+const headerRuleCount = headers.split(/\r?\n/).filter((line) => line && !/^[\s#]/.test(line)).length;
+assert(
+  headerRuleCount <= 100,
+  `public/_headers has ${headerRuleCount} rules; Cloudflare Pages ignores everything past 100, so later noindex rules would not apply`
+);
 const redirects = readFileSync(join(root, 'public/_redirects'), 'utf8');
 const duckdb = readFileSync(join(root, 'src/lib/duckdb.js'), 'utf8');
 const htaccess = readFileSync(join(root, 'public/.htaccess'), 'utf8');
@@ -53,15 +59,24 @@ assert(headers.includes('/assets/*'), '_headers must long-cache hashed /assets/*
 assert(headers.includes('stale-while-revalidate=86400'), '_headers should keep HTML revalidation cheap');
 assert(headers.includes('rel=api-catalog'), '_headers must advertise the agent catalog on /');
 
+// Pages merges every matching rule, so an allowlisted (indexable) page must have NO noindex
+// rule at all. Held-out pages carry exactly one rule on their trailing-slash URL.
+const headerBlocks = headers.split(/\r?\n\s*\r?\n/).map((block) =>
+  block.split(/\r?\n/).filter((line) => line.trim() && !line.trim().startsWith('#'))
+);
+const noindexRuleFor = (path) => headerBlocks.some(
+  (lines) => [path, `${path}/`].includes((lines[0] || '').trim()) && /noindex/i.test(lines.slice(1).join('\n'))
+);
 for (const slug of ADSENSE_REVIEW_CHEATSHEETS) {
-  assert(
-    headers.includes(`/cheatsheets/${slug}`),
-    `_headers cheat-sheet allowlist is missing ${slug}`
-  );
+  assert(!noindexRuleFor(`/cheatsheets/${slug}`), `_headers sends noindex for the allowlisted cheat sheet ${slug}`);
 }
 for (const slug of ADSENSE_REVIEW_TOOLS) {
-  assert(headers.includes(`/tools/${slug}`), `_headers tool allowlist is missing ${slug}`);
+  assert(!noindexRuleFor(`/tools/${slug}`), `_headers sends noindex for the allowlisted tool ${slug}`);
 }
+assert(
+  noindexRuleFor('/tools/csv-to-sql') && noindexRuleFor('/cheatsheets/dbt-best-practices'),
+  '_headers must keep a noindex rule on the trailing-slash URL of held-out tools and cheat sheets'
+);
 
 assert(duckdb.includes('DUCKDB_NPM_VERSION'), 'DuckDB must pin the npm version used on the CDN fallback');
 assert(duckdb.includes(duckdbVersion), `DuckDB CDN pin must match package.json (${duckdbVersion})`);

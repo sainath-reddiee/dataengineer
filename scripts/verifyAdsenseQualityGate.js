@@ -231,15 +231,24 @@ if (/^\s*\/\* \/index\.html 200\s*$/m.test(pagesRedirects)) {
   console.error('❌ public/_redirects must not SPA-fallback unknown URLs (AdSense duplicate homepage)');
   failed += 1;
 }
+// Cloudflare Pages merges every matching header rule (a specific rule does not override a
+// wildcard) and ignores rules past the first 100. The allowlist is therefore enforced by
+// absence: an indexable page must have no noindex rule in public/_headers.
+const headerRuleBlocks = pagesHeaders.split(/\r?\n\s*\r?\n/);
+const hasNoindexRule = (path) => headerRuleBlocks.some((block) => {
+  const lines = block.split(/\r?\n/).filter((line) => line.trim() && !line.trim().startsWith('#'));
+  const first = (lines[0] || '').trim();
+  return (first === path || first === `${path}/`) && /noindex/i.test(lines.slice(1).join('\n'));
+});
 for (const slug of ADSENSE_REVIEW_CHEATSHEETS) {
-  if (!pagesHeaders.includes(`/cheatsheets/${slug}`)) {
-    console.error(`❌ public/_headers cheat-sheet allowlist is missing ${slug}`);
+  if (hasNoindexRule(`/cheatsheets/${slug}`)) {
+    console.error(`❌ public/_headers sends noindex for the allowlisted cheat sheet ${slug}`);
     failed += 1;
   }
 }
 for (const slug of ADSENSE_REVIEW_TOOLS) {
-  if (!pagesHeaders.includes(`/tools/${slug}`)) {
-    console.error(`❌ public/_headers tool allowlist is missing ${slug}`);
+  if (hasNoindexRule(`/tools/${slug}`)) {
+    console.error(`❌ public/_headers sends noindex for the allowlisted tool ${slug}`);
     failed += 1;
   }
 }

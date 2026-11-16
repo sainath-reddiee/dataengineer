@@ -87,6 +87,10 @@ const headers = fs.readFileSync(path.join(dest, '_headers'), 'utf8');
 if (!headers.includes('https://:project.pages.dev/*')) {
   fail('_headers must noindex the *.pages.dev preview host');
 }
+const headerRuleCount = headers.split(/\r?\n/).filter((line) => line && !/^[\s#]/.test(line)).length;
+if (headerRuleCount > 100) {
+  fail(`_headers has ${headerRuleCount} rules; Cloudflare Pages ignores everything past 100, so later noindex rules would not apply`);
+}
 
 if (remaining.length > FREE_FILE_LIMIT) {
   console.warn(

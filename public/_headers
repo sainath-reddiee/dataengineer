@@ -76,10 +76,11 @@ https://:project.pages.dev/*
   X-Robots-Tag: noindex, follow
   Cache-Control: no-store, max-age=0, must-revalidate
 
-/cheatsheets/category
-  X-Robots-Tag: noindex, follow
-  Cache-Control: no-store, max-age=0, must-revalidate
-
+# Pages ignores header rules past the first 100 (the limit is per project), and merges
+# every matching rule instead of letting a specific one override a wildcard. So held-out
+# tools and cheat sheets get exactly one rule each, on the trailing-slash URL that
+# returns 200. Indexable pages (the allowlist in src/data/adsenseQualityGate.js) get no
+# rule at all. scripts/verifyCloudflarePages.js fails the build above 100 rules.
 /cheatsheets/category/
   X-Robots-Tag: noindex, follow
   Cache-Control: no-store, max-age=0, must-revalidate
@@ -188,15 +189,7 @@ https://:project.pages.dev/*
   X-Robots-Tag: noindex, follow
   Cache-Control: no-store, max-age=0, must-revalidate
 
-/cheatsheets/sql-interview-questions
-  X-Robots-Tag: noindex, follow
-  Cache-Control: no-store, max-age=0, must-revalidate
-
 /cheatsheets/sql-interview-questions/
-  X-Robots-Tag: noindex, follow
-  Cache-Control: no-store, max-age=0, must-revalidate
-
-/cheatsheets/data-engineering-interview-questions
   X-Robots-Tag: noindex, follow
   Cache-Control: no-store, max-age=0, must-revalidate
 
@@ -204,15 +197,7 @@ https://:project.pages.dev/*
   X-Robots-Tag: noindex, follow
   Cache-Control: no-store, max-age=0, must-revalidate
 
-/cheatsheets/dbt-best-practices
-  X-Robots-Tag: noindex, follow
-  Cache-Control: no-store, max-age=0, must-revalidate
-
 /cheatsheets/dbt-best-practices/
-  X-Robots-Tag: noindex, follow
-  Cache-Control: no-store, max-age=0, must-revalidate
-
-/cheatsheets/airflow-best-practices
   X-Robots-Tag: noindex, follow
   Cache-Control: no-store, max-age=0, must-revalidate
 
@@ -220,15 +205,7 @@ https://:project.pages.dev/*
   X-Robots-Tag: noindex, follow
   Cache-Control: no-store, max-age=0, must-revalidate
 
-/cheatsheets/snowflake-streams-tasks-interview
-  X-Robots-Tag: noindex, follow
-  Cache-Control: no-store, max-age=0, must-revalidate
-
 /cheatsheets/snowflake-streams-tasks-interview/
-  X-Robots-Tag: noindex, follow
-  Cache-Control: no-store, max-age=0, must-revalidate
-
-/cheatsheets/snowflake-dynamic-tables-interview
   X-Robots-Tag: noindex, follow
   Cache-Control: no-store, max-age=0, must-revalidate
 
@@ -236,15 +213,7 @@ https://:project.pages.dev/*
   X-Robots-Tag: noindex, follow
   Cache-Control: no-store, max-age=0, must-revalidate
 
-/cheatsheets/snowflake-snowpark-interview
-  X-Robots-Tag: noindex, follow
-  Cache-Control: no-store, max-age=0, must-revalidate
-
 /cheatsheets/snowflake-snowpark-interview/
-  X-Robots-Tag: noindex, follow
-  Cache-Control: no-store, max-age=0, must-revalidate
-
-/cheatsheets/snowflake-data-sharing-interview
   X-Robots-Tag: noindex, follow
   Cache-Control: no-store, max-age=0, must-revalidate
 
@@ -252,15 +221,7 @@ https://:project.pages.dev/*
   X-Robots-Tag: noindex, follow
   Cache-Control: no-store, max-age=0, must-revalidate
 
-/cheatsheets/snowflake-iceberg-tables-interview
-  X-Robots-Tag: noindex, follow
-  Cache-Control: no-store, max-age=0, must-revalidate
-
 /cheatsheets/snowflake-iceberg-tables-interview/
-  X-Robots-Tag: noindex, follow
-  Cache-Control: no-store, max-age=0, must-revalidate
-
-/cheatsheets/snowflake-cortex-ai-interview
   X-Robots-Tag: noindex, follow
   Cache-Control: no-store, max-age=0, must-revalidate
 
@@ -268,15 +229,7 @@ https://:project.pages.dev/*
   X-Robots-Tag: noindex, follow
   Cache-Control: no-store, max-age=0, must-revalidate
 
-/cheatsheets/snowflake-snowpipe-streaming-interview
-  X-Robots-Tag: noindex, follow
-  Cache-Control: no-store, max-age=0, must-revalidate
-
 /cheatsheets/snowflake-snowpipe-streaming-interview/
-  X-Robots-Tag: noindex, follow
-  Cache-Control: no-store, max-age=0, must-revalidate
-
-/cheatsheets/snowflake-governance-interview
   X-Robots-Tag: noindex, follow
   Cache-Control: no-store, max-age=0, must-revalidate
 
@@ -284,15 +237,7 @@ https://:project.pages.dev/*
   X-Robots-Tag: noindex, follow
   Cache-Control: no-store, max-age=0, must-revalidate
 
-/cheatsheets/snowflake-cost-optimization-interview
-  X-Robots-Tag: noindex, follow
-  Cache-Control: no-store, max-age=0, must-revalidate
-
 /cheatsheets/snowflake-cost-optimization-interview/
-  X-Robots-Tag: noindex, follow
-  Cache-Control: no-store, max-age=0, must-revalidate
-
-/cheatsheets/snowflake-performance-deep-dive-interview
   X-Robots-Tag: noindex, follow
   Cache-Control: no-store, max-age=0, must-revalidate
 
@@ -300,15 +245,7 @@ https://:project.pages.dev/*
   X-Robots-Tag: noindex, follow
   Cache-Control: no-store, max-age=0, must-revalidate
 
-/cheatsheets/snowflake-replication-failover-interview
-  X-Robots-Tag: noindex, follow
-  Cache-Control: no-store, max-age=0, must-revalidate
-
 /cheatsheets/snowflake-replication-failover-interview/
-  X-Robots-Tag: noindex, follow
-  Cache-Control: no-store, max-age=0, must-revalidate
-
-/cheatsheets/snowflake-semi-structured-interview
   X-Robots-Tag: noindex, follow
   Cache-Control: no-store, max-age=0, must-revalidate
 
@@ -316,15 +253,7 @@ https://:project.pages.dev/*
   X-Robots-Tag: noindex, follow
   Cache-Control: no-store, max-age=0, must-revalidate
 
-/cheatsheets/snowflake-stored-procedures-interview
-  X-Robots-Tag: noindex, follow
-  Cache-Control: no-store, max-age=0, must-revalidate
-
 /cheatsheets/snowflake-stored-procedures-interview/
-  X-Robots-Tag: noindex, follow
-  Cache-Control: no-store, max-age=0, must-revalidate
-
-/cheatsheets/snowflake-external-integrations-interview
   X-Robots-Tag: noindex, follow
   Cache-Control: no-store, max-age=0, must-revalidate
 
@@ -332,15 +261,7 @@ https://:project.pages.dev/*
   X-Robots-Tag: noindex, follow
   Cache-Control: no-store, max-age=0, must-revalidate
 
-/cheatsheets/pyspark
-  X-Robots-Tag: noindex, follow
-  Cache-Control: no-store, max-age=0, must-revalidate
-
 /cheatsheets/pyspark/
-  X-Robots-Tag: noindex, follow
-  Cache-Control: no-store, max-age=0, must-revalidate
-
-/cheatsheets/aws-for-data-engineers
   X-Robots-Tag: noindex, follow
   Cache-Control: no-store, max-age=0, must-revalidate
 
@@ -348,79 +269,7 @@ https://:project.pages.dev/*
   X-Robots-Tag: noindex, follow
   Cache-Control: no-store, max-age=0, must-revalidate
 
-/cheatsheets/azure-for-data-engineers
-  X-Robots-Tag: noindex, follow
-  Cache-Control: no-store, max-age=0, must-revalidate
-
 /cheatsheets/azure-for-data-engineers/
-  X-Robots-Tag: noindex, follow
-  Cache-Control: no-store, max-age=0, must-revalidate
-
-/cheatsheets/snowflake-sql
-  X-Robots-Tag: index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1
-  Cache-Control: public, max-age=3600, stale-while-revalidate=86400
-
-/cheatsheets/snowflake-sql/
-  X-Robots-Tag: index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1
-  Cache-Control: public, max-age=3600, stale-while-revalidate=86400
-
-/cheatsheets/sql-window-functions
-  X-Robots-Tag: index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1
-  Cache-Control: public, max-age=3600, stale-while-revalidate=86400
-
-/cheatsheets/sql-window-functions/
-  X-Robots-Tag: index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1
-  Cache-Control: public, max-age=3600, stale-while-revalidate=86400
-
-/cheatsheets/dbt-commands
-  X-Robots-Tag: index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1
-  Cache-Control: public, max-age=3600, stale-while-revalidate=86400
-
-/cheatsheets/dbt-commands/
-  X-Robots-Tag: index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1
-  Cache-Control: public, max-age=3600, stale-while-revalidate=86400
-
-/cheatsheets/airflow-essentials
-  X-Robots-Tag: index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1
-  Cache-Control: public, max-age=3600, stale-while-revalidate=86400
-
-/cheatsheets/airflow-essentials/
-  X-Robots-Tag: index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1
-  Cache-Control: public, max-age=3600, stale-while-revalidate=86400
-
-/cheatsheets/snowflake-best-practices
-  X-Robots-Tag: index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1
-  Cache-Control: public, max-age=3600, stale-while-revalidate=86400
-
-/cheatsheets/snowflake-best-practices/
-  X-Robots-Tag: index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1
-  Cache-Control: public, max-age=3600, stale-while-revalidate=86400
-
-/cheatsheets/databricks
-  X-Robots-Tag: index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1
-  Cache-Control: public, max-age=3600, stale-while-revalidate=86400
-
-/cheatsheets/databricks/
-  X-Robots-Tag: index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1
-  Cache-Control: public, max-age=3600, stale-while-revalidate=86400
-
-/cheatsheets/python-for-data-engineers
-  X-Robots-Tag: index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1
-  Cache-Control: public, max-age=3600, stale-while-revalidate=86400
-
-/cheatsheets/python-for-data-engineers/
-  X-Robots-Tag: index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1
-  Cache-Control: public, max-age=3600, stale-while-revalidate=86400
-
-/cheatsheets/data-modeling
-  X-Robots-Tag: index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1
-  Cache-Control: public, max-age=3600, stale-while-revalidate=86400
-
-/cheatsheets/data-modeling/
-  X-Robots-Tag: index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1
-  Cache-Control: public, max-age=3600, stale-while-revalidate=86400
-
-/tools/snowflake-credit-cost
   X-Robots-Tag: noindex, follow
   Cache-Control: no-store, max-age=0, must-revalidate
 
@@ -428,15 +277,7 @@ https://:project.pages.dev/*
   X-Robots-Tag: noindex, follow
   Cache-Control: no-store, max-age=0, must-revalidate
 
-/tools/snowflake-query-cost-estimator
-  X-Robots-Tag: noindex, follow
-  Cache-Control: no-store, max-age=0, must-revalidate
-
 /tools/snowflake-query-cost-estimator/
-  X-Robots-Tag: noindex, follow
-  Cache-Control: no-store, max-age=0, must-revalidate
-
-/tools/snowflake-warehouse-sizing
   X-Robots-Tag: noindex, follow
   Cache-Control: no-store, max-age=0, must-revalidate
 
@@ -444,15 +285,7 @@ https://:project.pages.dev/*
   X-Robots-Tag: noindex, follow
   Cache-Control: no-store, max-age=0, must-revalidate
 
-/tools/dbt-cloud-cost-calculator
-  X-Robots-Tag: noindex, follow
-  Cache-Control: no-store, max-age=0, must-revalidate
-
 /tools/dbt-cloud-cost-calculator/
-  X-Robots-Tag: noindex, follow
-  Cache-Control: no-store, max-age=0, must-revalidate
-
-/tools/sql-formatter
   X-Robots-Tag: noindex, follow
   Cache-Control: no-store, max-age=0, must-revalidate
 
@@ -460,15 +293,7 @@ https://:project.pages.dev/*
   X-Robots-Tag: noindex, follow
   Cache-Control: no-store, max-age=0, must-revalidate
 
-/tools/cron-expression-builder
-  X-Robots-Tag: noindex, follow
-  Cache-Control: no-store, max-age=0, must-revalidate
-
 /tools/cron-expression-builder/
-  X-Robots-Tag: noindex, follow
-  Cache-Control: no-store, max-age=0, must-revalidate
-
-/tools/json-to-sql-ddl
   X-Robots-Tag: noindex, follow
   Cache-Control: no-store, max-age=0, must-revalidate
 
@@ -476,15 +301,7 @@ https://:project.pages.dev/*
   X-Robots-Tag: noindex, follow
   Cache-Control: no-store, max-age=0, must-revalidate
 
-/tools/csv-to-sql
-  X-Robots-Tag: noindex, follow
-  Cache-Control: no-store, max-age=0, must-revalidate
-
 /tools/csv-to-sql/
-  X-Robots-Tag: noindex, follow
-  Cache-Control: no-store, max-age=0, must-revalidate
-
-/tools/dbt-schema-generator
   X-Robots-Tag: noindex, follow
   Cache-Control: no-store, max-age=0, must-revalidate
 
@@ -492,15 +309,7 @@ https://:project.pages.dev/*
   X-Robots-Tag: noindex, follow
   Cache-Control: no-store, max-age=0, must-revalidate
 
-/tools/unix-timestamp-converter
-  X-Robots-Tag: noindex, follow
-  Cache-Control: no-store, max-age=0, must-revalidate
-
 /tools/unix-timestamp-converter/
-  X-Robots-Tag: noindex, follow
-  Cache-Control: no-store, max-age=0, must-revalidate
-
-/tools/json-parquet-avro-converter
   X-Robots-Tag: noindex, follow
   Cache-Control: no-store, max-age=0, must-revalidate
 
@@ -508,61 +317,13 @@ https://:project.pages.dev/*
   X-Robots-Tag: noindex, follow
   Cache-Control: no-store, max-age=0, must-revalidate
 
-/tools/warehouse-cost-estimator
-  X-Robots-Tag: noindex, follow
-  Cache-Control: no-store, max-age=0, must-revalidate
-
 /tools/warehouse-cost-estimator/
-  X-Robots-Tag: noindex, follow
-  Cache-Control: no-store, max-age=0, must-revalidate
-
-/tools/snowflake-certification-practice
   X-Robots-Tag: noindex, follow
   Cache-Control: no-store, max-age=0, must-revalidate
 
 /tools/snowflake-certification-practice/
   X-Robots-Tag: noindex, follow
   Cache-Control: no-store, max-age=0, must-revalidate
-
-/tools/snowflake-cost-calculator
-  X-Robots-Tag: index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1
-  Cache-Control: public, max-age=3600, stale-while-revalidate=86400
-
-/tools/snowflake-cost-calculator/
-  X-Robots-Tag: index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1
-  Cache-Control: public, max-age=3600, stale-while-revalidate=86400
-
-/tools/cloud-data-warehouse-cost-comparison
-  X-Robots-Tag: index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1
-  Cache-Control: public, max-age=3600, stale-while-revalidate=86400
-
-/tools/cloud-data-warehouse-cost-comparison/
-  X-Robots-Tag: index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1
-  Cache-Control: public, max-age=3600, stale-while-revalidate=86400
-
-/tools/sql-playground
-  X-Robots-Tag: index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1
-  Cache-Control: public, max-age=3600, stale-while-revalidate=86400
-
-/tools/sql-playground/
-  X-Robots-Tag: index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1
-  Cache-Control: public, max-age=3600, stale-while-revalidate=86400
-
-/tools/databricks-cost-calculator
-  X-Robots-Tag: index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1
-  Cache-Control: public, max-age=3600, stale-while-revalidate=86400
-
-/tools/databricks-cost-calculator/
-  X-Robots-Tag: index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1
-  Cache-Control: public, max-age=3600, stale-while-revalidate=86400
-
-/tools/bigquery-cost-calculator
-  X-Robots-Tag: index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1
-  Cache-Control: public, max-age=3600, stale-while-revalidate=86400
-
-/tools/bigquery-cost-calculator/
-  X-Robots-Tag: index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1
-  Cache-Control: public, max-age=3600, stale-while-revalidate=86400
 
 /well-known/api-catalog
   Content-Type: application/linkset+json; profile="https://www.rfc-editor.org/info/rfc9727"
