@@ -1,0 +1,56 @@
+{
+  "summary": {
+    "health_score": 71,
+    "business_type": "Independent technical publisher (single author) with free tools and sponsorships",
+    "top_findings": [
+      "Trailing-slash 308 loop between sitemap/canonical URLs and served URLs",
+      "21 legacy 2025 articles are thin, generic and partly unsourced",
+      "Two reported factual errors to verify (DuckDB billing, Tasks retry)",
+      "Guest post author misattributed in schema; sponsored link lacks rel attributes",
+      "Article hero image is 2.79 MB"
+    ],
+    "quick_wins": [
+      "Make sitemap URLs return 200 directly",
+      "Serve hero at w=800",
+      "Merge and deploy geo-readiness-fixes",
+      "Correct declared schema image sizes",
+      "301 www to apex"
+    ]
+  },
+  "categories": [
+    {"name": "Technical SEO", "score": 78, "what_works": ["HTTPS and HSTS", "Real 404s", "Server-rendered content", "Valid robots.txt"], "findings": [
+      {"title": "Slash and non-slash canonical loop", "severity": "High", "description": "All 40 sampled sitemap URLs 308 to the slash form, whose canonical is the non-slash form.", "recommendation": "Choose one form and serve it with 200."},
+      {"title": "www host returns 200", "severity": "Medium", "description": "www.dataengineerhub.blog does not 301 to the apex.", "recommendation": "Add a 301 at Cloudflare."}
+    ]},
+    {"name": "Content Quality", "score": 66, "what_works": ["Strong first-hand 2026 articles", "TL;DR blocks"], "findings": [
+      {"title": "Legacy 2025 articles thin and unsourced", "severity": "High", "description": "21 articles, median 1,165 words, 16 not edited since 2025.", "recommendation": "Rewrite, merge or noindex."},
+      {"title": "Possible factual errors", "severity": "High", "description": "DuckDB billing example and Tasks retry claim reported wrong; verify against Snowflake docs.", "recommendation": "Verify then correct and source statistics."}
+    ]},
+    {"name": "On-Page SEO", "score": 74, "what_works": ["Titles and descriptions mostly in range", "One H1 per article", "100% image alt text"], "findings": [
+      {"title": "Auto-generated FAQ questions", "severity": "Medium", "description": "About 30 articles have headings turned into questions.", "recommendation": "Keep only real questions."}
+    ]},
+    {"name": "Schema / Structured Data", "score": 66, "what_works": ["All JSON-LD parses", "Valid breadcrumbs"], "findings": [
+      {"title": "Wrong image dimensions declared", "severity": "Medium", "description": "Articles declare 1200x630; real files differ; og-image.jpg is 1024x1024.", "recommendation": "Declare true sizes and ship a real 1200x630 OG image."},
+      {"title": "Fragmented entity graph", "severity": "Medium", "description": "Author @id mismatch and publisher without @id.", "recommendation": "Unify @id values."}
+    ]},
+    {"name": "Performance (CWV)", "score": 75, "what_works": ["TTFB 0.30 to 0.56 s", "Immutable asset caching", "Self-hosted fonts"], "findings": [
+      {"title": "Core Web Vitals not measured", "severity": "Info", "description": "PSI returned 429; no Lighthouse or CrUX data. Score is an estimate.", "recommendation": "Re-run with an API key."},
+      {"title": "2.79 MB article hero", "severity": "High", "description": "Same image at w=800 is 117 KB.", "recommendation": "Serve responsive sizes."}
+    ]},
+    {"name": "AI Search Readiness", "score": 74, "what_works": ["All search and training bots allowed", "llms.txt and discovery files", "SSR"], "findings": [
+      {"title": "No tables or question headings in most articles", "severity": "Medium", "description": "88 articles lack tables; 94 lack question-form headings.", "recommendation": "Edit in WordPress using plans/geo-worklist.json."}
+    ]},
+    {"name": "Images", "score": 55, "what_works": ["Content images 35-56 KB, lazy, sized"], "findings": [
+      {"title": "Malformed alt attributes", "severity": "Medium", "description": "Three in-body images have broken alt text; hero declared size mismatches crop.", "recommendation": "Fix markup at source."}
+    ]}
+  ],
+  "action_plan": {
+    "phases": [
+      {"name": "Phase 1: Critical Fixes", "timeframe": "Week 1", "items": ["Resolve slash canonical loop", "Resize hero", "Verify factual errors", "Fix guest post attribution and rel", "Deploy geo-readiness-fixes"]},
+      {"name": "Phase 2: High-Impact Improvements", "timeframe": "Weeks 2-3", "items": ["Fix schema entity graph and image sizes", "Rework /about", "Rewrite FAQ questions", "www to apex 301"]},
+      {"name": "Phase 3: Content & Authority", "timeframe": "Month 2", "items": ["Triage 21 legacy articles", "Add tables and question headings", "Off-site presence"]},
+      {"name": "Phase 4: Monitoring & Iteration", "timeframe": "Ongoing", "items": ["Run PSI with API key", "Connect Search Console and GA4", "Re-run auditGeoReadiness.js"]}
+    ]
+  },
+  "artifacts": {"findings_dir": "findings/", "screenshots_dir": "screenshots/"}
+}

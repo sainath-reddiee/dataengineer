@@ -1,0 +1,1290 @@
+{
+  "total": 119,
+  "counts": {
+    "no-table": 88,
+    "no-question-heading": 94,
+    "never-revised": 57,
+    "title-h1-drift": 10,
+    "weak-opener": 3
+  },
+  "articles": [
+    {
+      "slug": "20-ai-concepts-for-data-engineers",
+      "title": "20 AI Concepts Every Data Engineer Must Know",
+      "h1": "20 AI Concepts Every Data Engineer Actually Needs",
+      "published": "2026-08-04T04:30:00",
+      "modified": "2026-08-04T04:30:00",
+      "issues": [
+        "no-table",
+        "no-question-heading",
+        "never-revised"
+      ]
+    },
+    {
+      "slug": "7-steps-autonomous-agent",
+      "title": "7 Steps to Building Autonomous AI Agents",
+      "h1": "7 Steps to Building and Deploying Your First Autonomous Agent",
+      "published": "2026-08-02T04:00:00",
+      "modified": "2026-08-02T04:00:00",
+      "issues": [
+        "no-table",
+        "no-question-heading",
+        "never-revised"
+      ]
+    },
+    {
+      "slug": "advanced-snowflake-interview-questions-experienced",
+      "title": "Advanced Snowflake Interview Q&A: Senior 2026",
+      "h1": "Advanced Snowflake Interview Questions for Experienced",
+      "published": "2025-09-28T16:50:46",
+      "modified": "2025-10-08T13:34:21",
+      "issues": [
+        "no-table",
+        "no-question-heading"
+      ]
+    },
+    {
+      "slug": "agent-real-memory-ollama",
+      "title": "Agent Memory with Ollama: Local LLMs That Remember",
+      "h1": "What Happens When You Give Your Local Agent a Real Memory",
+      "published": "2026-07-28T13:58:13",
+      "modified": "2026-07-28T13:58:13",
+      "issues": [
+        "title-h1-drift",
+        "no-question-heading",
+        "never-revised"
+      ]
+    },
+    {
+      "slug": "agentic-ai-security-data-pipelines",
+      "title": "Agentic AI Security for Data Pipelines",
+      "h1": "Your Data Pipeline Agent Is a Confused Deputy Waiting to Happen",
+      "published": "2026-07-29T03:30:00",
+      "modified": "2026-07-29T03:30:00",
+      "issues": [
+        "title-h1-drift",
+        "no-table",
+        "no-question-heading",
+        "never-revised"
+      ]
+    },
+    {
+      "slug": "ai-agent-tool-design-patterns",
+      "title": "AI Agent Tool Design Patterns That Scale",
+      "h1": "AI Agent Tool Design: What Works and What Doesn’t",
+      "published": "2026-07-22T14:33:21",
+      "modified": "2026-07-23T14:54:18",
+      "issues": [
+        "no-table",
+        "no-question-heading"
+      ]
+    },
+    {
+      "slug": "ai-coding-agents-pipeline-metadata-security",
+      "title": "AI Coding Agents: Pipeline, Metadata & Security",
+      "h1": "How to Give AI Coding Agents Access to Your Pipeline Metadata Without Opening Security Holes",
+      "published": "2026-07-21T09:00:00",
+      "modified": "2026-07-23T14:54:39",
+      "issues": [
+        "no-table",
+        "no-question-heading"
+      ]
+    },
+    {
+      "slug": "ai-data-pipelines-cost-control",
+      "title": "AI Data Pipelines: Cost Control Strategies That Work",
+      "h1": "Building Data Pipelines That Feed AI Features Without Breaking the Bill",
+      "published": "2026-09-17T06:43:02",
+      "modified": "2026-09-18T16:33:57",
+      "issues": [
+        "no-table"
+      ]
+    },
+    {
+      "slug": "airflow-common-ai-provider-llm-tasks",
+      "title": "Airflow Common AI Provider: LLM Tasks in DAGs",
+      "h1": "Running LLM Tasks in Apache Airflow with the common.ai Provider",
+      "published": "2026-09-19T06:16:54",
+      "modified": "2026-09-19T06:16:57",
+      "issues": [
+        "no-question-heading",
+        "never-revised"
+      ]
+    },
+    {
+      "slug": "airflow-dbt-snowflake-orchestration-guide",
+      "title": "Airflow + dbt + Snowflake: Orchestration Guide",
+      "h1": "Orchestrating dbt with Airflow on Snowflake: Job vs Model-Level in 2026",
+      "published": "2026-07-04T14:12:11",
+      "modified": "2026-07-04T14:12:14",
+      "issues": [
+        "no-table",
+        "no-question-heading",
+        "never-revised"
+      ]
+    },
+    {
+      "slug": "airflow-etl-audit-logger-snowflake",
+      "title": "Airflow ETL Audit Logger: Snowflake Integration",
+      "h1": "Building a Bulletproof ETL Audit Logger: Capturing Airflow Execution Context in Snowflake",
+      "published": "2026-07-18T03:55:43",
+      "modified": "2026-07-18T03:56:12",
+      "issues": [
+        "no-table",
+        "no-question-heading",
+        "never-revised"
+      ]
+    },
+    {
+      "slug": "airflow-vs-prefect",
+      "title": "Airflow vs Prefect: 2026 Comparison Guide",
+      "h1": "Airflow vs Prefect: Comparison Guide",
+      "published": "2026-05-05T14:56:26",
+      "modified": "2026-10-20T08:53:56",
+      "issues": [
+        "no-question-heading"
+      ]
+    },
+    {
+      "slug": "automated-etl-airflow-python",
+      "title": "Automated ETL with Airflow & Python (Guide)",
+      "h1": "Automated ETL with Airflow and Python: A Practical Guide",
+      "published": "2025-09-28T03:19:27",
+      "modified": "2025-10-08T13:35:06",
+      "issues": [
+        "no-table",
+        "no-question-heading"
+      ]
+    },
+    {
+      "slug": "automation-in-data-engineering",
+      "title": "Automation in Data Engineering: What to Automate",
+      "h1": "Automation in Data Engineering: It’s Not AI You Should Worry About",
+      "published": "2026-04-16T08:16:08",
+      "modified": "2026-10-20T13:56:18",
+      "issues": [
+        "no-question-heading"
+      ]
+    },
+    {
+      "slug": "aws-data-pipeline-cost-optimization-strategies",
+      "title": "AWS Data Pipeline Cost Optimization (7 Strategies)",
+      "h1": "AWS Data Pipeline Cost Optimization Strategies",
+      "published": "2025-09-29T05:52:53",
+      "modified": "2025-10-08T13:33:01",
+      "issues": [
+        "no-table",
+        "no-question-heading"
+      ]
+    },
+    {
+      "slug": "best-mcp-servers-agentic-development",
+      "title": "Best MCP Servers for Agentic Development (2026)",
+      "h1": "Top MCP Servers for High-Performance Agentic Development 2026",
+      "published": "2026-07-26T10:30:00",
+      "modified": "2026-07-26T10:30:00",
+      "issues": [
+        "no-table",
+        "no-question-heading",
+        "never-revised"
+      ]
+    },
+    {
+      "slug": "build-data-lakehouse-on-azure",
+      "title": "How to Build a Data Lakehouse on Azure",
+      "h1": "How to Build a Data Lakehouse on Azure",
+      "published": "2025-09-27T03:41:17",
+      "modified": "2025-10-08T13:36:09",
+      "issues": [
+        "no-table",
+        "no-question-heading"
+      ]
+    },
+    {
+      "slug": "build-databricks-ai-agent-gpt5-guide",
+      "title": "Build a Databricks AI Agent with GPT-5",
+      "h1": "Build a Databricks AI Agent with GPT-5",
+      "published": "2025-10-17T05:39:27",
+      "modified": "2025-10-17T05:58:27",
+      "issues": [
+        "no-table",
+        "never-revised"
+      ]
+    },
+    {
+      "slug": "build-mcp-server-python-fastmcp",
+      "title": "Build MCP Server with Python FastMCP",
+      "h1": "Build a Simple MCP Server in Python with FastMCP (2026)",
+      "published": "2026-07-24T06:48:14",
+      "modified": "2026-07-24T06:48:14",
+      "issues": [
+        "no-table",
+        "no-question-heading",
+        "never-revised"
+      ]
+    },
+    {
+      "slug": "build-rag-snowflake-cortex-search-guide",
+      "title": "Build RAG in Snowflake: Cortex Search Guide 2026",
+      "h1": "Build RAG in Snowflake: Complete Cortex Search Guide",
+      "published": "2025-11-10T14:39:53",
+      "modified": "2026-10-20T13:36:27",
+      "issues": [
+        "no-table",
+        "no-question-heading"
+      ]
+    },
+    {
+      "slug": "build-snowflake-cortex-ai-agent-guide",
+      "title": "Build a Snowflake Cortex AI Agent (2026 Tutorial)",
+      "h1": "Cortex Agents 2026: Build AI Bots with Snowflake",
+      "published": "2025-10-08T11:05:30",
+      "modified": "2026-05-09T15:33:13",
+      "issues": [
+        "no-table"
+      ]
+    },
+    {
+      "slug": "claude-code-power-user-guide",
+      "title": "Claude Code Power User Guide: Stop Autocompleting",
+      "h1": "Claude Code Power User Guide: Stop Using It Like Autocomplete",
+      "published": "2026-04-25T02:58:45",
+      "modified": "2026-10-20T14:35:53",
+      "issues": [
+        "no-table",
+        "no-question-heading"
+      ]
+    },
+    {
+      "slug": "data-contracts-schema-brekage-guide",
+      "title": "Someone renamed a column.Your Pipeline Died.Here’s the fix",
+      "h1": "Someone renamed a column.Your Pipeline Died.Here’s the fix",
+      "published": "2026-07-01T04:56:43",
+      "modified": "2026-07-01T04:56:45",
+      "issues": [
+        "no-table",
+        "no-question-heading",
+        "never-revised"
+      ]
+    },
+    {
+      "slug": "data-pipelines-python",
+      "title": "Python Data Pipelines: APIs to S3 & Snowflake",
+      "h1": "Mastering Python Data Pipelines: Extract from APIs & Databases, Load to S3 & Snowflake",
+      "published": "2025-10-07T14:32:37",
+      "modified": "2025-10-08T13:25:02",
+      "issues": [
+        "no-table"
+      ]
+    },
+    {
+      "slug": "databricks-unity-catalog-iceberg-2026",
+      "title": "Databricks Unity Catalog + Iceberg: 2026 Guide",
+      "h1": "Databricks Unity Catalog + Apache Iceberg in 2026",
+      "published": "2026-07-20T14:08:58",
+      "modified": "2026-07-23T08:18:57",
+      "issues": [
+        "no-table",
+        "no-question-heading"
+      ]
+    },
+    {
+      "slug": "dbr-fusion-engine-migration-guide",
+      "title": "Databricks Fusion Engine Migration Guide",
+      "h1": "dbt Fusion: 30x Faster parsing(And why Migration matters)",
+      "published": "2026-06-22T19:37:55",
+      "modified": "2026-06-22T19:38:09",
+      "issues": [
+        "no-table",
+        "no-question-heading",
+        "never-revised"
+      ]
+    },
+    {
+      "slug": "dbt-projects-snowflake-structure",
+      "title": "How to Structure dbt Projects in Snowflake",
+      "h1": "Structuring dbt Projects in Snowflake: The Definitive Guide",
+      "published": "2025-09-25T11:26:39",
+      "modified": "2025-10-08T13:37:09",
+      "issues": [
+        "no-table",
+        "no-question-heading"
+      ]
+    },
+    {
+      "slug": "dbt-state-skip-unchanged-models",
+      "title": "dbt State: Skip Unchanged Models, Cut Runtime 60%",
+      "h1": "dbt State: Stop Rebuilding What Hasn’t Changed",
+      "published": "2026-09-20T07:01:32",
+      "modified": "2026-09-20T07:01:35",
+      "issues": [
+        "title-h1-drift",
+        "no-question-heading",
+        "never-revised"
+      ]
+    },
+    {
+      "slug": "dbt-state-skip-unchanged-nodes",
+      "title": "dbt State: Skip Unchanged Nodes in CI",
+      "h1": "dbt state: Skip Unchanged Nodes, Cut Warehouse Compute 30%",
+      "published": "2026-06-23T18:41:42",
+      "modified": "2026-06-23T18:41:45",
+      "issues": [
+        "no-table",
+        "no-question-heading",
+        "never-revised"
+      ]
+    },
+    {
+      "slug": "dbt-state-snowflake-configuration",
+      "title": "dbt State Configuration for Snowflake",
+      "h1": "How to setup DBT state in Your Snowflake project (step-by-step Config Guide)",
+      "published": "2026-07-04T03:11:14",
+      "modified": "2026-07-04T03:12:00",
+      "issues": [
+        "no-table",
+        "no-question-heading",
+        "never-revised"
+      ]
+    },
+    {
+      "slug": "dbt-tests-pass-bad-data",
+      "title": "Why dbt Tests Pass But Bad Data Still Ships",
+      "h1": "The Problem with dbt Tests Nobody Talks About — They Pass and You Still Ship Bad Data",
+      "published": "2026-04-17T16:11:12",
+      "modified": "2026-04-18T05:26:38",
+      "issues": [
+        "no-table"
+      ]
+    },
+    {
+      "slug": "dbt-unit-testing-snowflake-credit-cost",
+      "title": "dbt Unit Testing: Cut Snowflake Credit Costs",
+      "h1": "The Dark Side of dbt Unit Testing in Snowflake: Managing Credit Burn on Large Test Suites",
+      "published": "2026-07-15T14:06:07",
+      "modified": "2026-07-16T16:37:02",
+      "issues": [
+        "no-table",
+        "no-question-heading"
+      ]
+    },
+    {
+      "slug": "duckdb-vs-spark-when-to-switch",
+      "title": "DuckDB vs Spark: When to Switch Engines",
+      "h1": "Stop Spinning Up Spark clusters for 50GB Datasets",
+      "published": "2026-07-03T15:27:26",
+      "modified": "2026-07-03T15:29:54",
+      "issues": [
+        "title-h1-drift",
+        "no-table",
+        "no-question-heading",
+        "never-revised"
+      ]
+    },
+    {
+      "slug": "dynamic-airflow-dags-snowflake-metadata",
+      "title": "Dynamic Airflow DAGs from Snowflake Metadata",
+      "h1": "Dynamic Airflow DAGs via Snowflake Metadata: Eliminating Hardcoded Pipeline Tasks",
+      "published": "2026-07-15T04:37:12",
+      "modified": "2026-08-07T18:12:08",
+      "issues": [
+        "no-table",
+        "no-question-heading"
+      ]
+    },
+    {
+      "slug": "etl-vs-elt-vs-reverse-etl-framework",
+      "title": "ETL vs ELT vs Reverse ETL: When to Use Each",
+      "h1": "ETL vs. ELT vs. Reverse ETL: A Practitioner’s Framework for Choosing the Right Pattern for a Given Workload",
+      "published": "2026-08-26T15:05:55",
+      "modified": "2026-08-26T15:06:45",
+      "issues": [
+        "no-table",
+        "no-question-heading",
+        "never-revised"
+      ]
+    },
+    {
+      "slug": "food-data-quality-pipeline-guest-post",
+      "title": "Food Data Quality Pipeline: Guest Post Case Study",
+      "h1": "What 4.2 Million Food Records Taught Me About Reliable Data Quality Pipelines",
+      "published": "2026-07-26T14:19:48",
+      "modified": "2026-07-26T14:21:19",
+      "issues": [
+        "title-h1-drift",
+        "no-question-heading",
+        "never-revised"
+      ]
+    },
+    {
+      "slug": "from-etl-pipelines-to-reusable-data-products",
+      "title": "From ETL Pipelines to Reusable Data Products",
+      "h1": "From ETL Pipelines to Data Products: Designing Reusable Data Infrastructure for Enterprise AI",
+      "published": "2026-08-26T15:23:20",
+      "modified": "2026-08-26T15:24:32",
+      "issues": [
+        "no-table",
+        "no-question-heading",
+        "never-revised"
+      ]
+    },
+    {
+      "slug": "future-of-data-engineering-ai-driven-world",
+      "title": "Future of Data Engineering in an AI-Driven World",
+      "h1": "The Future of Data Engineering in an AI-Driven World",
+      "published": "2026-08-01T15:30:00",
+      "modified": "2026-08-02T05:37:52",
+      "issues": [
+        "no-table",
+        "no-question-heading"
+      ]
+    },
+    {
+      "slug": "governing-ai-agents-snowflake-coco-mcp-security",
+      "title": "Governing AI Agents: Snowflake CoCo + MCP Security",
+      "h1": "Governing AI Agents: Securing Snowflake CoCo and MCP Workflows in Production",
+      "published": "2026-07-16T14:22:52",
+      "modified": "2026-11-09T14:35:38",
+      "issues": [
+        "no-table",
+        "no-question-heading"
+      ]
+    },
+    {
+      "slug": "how-ai-is-reshaping-data-engineering",
+      "title": "How AI Is Reshaping Data Engineering (2026)",
+      "h1": "How AI Is Reshaping Data Engineering: A Practical Guide (2026)",
+      "published": "2026-07-28T10:00:00",
+      "modified": "2026-08-07T18:08:19",
+      "issues": [
+        "no-table",
+        "no-question-heading"
+      ]
+    },
+    {
+      "slug": "how-snowflake-stores-data-internally",
+      "title": "How Snowflake Stores Data Internally: Deep Dive",
+      "h1": "How Snowflake Stores Data Internally: Micro-Partitions, FDN & Pruning",
+      "published": "2026-07-31T15:30:00",
+      "modified": "2026-07-31T15:30:00",
+      "issues": [
+        "no-table",
+        "no-question-heading",
+        "never-revised"
+      ]
+    },
+    {
+      "slug": "incremental-data-processing-vs-full-refresh",
+      "title": "Beyond Full Refreshes: How I Redesigned a High-Volume Analytics Pipeline Around Incremental Processing",
+      "h1": "Beyond Full Refreshes: How I Redesigned a High-Volume Analytics Pipeline Around Incremental Processing",
+      "published": "2026-10-14T15:51:33",
+      "modified": "2026-10-14T15:51:52",
+      "issues": [
+        "no-table",
+        "weak-opener",
+        "never-revised"
+      ]
+    },
+    {
+      "slug": "introduction-to-loop-engineering",
+      "title": "Introduction to Loop Engineering for Data Teams",
+      "h1": "Introduction to Loop Engineering: Designing AI Agent Loops (2026)",
+      "published": "2026-07-25T14:49:57",
+      "modified": "2026-07-25T14:49:57",
+      "issues": [
+        "no-table",
+        "no-question-heading",
+        "never-revised"
+      ]
+    },
+    {
+      "slug": "justify-data-platform-investment",
+      "title": "Justify Data Platform Investment: ROI Framework",
+      "h1": "Data Engineering ROI: How to Justify Your Data Platform Investment to the Board",
+      "published": "2026-08-25T05:04:57",
+      "modified": "2026-08-25T05:34:44",
+      "issues": [
+        "no-table",
+        "no-question-heading",
+        "never-revised"
+      ]
+    },
+    {
+      "slug": "load-data-into-snowflake",
+      "title": "Load Data into Snowflake: Stages & File Formats",
+      "h1": "How to Load Data into Snowflake: Guide to Warehouse, Stages and File Format",
+      "published": "2025-09-29T06:49:16",
+      "modified": "2025-10-08T13:31:28",
+      "issues": [
+        "no-table",
+        "no-question-heading"
+      ]
+    },
+    {
+      "slug": "mastering-real-time-etl-with-google-cloud-dataflow",
+      "title": "Real-Time ETL with Google Cloud Dataflow (Tutorial)",
+      "h1": "Mastering Real-Time ETL with Google Cloud Dataflow: A Comprehensive Tutorial",
+      "published": "2025-10-07T17:34:57",
+      "modified": "2025-10-08T13:23:46",
+      "issues": [
+        "no-table",
+        "no-question-heading"
+      ]
+    },
+    {
+      "slug": "medallion-architecture-reconsidered",
+      "title": "Medallion Architecture Reconsidered: Is Bronze/Silver/Gold Dead?",
+      "h1": "The Medallion Architecture, Reconsidered: What It Solved and Where It Cracks",
+      "published": "2026-08-02T04:19:00",
+      "modified": "2026-08-02T04:19:00",
+      "issues": [
+        "title-h1-drift",
+        "no-table",
+        "no-question-heading",
+        "never-revised"
+      ]
+    },
+    {
+      "slug": "meeting-notes-rag-snowflake-ai-assistant",
+      "title": "Build a Meeting Notes AI Assistant in Snowflake",
+      "h1": "Build a Meeting Notes RAG in Snowflake: AI-Powered Meeting Intelligence System",
+      "published": "2026-01-01T02:54:03",
+      "modified": "2026-01-04T21:50:16",
+      "issues": [
+        "no-table"
+      ]
+    },
+    {
+      "slug": "model-context-protocol-explained-3-levels",
+      "title": "Model Context Protocol Explained at 3 Levels",
+      "h1": "Model Context Protocol Explained in 3 Levels of Difficulty",
+      "published": "2026-07-23T03:52:47",
+      "modified": "2026-07-23T14:54:04",
+      "issues": [
+        "no-table",
+        "no-question-heading",
+        "never-revised"
+      ]
+    },
+    {
+      "slug": "native-tables-to-dynamic-iceberg-v3-snowflake",
+      "title": "Native Tables to Dynamic Iceberg v3: Snowflake Migration",
+      "h1": "The 2026 Migration Trap: Moving from Native Tables to Dynamic Apache Iceberg v3 in Snowflake",
+      "published": "2026-07-17T17:19:21",
+      "modified": "2026-07-17T17:19:21",
+      "issues": [
+        "no-table",
+        "no-question-heading",
+        "never-revised"
+      ]
+    },
+    {
+      "slug": "ollama-local-llm-data-pipeline",
+      "title": "Ollama Local LLM Data Pipeline: Privacy-First AI",
+      "h1": "Running Ollama Inside a Data Pipeline: What Actually Breaks",
+      "published": "2026-07-25T06:53:50",
+      "modified": "2026-07-25T06:53:50",
+      "issues": [
+        "title-h1-drift",
+        "no-question-heading",
+        "never-revised"
+      ]
+    },
+    {
+      "slug": "open-semantic-interchange-snowflake-ai-problem-solved",
+      "title": "Open Semantic Interchange: Solving AI's $1T Problem",
+      "h1": "Open Semantic Interchange: Solving AI’s $1T Problem",
+      "published": "2025-10-09T16:36:31",
+      "modified": "2025-10-14T08:20:01",
+      "issues": [
+        "no-table",
+        "no-question-heading"
+      ]
+    },
+    {
+      "slug": "optimizing-dbt-models-modern-warehouses",
+      "title": "Optimizing dbt Models for Modern Warehouses",
+      "h1": "Optimizing dbt Models for Modern Warehouses: An Author & Reviewer’s Guide",
+      "published": "2026-08-06T03:30:00",
+      "modified": "2026-08-06T03:30:00",
+      "issues": [
+        "no-table",
+        "never-revised"
+      ]
+    },
+    {
+      "slug": "query-snowflake-in-duckdb-cut-costs",
+      "title": "Query Snowflake in DuckDB: Cut Dev Costs 80%",
+      "h1": "How to Query Snowflake in DuckDB (and Cut Your Bill While Doing It)",
+      "published": "2026-04-19T12:09:09",
+      "modified": "2026-11-09T14:52:14",
+      "issues": [
+        "no-table"
+      ]
+    },
+    {
+      "slug": "querying-data-in-snowflake",
+      "title": "Query Data in Snowflake: JSON & Time Travel Guide",
+      "h1": "Querying data in snowflake: A Guide to JSON and Time Travel",
+      "published": "2025-09-29T07:06:15",
+      "modified": "2025-10-08T13:30:56",
+      "issues": [
+        "no-table",
+        "no-question-heading"
+      ]
+    },
+    {
+      "slug": "rag-retrieval-augumented-generation-production-guide",
+      "title": "Why your RAG Pipeline Fails ( and how to fix it in Production )",
+      "h1": "Why your RAG Pipeline Fails ( and how to fix it in Production )",
+      "published": "2026-07-07T07:55:42",
+      "modified": "2026-07-07T07:55:44",
+      "issues": [
+        "no-table",
+        "no-question-heading",
+        "never-revised"
+      ]
+    },
+    {
+      "slug": "salesforce-agentforce-complete-guide-2025",
+      "title": "Salesforce Agentforce: Complete 2026 Guide",
+      "h1": "Salesforce Agentforce Explained: Features, Use Cases and How to Start",
+      "published": "2025-10-17T05:36:08",
+      "modified": "2026-11-15T07:07:17",
+      "issues": [
+        "no-table",
+        "no-question-heading"
+      ]
+    },
+    {
+      "slug": "salesforce-copilot-custom-action-guide",
+      "title": "Build Your First Salesforce Copilot Action (5 Steps)",
+      "h1": "Your First Salesforce Copilot Action : A 5-Step Guide",
+      "published": "2025-10-17T10:07:01",
+      "modified": "2025-10-17T10:21:28",
+      "issues": [
+        "no-table",
+        "no-question-heading",
+        "never-revised"
+      ]
+    },
+    {
+      "slug": "salesforce-data-cloud-zero-copy-snowflake",
+      "title": "Salesforce Data Cloud Zero-Copy to Snowflake",
+      "h1": "How Salesforce Data Cloud Zero Copy Actually Works With Snowflake",
+      "published": "2026-07-19T14:04:59",
+      "modified": "2026-07-19T14:04:59",
+      "issues": [
+        "no-table",
+        "no-question-heading",
+        "never-revised"
+      ]
+    },
+    {
+      "slug": "serverless-data-pipeline-aws",
+      "title": "Build a Serverless Data Pipeline on AWS (Guide)",
+      "h1": "Building a Serverless Data Pipeline on AWS: A Step-by-Step Guide",
+      "published": "2025-09-26T14:47:13",
+      "modified": "2025-10-08T13:36:35",
+      "issues": [
+        "no-table",
+        "no-question-heading"
+      ]
+    },
+    {
+      "slug": "snowflake-aiceberg-v3-migration-guide",
+      "title": "Snowflake Iceberg V3: When to Actually Migrate(vs Native Tables)",
+      "h1": "Snowflake Iceberg V3: When to Actually Migrate(vs Native Tables)",
+      "published": "2026-06-22T19:26:56",
+      "modified": "2026-06-22T19:39:07",
+      "issues": [
+        "no-table",
+        "no-question-heading",
+        "never-revised"
+      ]
+    },
+    {
+      "slug": "snowflake-coco-desktop",
+      "title": "Snowflake CoCo Desktop: What Data Teams Need to Know",
+      "h1": "Snowflake CoCo Desktop — What It Is, How It Works, and Whether It’s Worth It",
+      "published": "2026-06-07T03:10:32",
+      "modified": "2026-06-07T03:11:07",
+      "issues": [
+        "title-h1-drift",
+        "no-question-heading",
+        "never-revised"
+      ]
+    },
+    {
+      "slug": "snowflake-coco-mcp-guide",
+      "title": "Snowflake CoCo MCP Guide: Secure AI Compute",
+      "h1": "How to Use MCP in Snowflake CoCo Desktop",
+      "published": "2026-07-10T18:03:39",
+      "modified": "2026-07-10T18:04:23",
+      "issues": [
+        "no-table",
+        "no-question-heading",
+        "never-revised"
+      ]
+    },
+    {
+      "slug": "snowflake-cortex-ai-complete-guide-2026",
+      "title": "Snowflake Cortex AI: Complete 2026 Guide",
+      "h1": "Snowflake Cortex AI: Complete Guide for 2026",
+      "published": "2026-01-02T04:38:02",
+      "modified": "2026-01-02T04:39:26",
+      "issues": [
+        "no-table",
+        "never-revised"
+      ]
+    },
+    {
+      "slug": "snowflake-cortex-ai-financial-services",
+      "title": "Snowflake Cortex AI for Financial Services",
+      "h1": "Snowflake Cortex AI for Financial Services: What It Includes and Where It Fits",
+      "published": "2025-10-07T11:59:44",
+      "modified": "2026-11-15T07:28:08",
+      "issues": [
+        "no-table",
+        "no-question-heading"
+      ]
+    },
+    {
+      "slug": "snowflake-cortex-ai-hidden-token-costs",
+      "title": "Snowflake Cortex AI: Hidden Token Costs Exposed",
+      "h1": "Snowflake Cortex AI Hidden Token Costs: Where They Hide and How to Monitor Them",
+      "published": "2026-08-10T14:15:21",
+      "modified": "2026-11-15T08:04:48",
+      "issues": [
+        "no-question-heading"
+      ]
+    },
+    {
+      "slug": "snowflake-cortex-aisql-query-optimization-guide",
+      "title": "7 Ways to Optimize Snowflake Cortex AISQL Queries",
+      "h1": "7 Ways to Cut Snowflake Cortex AI Costs [2026]",
+      "published": "2025-11-08T06:14:02",
+      "modified": "2026-04-07T06:38:12",
+      "issues": [
+        "no-table",
+        "no-question-heading"
+      ]
+    },
+    {
+      "slug": "snowflake-cortex-code-cost-control-2026",
+      "title": "Snowflake Cortex Code Cost Control: Set Limits Right",
+      "h1": "Snowflake Cortex Code Cost Control: Setting Per-User Credit Limits",
+      "published": "2026-04-11T05:38:27",
+      "modified": "2026-11-09T05:47:01",
+      "issues": [
+        "no-question-heading"
+      ]
+    },
+    {
+      "slug": "snowflake-cortex-code-dbt-optimization-guide",
+      "title": "Cortex Code for dbt: Cut Build Time 48%",
+      "h1": "2026 Guide: Cut dbt Build Time 48% with Snowflake Cortex Code",
+      "published": "2026-03-08T03:29:33",
+      "modified": "2026-05-09T03:18:25",
+      "issues": [
+        "no-question-heading"
+      ]
+    },
+    {
+      "slug": "snowflake-cortex-code-guide-real-examples",
+      "title": "Snowflake Cortex Code: Hands-On Guide + Examples",
+      "h1": "How I Taught Myself Snowflake Cortex Code (And What I Found)",
+      "published": "2026-04-03T12:29:15",
+      "modified": "2026-04-11T05:43:49",
+      "issues": [
+        "no-table",
+        "no-question-heading",
+        "weak-opener"
+      ]
+    },
+    {
+      "slug": "snowflake-cortex-sense-context-runtime",
+      "title": "Snowflake Cortex Sense: The Context Runtime Agents Have Been Missing",
+      "h1": "Snowflake Cortex Sense: The Context Runtime Agents Have Been Missing",
+      "published": "2026-10-04T02:44:09",
+      "modified": "2026-11-15T06:56:07",
+      "issues": [
+        "no-question-heading"
+      ]
+    },
+    {
+      "slug": "snowflake-cortex-token-usage-monitoring",
+      "title": "Snowflake Cortex Token Monitoring: Track Every Credit",
+      "h1": "Snowflake Cortex AI Token Usage Monitoring: The Complete Guide",
+      "published": "2026-09-16T16:27:11",
+      "modified": "2026-09-18T16:36:07",
+      "issues": [
+        "no-question-heading"
+      ]
+    },
+    {
+      "slug": "snowflake-cost-optimization-techniques-2026",
+      "title": "12 Ways to Cut Your Snowflake Bill by 40%",
+      "h1": "Snowflake Cost Optimization: 12 Proven Techniques to Cut Your Bill by 40% in 2026",
+      "published": "2026-01-02T16:54:35",
+      "modified": "2026-01-02T16:59:39",
+      "issues": [
+        "no-table",
+        "no-question-heading",
+        "never-revised"
+      ]
+    },
+    {
+      "slug": "snowflake-data-science-agent-automate-ml-2025",
+      "title": "Snowflake Data Science Agent: Automate ML in 2026",
+      "h1": "Snowflake Data Science Agent: Automate ML Workflows 2025",
+      "published": "2025-10-06T12:04:00",
+      "modified": "2025-10-08T13:26:41",
+      "issues": [
+        "no-table"
+      ]
+    },
+    {
+      "slug": "snowflake-dbt-projects-airflow-orchestration",
+      "title": "Orchestrate Snowflake dbt Projects with Airflow",
+      "h1": "Orchestrating Snowflake dbt Projects with Airflow: An End-to-End Pipeline",
+      "published": "2026-04-07T17:06:23",
+      "modified": "2026-11-15T08:16:57",
+      "issues": [
+        "no-table",
+        "no-question-heading"
+      ]
+    },
+    {
+      "slug": "snowflake-dynamic-tables-complete-guide-2025",
+      "title": "Snowflake Dynamic Tables: Complete 2026 Guide",
+      "h1": "Snowflake Dynamic Tables: Complete 2025 Guide & Examples",
+      "published": "2025-10-14T04:36:23",
+      "modified": "2025-10-16T13:48:54",
+      "issues": [
+        "no-question-heading"
+      ]
+    },
+    {
+      "slug": "snowflake-expert-interview-questions",
+      "title": "Expert Snowflake Interview Questions & Answers 2026",
+      "h1": "Snowflake Interview Questions — Expert Level",
+      "published": "2026-04-09T11:50:38",
+      "modified": "2026-04-09T11:50:40",
+      "issues": [
+        "no-table",
+        "no-question-heading",
+        "never-revised"
+      ]
+    },
+    {
+      "slug": "snowflake-intelligence-guide-setup-optimization",
+      "title": "Snowflake Intelligence: Setup & Optimization Guide",
+      "h1": "Snowflake Intelligence Guide: Setup, Optimization & Real SQL Examples",
+      "published": "2025-11-07T02:48:37",
+      "modified": "2025-11-08T05:05:57",
+      "issues": [
+        "no-table",
+        "no-question-heading"
+      ]
+    },
+    {
+      "slug": "snowflake-interactive-tables-guide",
+      "title": "Snowflake Interactive Tables: Quick Data Exploration",
+      "h1": "Snowflake Interactive tables: How and when to use them ( From Production)",
+      "published": "2026-07-08T18:39:53",
+      "modified": "2026-07-16T16:39:09",
+      "issues": [
+        "no-table",
+        "no-question-heading"
+      ]
+    },
+    {
+      "slug": "snowflake-interview-questions-answers-2026",
+      "title": "Snowflake Interview Questions and Answers 2026",
+      "h1": "Snowflake Interview Questions and Answers 2026",
+      "published": "2026-01-02T09:29:58",
+      "modified": "2026-05-10T09:14:02",
+      "issues": [
+        "no-table",
+        "no-question-heading"
+      ]
+    },
+    {
+      "slug": "snowflake-managed-iceberg-tables-complete-guide-2026",
+      "title": "Snowflake Managed Iceberg Tables Guide (2026)",
+      "h1": "Snowflake Managed Iceberg Tables 2026",
+      "published": "2026-02-02T15:40:37",
+      "modified": "2026-02-02T15:44:19",
+      "issues": [
+        "never-revised"
+      ]
+    },
+    {
+      "slug": "snowflake-mcp-server-agentic-ai-guide-2025",
+      "title": "Snowflake MCP Server: Enterprise AI Agents Guide",
+      "h1": "Enterprise AI 2025: Snowflake MCP Links Agents to Data",
+      "published": "2025-10-06T08:48:09",
+      "modified": "2025-10-08T13:27:11",
+      "issues": [
+        "no-table"
+      ]
+    },
+    {
+      "slug": "snowflake-mcp-server-guide",
+      "title": "Build a Snowflake MCP Server: Complete Tutorial",
+      "h1": "Using MCP Servers with Snowflake: A Practitioner’s Guide",
+      "published": "2026-09-15T11:29:13",
+      "modified": "2026-09-15T11:29:16",
+      "issues": [
+        "no-table",
+        "no-question-heading",
+        "never-revised"
+      ]
+    },
+    {
+      "slug": "snowflake-merge-optimization-techniques",
+      "title": "5 Techniques to Optimize Snowflake MERGE Queries",
+      "h1": "5 Advanced Techniques for Optimizing Snowflake MERGE Queries",
+      "published": "2025-10-01T12:07:50",
+      "modified": "2025-10-08T13:28:32",
+      "issues": [
+        "no-question-heading"
+      ]
+    },
+    {
+      "slug": "snowflake-native-dbt-integration-2025-guide",
+      "title": "Snowflake Native dbt Integration: 2026 Setup Guide",
+      "h1": "Snowflake Native dbt Integration: Complete 2025 Guide",
+      "published": "2025-10-17T11:14:10",
+      "modified": "2025-10-17T11:21:18",
+      "issues": [
+        "never-revised"
+      ]
+    },
+    {
+      "slug": "snowflake-openflow-ai-data-ingestion-guide",
+      "title": "Snowflake OpenFlow: AI-Powered Data Ingestion",
+      "h1": "Snowflake OpenFlow: Revolutionizing Data Ingestion with AI-Powered Workflows",
+      "published": "2025-11-11T08:44:24",
+      "modified": "2025-11-11T08:58:07",
+      "issues": [
+        "no-table",
+        "never-revised"
+      ]
+    },
+    {
+      "slug": "snowflake-optima-automatic-query-optimization-guide",
+      "title": "Snowflake Optima: 15x Faster Queries, Zero Effort",
+      "h1": "Snowflake Optima: 15x Faster Queries at Zero Cost",
+      "published": "2025-10-12T15:24:54",
+      "modified": "2025-10-16T17:08:08",
+      "issues": [
+        "no-table"
+      ]
+    },
+    {
+      "slug": "snowflake-parse-document-complete-guide-2026",
+      "title": "Snowflake AI_PARSE_DOCUMENT: Full Tutorial",
+      "h1": "Snowflake AI_PARSE_DOCUMENT: Full Guide 2026",
+      "published": "2026-01-28T17:21:50",
+      "modified": "2026-05-08T06:44:31",
+      "issues": [
+        "weak-opener"
+      ]
+    },
+    {
+      "slug": "snowflake-query-execution-architecture",
+      "title": "Snowflake Query Execution Architecture Deep Dive",
+      "h1": "Snowflake Query Execution: what really happens under the hood",
+      "published": "2026-06-21T08:51:58",
+      "modified": "2026-06-21T08:52:27",
+      "issues": [
+        "no-question-heading",
+        "never-revised"
+      ]
+    },
+    {
+      "slug": "snowflake-query-optimization-2025",
+      "title": "Snowflake Query Optimization Tips for 2026",
+      "h1": "Snowflake Query Optimization in 2025",
+      "published": "2025-10-04T13:42:24",
+      "modified": "2025-10-08T13:27:45",
+      "issues": [
+        "no-table",
+        "no-question-heading"
+      ]
+    },
+    {
+      "slug": "snowflake-query-optimization-guide-2026",
+      "title": "Snowflake Query Optimization: What Works in 2026",
+      "h1": "Snowflake Query Optimization: What Actually Works in 2026",
+      "published": "2026-01-02T13:50:06",
+      "modified": "2026-01-02T13:54:04",
+      "issues": [
+        "no-table",
+        "no-question-heading",
+        "never-revised"
+      ]
+    },
+    {
+      "slug": "snowflake-sql-tutorial-2025-complete-guide",
+      "title": "Snowflake SQL Tutorial: MERGE ALL BY NAME & More",
+      "h1": "Snowflake SQL Tutorial: Master MERGE ALL BY NAME in 2025",
+      "published": "2025-10-13T05:08:15",
+      "modified": "2025-10-16T17:10:58",
+      "issues": [
+        "no-table"
+      ]
+    },
+    {
+      "slug": "snowflake-streams-tasks-pipeline-guide",
+      "title": "Snowflake Streams & Tasks: Build SCD2 Pipelines",
+      "h1": "Snowflake Streams & Tasks: SCD2 Pipeline Guide",
+      "published": "2026-01-14T13:09:06",
+      "modified": "2026-04-07T06:40:03",
+      "issues": [
+        "no-table",
+        "no-question-heading"
+      ]
+    },
+    {
+      "slug": "snowflake-time-travel-architecture",
+      "title": "Snowflake Time Travel: The Real Architecture",
+      "h1": "The Hidden Architecture Behind Snowflake Time Travel: Why It’s Not Really a Backup Feature",
+      "published": "2026-06-10T14:00:27",
+      "modified": "2026-06-10T14:00:44",
+      "issues": [
+        "no-question-heading",
+        "never-revised"
+      ]
+    },
+    {
+      "slug": "snowflake-time-travel-fail-safe",
+      "title": "Snowflake Time Travel & Fail-Safe: Complete Guide",
+      "h1": "Snowflake Time Travel vs. Fail-safe: What Gets Recovered and When",
+      "published": "2026-08-08T03:30:00",
+      "modified": "2026-08-08T03:30:00",
+      "issues": [
+        "no-question-heading",
+        "never-revised"
+      ]
+    },
+    {
+      "slug": "snowflake-unique-aggregations-hidden-functions",
+      "title": "Snowflake Hidden Aggregation Functions You Need",
+      "h1": "Snowflake’s Unique Aggregation Functions You Need to Know",
+      "published": "2025-10-16T17:45:14",
+      "modified": "2026-10-20T08:30:39",
+      "issues": [
+        "no-table",
+        "no-question-heading"
+      ]
+    },
+    {
+      "slug": "snowflake-warehouse-cache-explained",
+      "title": "Snowflake Warehouse Cache: Local & Result Cache",
+      "h1": "How the Warehouse Cache Actually Works in Snowflake",
+      "published": "2026-06-18T05:28:11",
+      "modified": "2026-06-18T05:28:13",
+      "issues": [
+        "no-question-heading",
+        "never-revised"
+      ]
+    },
+    {
+      "slug": "snowflake-zero-copy-clone-storage-cicd",
+      "title": "Snowflake Zero-Copy Clone: Storage & CI/CD Patterns",
+      "h1": "Debugging Zero-Copy Clone Storage Costs in CI/CD",
+      "published": "2026-07-14T16:56:21",
+      "modified": "2026-07-16T16:38:03",
+      "issues": [
+        "no-table",
+        "no-question-heading"
+      ]
+    },
+    {
+      "slug": "snowflake-zero-copy-cloning-problems",
+      "title": "Snowflake Zero-Copy Cloning: 5 Hidden Pitfalls",
+      "h1": "The Problem with Zero-Copy Cloning in Snowflake That Nobody Talks About",
+      "published": "2026-04-25T03:35:55",
+      "modified": "2026-11-15T09:22:43",
+      "issues": [
+        "no-table"
+      ]
+    },
+    {
+      "slug": "snowpro-specialty-gen-ai-practice-exams",
+      "title": "SnowPro Gen AI Practice Exams — Free Questions (2026)",
+      "h1": "Snowflake’s New GenAI Cert is Here—And I’ve Built Something to Help You Pass",
+      "published": "2025-12-26T16:35:31",
+      "modified": "2025-12-26T16:41:13",
+      "issues": [
+        "title-h1-drift",
+        "no-table",
+        "no-question-heading",
+        "never-revised"
+      ]
+    },
+    {
+      "slug": "sql-most-valuable-skill-ai-2026",
+      "title": "SQL Is the Most Valuable AI Skill in 2026",
+      "h1": "Everyone Said SQL Was Dead. Now It’s the Most Valuable Skill in AI",
+      "published": "2026-06-11T06:56:58",
+      "modified": "2026-11-15T09:35:58",
+      "issues": [
+        "no-question-heading"
+      ]
+    },
+    {
+      "slug": "sql-pattern-that-kills-data-engineer-interviews",
+      "title": "SQL Pattern That Kills Data Engineer Interviews",
+      "h1": "The Real Reason Data Engineers Fail Technical Interviews",
+      "published": "2026-09-28T13:03:22",
+      "modified": "2026-09-28T13:03:25",
+      "issues": [
+        "title-h1-drift",
+        "no-question-heading",
+        "never-revised"
+      ]
+    },
+    {
+      "slug": "sql-patterns-that-show-up-in-interviews",
+      "title": "SQL Patterns That Show Up in Data Engineering Interviews",
+      "h1": "SQL Patterns That Actually Show Up in Interviews (All 10, With Code)",
+      "published": "2026-08-07T03:03:00",
+      "modified": "2026-08-07T03:03:00",
+      "issues": [
+        "no-table",
+        "no-question-heading",
+        "never-revised"
+      ]
+    },
+    {
+      "slug": "sql-portfolio-projects-that-get-hired",
+      "title": "SQL Portfolio Projects That Get Data Engineers Hired",
+      "h1": "5 Real-World SQL Portfolio Projects That Actually Get You Hired",
+      "published": "2026-07-27T10:00:00",
+      "modified": "2026-07-27T10:00:00",
+      "issues": [
+        "no-table",
+        "no-question-heading",
+        "never-revised"
+      ]
+    },
+    {
+      "slug": "star-schema-vs-snowflake-schema-comparison",
+      "title": "Star Schema vs Snowflake Schema: Key Differences",
+      "h1": "Star Schema vs Snowflake Schema:Key Differences & Use Cases",
+      "published": "2025-10-07T16:30:33",
+      "modified": "2025-10-08T13:24:20",
+      "issues": [
+        "no-question-heading"
+      ]
+    },
+    {
+      "slug": "synapse-to-fabric-migration-adx-eventhouse-guide",
+      "title": "Synapse to Fabric Migration Guide (ADX & Eventhouse)",
+      "h1": "Synapse to Fabric: Your ADX Migration Guide 2025",
+      "published": "2025-10-08T12:26:45",
+      "modified": "2025-10-08T13:08:58",
+      "issues": [
+        "no-table",
+        "no-question-heading",
+        "never-revised"
+      ]
+    },
+    {
+      "slug": "the-problem-with-data-engineering-certifications-that-nobody-talks-about",
+      "title": "The Problem With Data Engineering Certifications",
+      "h1": "The Problem with Data Engineering Certifications That Nobody Talks About",
+      "published": "2026-05-01T10:39:44",
+      "modified": "2026-05-08T17:45:00",
+      "issues": [
+        "no-table",
+        "no-question-heading"
+      ]
+    },
+    {
+      "slug": "tools-vs-subagents-ai-agents",
+      "title": "Tools vs Subagents: When to Use Each in AI Agents",
+      "h1": "Tools vs Subagents: Building Effective AI Agents Without Over-Engineering",
+      "published": "2026-07-21T09:08:00",
+      "modified": "2026-07-23T14:54:33",
+      "issues": [
+        "no-table",
+        "no-question-heading"
+      ]
+    },
+    {
+      "slug": "what-actually-works-building-ai-agents",
+      "title": "What Actually Works Building AI Agents (2026)",
+      "h1": "Building AI Agents: What Actually Works in Production",
+      "published": "2026-08-05T03:30:00",
+      "modified": "2026-08-05T03:30:00",
+      "issues": [
+        "no-table",
+        "no-question-heading",
+        "never-revised"
+      ]
+    },
+    {
+      "slug": "why-ai-agents-forget-memory-architecture",
+      "title": "Why AI Agents Forget: Memory Architecture Fixes",
+      "h1": "Why AI Agents Forget: The Architecture behind Memory failures",
+      "published": "2026-06-30T16:35:10",
+      "modified": "2026-06-30T16:36:18",
+      "issues": [
+        "no-table",
+        "never-revised"
+      ]
+    },
+    {
+      "slug": "why-i-stopped-using-snowflake-tasks-orchestration",
+      "title": "Why I Stopped Using Snowflake Tasks for Orchestration",
+      "h1": "Why I Stopped Using Snowflake Tasks for Orchestration",
+      "published": "2026-04-12T14:07:00",
+      "modified": "2026-04-12T14:07:02",
+      "issues": [
+        "no-question-heading",
+        "never-revised"
+      ]
+    },
+    {
+      "slug": "why-larger-llms-give-wrong-answers-in-production",
+      "title": "Why Larger LLMs Give Wrong Answers in Production",
+      "h1": "Why Larger LLMs Give Incorrect Answers in Production",
+      "published": "2026-08-03T04:30:00",
+      "modified": "2026-08-03T04:30:00",
+      "issues": [
+        "no-table",
+        "no-question-heading",
+        "never-revised"
+      ]
+    },
+    {
+      "slug": "why-llms-give-different-answers",
+      "title": "Why LLMs Give Different Answers: Non-Determinism Explained",
+      "h1": "Why LLMs give different answers to the same question",
+      "published": "2026-07-09T11:39:23",
+      "modified": "2026-07-09T11:39:26",
+      "issues": [
+        "no-table",
+        "no-question-heading",
+        "never-revised"
+      ]
+    },
+    {
+      "slug": "why-senior-engineers-write-sql-differently",
+      "title": "Why Senior Engineers Write SQL Differently",
+      "h1": "Why Senior Data Engineers Write SQL Differently (With Examples)",
+      "published": "2026-07-30T03:30:00",
+      "modified": "2026-07-30T03:30:00",
+      "issues": [
+        "no-table",
+        "no-question-heading",
+        "never-revised"
+      ]
+    }
+  ]
+}
