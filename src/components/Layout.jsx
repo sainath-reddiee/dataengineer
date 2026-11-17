@@ -30,7 +30,10 @@ const Layout = () => {
         </a>
         <Header topOffset={0} />
         {!pinStaticHero && <div style={{ paddingTop: 64 }}></div>}
-        <main id="main-content" tabIndex={-1} className="flex-grow relative z-0 outline-none">
+        {/* A full screen of height, so the footer starts below the fold while a route or its data
+            is still loading. Otherwise the footer sits at the bottom edge of the viewport and is
+            pushed out of view when content arrives, which counts as layout shift (CLS). */}
+        <main id="main-content" tabIndex={-1} className="flex-grow relative z-0 outline-none" style={{ minHeight: '100svh' }}>
           <Outlet />
         </main>
         <Footer />

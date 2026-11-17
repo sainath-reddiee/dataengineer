@@ -114,20 +114,24 @@ const StackShelf = ({ categories = [], omitSlugs = [] }) => {
         })}
       </div>
 
-      <ul id="stack-shelf-panel" role="tabpanel" aria-labelledby={`shelf-tab-${active.slug}`} className="mt-2 border-b border-paper-500">
-        {titles.map((article, index) => (
-          <li key={article.slug} className="grid grid-cols-[2rem_minmax(0,1fr)] gap-3 border-t border-paper-500 py-3.5">
-            <span className="pt-1 font-mono text-[11px] text-ink-faint">0{index + 1}</span>
-            <Link
-              to={`/articles/${article.slug}`}
-              reloadDocument={ADSENSE_REVIEW_MODE}
-              className="block font-serif text-[17px] font-semibold leading-snug text-ink hover:text-rust-600"
-            >
-              {article.title}
-            </Link>
-          </li>
-        ))}
-      </ul>
+      {/* The tab panel is a div that holds the list. role="tabpanel" on the <ul> itself is invalid
+          ARIA and removes list semantics from its <li> items. */}
+      <div id="stack-shelf-panel" role="tabpanel" aria-labelledby={`shelf-tab-${active.slug}`}>
+        <ul className="mt-2 border-b border-paper-500">
+          {titles.map((article, index) => (
+            <li key={article.slug} className="grid grid-cols-[2rem_minmax(0,1fr)] gap-3 border-t border-paper-500 py-3.5">
+              <span className="pt-1 font-mono text-[11px] text-ink-faint">0{index + 1}</span>
+              <Link
+                to={`/articles/${article.slug}`}
+                reloadDocument={ADSENSE_REVIEW_MODE}
+                className="block font-serif text-[17px] font-semibold leading-snug text-ink hover:text-rust-600"
+              >
+                {article.title}
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </div>
     </section>
   );
 };

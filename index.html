@@ -282,7 +282,9 @@
       .hero-actions .secondary { font-size: 15px; color: #2B2925; text-decoration: underline; text-decoration-color: #CFC7B8; text-underline-offset: 4px; }
 
       /* Below the masthead: same section rhythm as HomePage.jsx. */
-      .deh-sections { padding: 40px 0 64px; }
+      /* A full screen tall so the static footer starts below the fold: when React replaces this
+         content the footer then moves outside the viewport and cannot register as layout shift. */
+      .deh-sections { padding: 40px 0 64px; min-height: 100svh; }
       .deh-section { border-top: 2px solid #1B1A17; padding-top: 12px; margin-bottom: 64px; }
       .deh-section h2 { margin: 0 0 20px; font-family: 'Source Serif 4', Georgia, serif; font-size: 24px; font-weight: 600; line-height: 1.25; color: #1B1A17; }
       .deh-section p { max-width: 46rem; margin: 0 0 12px; font-size: 17px; line-height: 1.65; color: #33302B; }

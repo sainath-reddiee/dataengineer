@@ -15,7 +15,7 @@ const VARIANTS = {
   footerLink: 'text-gray-400 hover:text-amber-400 transition-colors flex items-center group',
   // Small standalone CTA under the footer social icons.
   footerCta:
-    'inline-flex items-center gap-1.5 rounded-full border border-amber-500/30 bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 hover:text-amber-200 px-4 py-2 text-sm font-semibold transition-colors',
+    'inline-flex items-center gap-1.5 rounded-full border border-paper-600 hover:border-paper text-paper hover:text-rust-300 px-4 py-2 text-sm font-semibold transition-colors',
   // Standalone gradient CTA — for the Advertise page section.
   cta: 'inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-400 hover:to-orange-500 text-white px-5 py-2.5 text-sm font-semibold shadow-lg transition-colors',
 };
