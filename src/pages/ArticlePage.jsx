@@ -9,6 +9,7 @@ import MetaTags from '@/components/SEO/MetaTags';
 import Breadcrumbs from '@/components/SEO/Breadcrumbs';
 import { usePost } from '@/hooks/useWordPress';
 import { throttle } from '@/utils/performance';
+import { rewriteRepoDraftLinks } from '@/utils/repoDraftLinks';
 import { trackScrollDepth, trackArticleRead } from '@/utils/analytics';
 import { generateBreadcrumbs } from '@/lib/seoConfig';
 import LazyImage from '@/components/LazyImage';
@@ -387,7 +388,7 @@ const ArticlePage = () => {
       const faqBody = faqAnalysis.source === 'section' || faqAnalysis.source === 'rendered'
         ? faqAnalysis.html
         : bodySource;
-      const sanitized = processWordPressContent(faqBody, purify);
+      const sanitized = processWordPressContent(rewriteRepoDraftLinks(faqBody, slug), purify);
       if (cancelled) return;
       setLiveProcessed({
         processedHtml: enhanceArticleCodeBlocks(

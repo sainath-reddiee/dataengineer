@@ -96,7 +96,7 @@
 /tag/i /articles/ 301
 /tag/i/ /articles/ 301
 
-/contributors/* /contributors 301
+/contributors/:slug /contributors/ 301
 
 # Do not add `/*/ /:splat 301`. Pages already 308s directory URLs onto a
 # trailing slash; stripping it here loops /articles/slug ⇄ /articles/slug/.

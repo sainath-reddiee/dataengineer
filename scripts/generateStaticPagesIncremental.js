@@ -115,6 +115,7 @@ const CONSENT_MODE_V2_HTML = `    <!-- Google Consent Mode v2: region-gated. Res
 // SEO overrides for CTR-optimized titles and descriptions
 import seoOverrides, { getSEOOverride } from '../src/data/seoOverrides.js';
 import { THIN_TAG_SLUGS, MIN_INDEXABLE_TAG_COUNT, MIN_INDEXABLE_CATEGORY_COUNT, MIN_INDEXABLE_WORD_COUNT } from '../src/data/thinTags.js';
+import { rewriteRepoDraftLinks } from '../src/utils/repoDraftLinks.js';
 import { isAdSenseNoindexPath, isReviewAllowlistedCheatsheet, ADSENSE_REVIEW_ROBOTS, ADSENSE_INDEX_ROBOTS, ADSENSE_GATE_VERSION, ADSENSE_REVIEW_MODE, getCheatsheetIndexableWordCount, countIndexableWords } from '../src/data/adsenseQualityGate.js';
 import { pruneSitemaps } from './pruneSitemapNoindex.js';
 import { isListableArticle } from '../src/data/listingHoldouts.js';
@@ -3076,7 +3077,8 @@ function generateFullArticleHTML(pageData, bundleFiles, relatedArticles = []) {
   }
 
   // 🖼️ Process images to make them absolute
-  const absoluteContent = makeImagesAbsolute(fullContent);
+  // Published copies of some drafts link to the public GitHub repo; keep readers on the site.
+  const absoluteContent = rewriteRepoDraftLinks(makeImagesAbsolute(fullContent), slug);
 
   // 📑 Normalize heading hierarchy (h3→h2 etc. when h2 is missing)
   let processedContent = normalizeHeadings(absoluteContent);
@@ -3221,7 +3223,7 @@ function generateFullArticleHTML(pageData, bundleFiles, relatedArticles = []) {
     : {
         '@type': 'Person',
         name: resolvedAuthorName,
-        url: authorData?.website || (authorData?.slug ? `https://dataengineerhub.blog/contributors/${authorData.slug}` : 'https://dataengineerhub.blog/contributors'),
+        url: authorData?.website || 'https://dataengineerhub.blog/contributors/',
         ...(authorData?.bio ? { description: authorData.bio } : {}),
         ...(authorData?.role ? { jobTitle: authorData.role } : {}),
         ...([authorData?.linkedin, authorData?.github, authorData?.twitter].filter(Boolean).length
@@ -3359,7 +3361,7 @@ ${featuredImage ? '' : `    <meta property="og:image:width" content="1200" />
     <meta property="og:locale" content="en_US" />
     <meta property="article:published_time" content="${effectivePublished}" />
     <meta property="article:modified_time" content="${effectiveModified}" />
-    <meta property="article:author" content="${isSiteOwner ? 'https://dataengineerhub.blog/about' : escapeHtml(authorData?.website || 'https://dataengineerhub.blog/contributors')}" />
+    <meta property="article:author" content="${isSiteOwner ? 'https://dataengineerhub.blog/about' : escapeHtml(authorData?.website || 'https://dataengineerhub.blog/contributors/')}" />
 ${categoryNames.length > 0 ? `    <meta property="article:section" content="${escapeHtml(categoryNames[0])}" />\n` : ''}${tagNames.slice(0, 6).map(t => `    <meta property="article:tag" content="${escapeHtml(t)}" />`).join('\n')}
 
     <link rel="dns-prefetch" href="//app.dataengineerhub.blog">
@@ -4000,7 +4002,7 @@ ${CONSENT_MODE_V2_HTML}
         <article>
           <h1 class="article-title">${headline}</h1>
           <div style="display:flex;align-items:center;gap:0.6rem;margin:0.75rem 0 1rem;flex-wrap:wrap;color:#5E584F;font-size:0.9rem;">
-            <a href="${isSiteOwner ? '/about' : (authorData?.slug ? `/contributors/${escapeHtml(authorData.slug)}` : '/contributors')}" style="color:#B4441F;text-decoration:none;font-weight:500;">${escapeHtml(authorName || 'Sainath Reddy')}</a>
+            <a href="${isSiteOwner ? '/about' : '/contributors/'}" style="color:#B4441F;text-decoration:none;font-weight:500;">${escapeHtml(authorName || 'Sainath Reddy')}</a>
             <span>·</span>
             <time datetime="${effectivePublished}">${formattedDate}</time>
 ${wasUpdated ? `            <span>·</span>
