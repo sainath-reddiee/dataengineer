@@ -44,14 +44,15 @@
 export const ADSENSE_REVIEW_MODE = true;
 /** Bump when held-out paths change so incremental SSG rewrites stale robots meta. */
 // v6: editorial light redesign of every static template.
-export const ADSENSE_GATE_VERSION = 7;
+export const ADSENSE_GATE_VERSION = 8;
 
+// snowflake-best-practices was removed from the list below: at about 560 prose words it is under the
+// 800-word thin-content rule, so the generator noindexes it anyway. Add it back once it has 800+ words.
 export const ADSENSE_REVIEW_CHEATSHEETS = [
   'snowflake-sql',
   'sql-window-functions',
   'dbt-commands',
   'airflow-essentials',
-  'snowflake-best-practices',
   'databricks',
   'python-for-data-engineers',
   'data-modeling',

@@ -10,6 +10,7 @@ import Breadcrumbs from '@/components/SEO/Breadcrumbs';
 import { usePost } from '@/hooks/useWordPress';
 import { throttle } from '@/utils/performance';
 import { rewriteRepoDraftLinks } from '@/utils/repoDraftLinks';
+import { guestPromoHost } from '@/utils/guestDisclosure';
 import { trackScrollDepth, trackArticleRead } from '@/utils/analytics';
 import { generateBreadcrumbs } from '@/lib/seoConfig';
 import LazyImage from '@/components/LazyImage';
@@ -566,6 +567,9 @@ const ArticlePage = () => {
     (t) => String(typeof t === 'string' ? t : (t?.slug || t?.name || '')).toLowerCase() === 'sponsored'
   );
 
+  // A guest post that links to the guest's own site gets a disclosure line above the body.
+  const guestPromo = guestPromoHost({ isOwner, authorWebsite: safePost.authorData?.website, html: processedHtml });
+
   const breadcrumbs = generateBreadcrumbs(`${isAnnouncement ? '/announcements' : '/articles'}/${slug}`, safePost.title);
   const articleIsThin =
     countIndexableWords(safePost.content) < MIN_INDEXABLE_WORD_COUNT;
@@ -626,6 +630,14 @@ const ArticlePage = () => {
                   This guide was written in partnership with a sponsor. Our{' '}
                   <Link to="/editorial-standards" className="text-rust-600 underline decoration-rust-200 underline-offset-2">editorial standards</Link>{' '}
                   still apply, and links to the sponsor are marked as sponsored.
+                </p>
+              )}
+              {!isAnnouncement && !isSponsoredPost && guestPromo && (
+                <p className="border-l-2 border-rust-500 bg-paper-300 px-4 py-3 text-[15px] text-ink-body">
+                  <span className="font-mono text-[11px] uppercase tracking-[0.08em] text-rust-600">Guest post</span>{' '}
+                  Written by {authorDisplayName}. It links to {guestPromo}, the author&apos;s own site, and those links are marked as sponsored. Our{' '}
+                  <Link to="/editorial-standards" className="text-rust-600 underline decoration-rust-200 underline-offset-2">editorial standards</Link>{' '}
+                  still apply.
                 </p>
               )}
 

@@ -116,6 +116,7 @@ const CONSENT_MODE_V2_HTML = `    <!-- Google Consent Mode v2: region-gated. Res
 import seoOverrides, { getSEOOverride } from '../src/data/seoOverrides.js';
 import { THIN_TAG_SLUGS, MIN_INDEXABLE_TAG_COUNT, MIN_INDEXABLE_CATEGORY_COUNT, MIN_INDEXABLE_WORD_COUNT } from '../src/data/thinTags.js';
 import { rewriteRepoDraftLinks } from '../src/utils/repoDraftLinks.js';
+import { guestPromoHost } from '../src/utils/guestDisclosure.js';
 import { isAdSenseNoindexPath, isReviewAllowlistedCheatsheet, ADSENSE_REVIEW_ROBOTS, ADSENSE_INDEX_ROBOTS, ADSENSE_GATE_VERSION, ADSENSE_REVIEW_MODE, getCheatsheetIndexableWordCount, countIndexableWords } from '../src/data/adsenseQualityGate.js';
 import { pruneSitemaps } from './pruneSitemapNoindex.js';
 import { isListableArticle } from '../src/data/listingHoldouts.js';
@@ -2795,10 +2796,15 @@ function makeImagesAbsolute(content) {
     }
   );
 
-  // Pattern 9: Alt text fallback — derive from filename when alt is empty or missing
+  // Pattern 9: Alt text fallback when WordPress has no alt. A meaningful filename is used;
+  // a junk one ("image-2-x.png", "duckdb-x.png") falls back to the section the image sits in.
+  const altHeadings = [...processedContent.matchAll(/<h[1-6][^>]*>([\s\S]*?)<\/h[1-6]>/gi)].map((m) => ({
+    at: m.index,
+    text: decodeHtmlEntities(m[1].replace(/<[^>]+>/g, '')).replace(/\s+/g, ' ').trim(),
+  }));
   processedContent = processedContent.replace(
     /<img([^>]*?)(\s*\/?>)/gi,
-    (match, attrs, close) => {
+    (match, attrs, close, offset) => {
       const altMatch = attrs.match(/alt="([^"]*)"/i);
       if (altMatch && altMatch[1].trim()) return match; // already has meaningful alt
       // Extract filename from src for fallback alt text
@@ -2808,10 +2814,22 @@ function makeImagesAbsolute(content) {
         .replace(/\.[^.]+$/, '')       // remove extension
         .replace(/[-_]/g, ' ')         // dashes/underscores to spaces
         .replace(/\d{2,}/g, '')        // remove numeric sequences
+        .replace(/(\s+(x|\d))+$/gi, '') // drop trailing "x" / single-digit export suffixes
         .replace(/\s+/g, ' ')          // collapse whitespace
         .trim();
-      if (!filename) return match;
-      const altText = filename.charAt(0).toUpperCase() + filename.slice(1);
+      const junk = !filename
+        || /^(image|img|screenshot|screen shot|untitled|capture|picture|photo)\b/i.test(filename)
+        || (filename.split(' ').length < 2 && filename.length < 14);
+      let altText = filename ? filename.charAt(0).toUpperCase() + filename.slice(1) : '';
+      if (junk) {
+        let context = '';
+        for (const h of altHeadings) {
+          if (h.at < offset) context = h.text;
+          else break;
+        }
+        if (context) altText = ('Illustration for the section: ' + context).slice(0, 125);
+      }
+      if (!altText) return match;
       if (altMatch) {
         // Replace empty alt=""
         return `<img${attrs.replace(/alt="[^"]*"/i, `alt="${escapeHtml(altText)}"`)}${close}`;
@@ -2999,6 +3017,22 @@ function sortCategoriesByPriority(categories) {
 // ============================================================================
 
 const SITE_ORIGIN = 'https://dataengineerhub.blog';
+
+// WordPress returns the site-local time without an offset ("2026-09-15T11:29:13"). Schema and
+// og dates should say which zone they are in, so derive the offset from the matching GMT time.
+// Returns the input unchanged when the GMT time is missing; it never guesses.
+function withUtcOffset(local, gmt) {
+  const re = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})$/;
+  const a = re.exec(String(local || ''));
+  const b = re.exec(String(gmt || ''));
+  if (!a || !b) return local;
+  const ms = (m) => Date.UTC(+m[1], +m[2] - 1, +m[3], +m[4], +m[5], +m[6]);
+  const diffMin = Math.round((ms(a) - ms(b)) / 60000);
+  if (diffMin === 0) return `${local}Z`;
+  const sign = diffMin < 0 ? '-' : '+';
+  const abs = Math.abs(diffMin);
+  return `${local}${sign}${String(Math.floor(abs / 60)).padStart(2, '0')}:${String(abs % 60).padStart(2, '0')}`;
+}
 // Cloudflare Pages serves every directory page at its trailing-slash URL and
 // 308s the bare form there. Canonicals, og:url and schema URLs use the slash
 // form so they name the URL that actually returns 200.
@@ -3038,7 +3072,7 @@ function markPaidAndGuestLinks(html, { sponsored, guestHost }) {
 }
 
 function generateFullArticleHTML(pageData, bundleFiles, relatedArticles = []) {
-  const { id: postId, title: rawTitle, headline: rawHeadline, description: rawDescription, path: pagePath, fullContent = '', slug, date: postDate, modified: postModified, featuredImage, categoryNames = [], tagNames = [], authorName = 'Sainath Reddy', authorData = null } = pageData;
+  const { id: postId, title: rawTitle, headline: rawHeadline, description: rawDescription, path: pagePath, fullContent = '', slug, date: postDate, modified: postModified, dateGmt: postDateGmt, modifiedGmt: postModifiedGmt, featuredImage, categoryNames = [], tagNames = [], authorName = 'Sainath Reddy', authorData = null } = pageData;
   const { jsFile, cssFile, modulePreloadHtml = '' } = bundleFiles;
 
   // 🛡️ Sanitize user-supplied strings from WordPress
@@ -3075,6 +3109,9 @@ function generateFullArticleHTML(pageData, bundleFiles, relatedArticles = []) {
   if (effectiveModified < effectivePublished) {
     effectiveModified = effectivePublished;
   }
+  // Same moments, with an explicit offset, for schema and og meta.
+  const schemaPublished = postDate ? withUtcOffset(effectivePublished, postDateGmt) : effectivePublished;
+  const schemaModified = postModified ? withUtcOffset(effectiveModified, postModifiedGmt) : effectiveModified;
 
   // 🖼️ Process images to make them absolute
   // Published copies of some drafts link to the public GitHub repo; keep readers on the site.
@@ -3170,6 +3207,9 @@ function generateFullArticleHTML(pageData, bundleFiles, relatedArticles = []) {
     sponsored: tagNames.some((t) => String(t).toLowerCase() === 'sponsored'),
     guestHost,
   });
+  // A guest post that links to the guest's own site gets a disclosure line above the body.
+  const guestPromo = guestPromoHost({ isOwner: isSiteOwner, authorWebsite: authorData?.website, html: crawlerBody });
+  const isSponsoredTagged = tagNames.some((t) => String(t).toLowerCase() === 'sponsored');
 
   // Reading time uses the full tutorial (code included). Robots / schema use
   // prose-only words so a 2,000-token SQL dump cannot pad a thin page.
@@ -3297,42 +3337,6 @@ function generateFullArticleHTML(pageData, bundleFiles, relatedArticles = []) {
     </script>`;
   }
 
-  // ðŸ“‹ Extract HowTo steps from article content (regex-based, no DOM parser)
-  let howToSchemaBlock = '';
-  const howToSteps = [];
-  // Strategy 1: H2/H3 headings with "Step N:" pattern
-  const stepHeadingRegex = /<h[23][^>]*>\s*(Step\s+\d+\s*[:\-–—]\s*(.+?))\s*<\/h[23]>/gi;
-  let stepMatch;
-  while ((stepMatch = stepHeadingRegex.exec(processedContent)) !== null) {
-    const stepName = (stepMatch[2] || stepMatch[1]).replace(/<[^>]+>/g, '').trim();
-    if (stepName.length > 3) {
-      // Grab next <p> text as step description
-      const afterHeading = processedContent.substring(stepMatch.index + stepMatch[0].length, stepMatch.index + stepMatch[0].length + 1000);
-      const pMatch = afterHeading.match(/<p[^>]*>([\s\S]*?)<\/p>/i);
-      const stepText = pMatch ? pMatch[1].replace(/<[^>]+>/g, '').trim().substring(0, 500) : stepName;
-      howToSteps.push({ name: stepName, text: stepText.length > 20 ? stepText : stepName });
-    }
-  }
-  if (howToSteps.length >= 2) {
-    const howToData = {
-      "@context": "https://schema.org",
-      "@type": "HowTo",
-      "name": rawTitle,
-      "description": rawDescription,
-      "step": howToSteps.slice(0, 10).map((s, i) => ({
-        "@type": "HowToStep",
-        "position": i + 1,
-        "name": s.name,
-        "text": s.text
-      }))
-    };
-    howToSchemaBlock = `
-    <!-- ðŸ“‹ STRUCTURED DATA - HowTo Schema -->
-    <script type="application/ld+json">
-    ${escapeJsonForScript(howToData)}
-    </script>`;
-  }
-
   return `<!doctype html>
 <html lang="en">
   <head>
@@ -3359,8 +3363,8 @@ ${featuredImage ? '' : `    <meta property="og:image:width" content="1200" />
 `}
     <meta property="og:image:alt" content="${title}" />
     <meta property="og:locale" content="en_US" />
-    <meta property="article:published_time" content="${effectivePublished}" />
-    <meta property="article:modified_time" content="${effectiveModified}" />
+    <meta property="article:published_time" content="${schemaPublished}" />
+    <meta property="article:modified_time" content="${schemaModified}" />
     <meta property="article:author" content="${isSiteOwner ? 'https://dataengineerhub.blog/about' : escapeHtml(authorData?.website || 'https://dataengineerhub.blog/contributors/')}" />
 ${categoryNames.length > 0 ? `    <meta property="article:section" content="${escapeHtml(categoryNames[0])}" />\n` : ''}${tagNames.slice(0, 6).map(t => `    <meta property="article:tag" content="${escapeHtml(t)}" />`).join('\n')}
 
@@ -4011,6 +4015,7 @@ ${wasUpdated ? `            <span>·</span>
             <span>${readingTime} min read</span>
           </div>
           ${tagNames.some((t) => String(t).toLowerCase() === 'sponsored') ? `<p class="sponsored-disclosure" style="border-left:2px solid #B4441F;background:#F4F0E8;padding:0.75rem 1rem;margin:0 0 1.25rem;font-size:0.95rem;color:#33302B;"><strong style="font-family:'IBM Plex Mono',monospace;font-size:0.7rem;letter-spacing:0.08em;text-transform:uppercase;color:#9C3A1A;">Sponsored</strong> This guide was written in partnership with a sponsor. Our <a href="/editorial-standards" style="color:#9C3A1A;">editorial standards</a> still apply, and links to the sponsor are marked as sponsored.</p>` : ''}
+          ${guestPromo && !isSponsoredTagged ? `<p class="guest-disclosure" style="border-left:2px solid #B4441F;background:#F4F0E8;padding:0.75rem 1rem;margin:0 0 1.25rem;font-size:0.95rem;color:#33302B;"><strong style="font-family:'IBM Plex Mono',monospace;font-size:0.7rem;letter-spacing:0.08em;text-transform:uppercase;color:#9C3A1A;">Guest post</strong> Written by ${escapeHtml(authorName || '')}. It links to ${escapeHtml(guestPromo)}, the author's own site, and those links are marked as sponsored. Our <a href="/editorial-standards" style="color:#9C3A1A;">editorial standards</a> still apply.</p>` : ''}
           ${heroHtml}
           <p class="excerpt article-description">${description}</p>
 
@@ -4162,6 +4167,7 @@ ${wasUpdated ? `            <span>·</span>
     {
       "@context": "https://schema.org",
       "@type": "Article",
+      "@id": "${canonicalUrl(pagePath)}#article",
       "headline": "${headlineJsonLd}",
       "description": "${descriptionJsonLd}",
       "image": {
@@ -4182,8 +4188,8 @@ ${wasUpdated ? `            <span>·</span>
           "height": 250
         }
       },
-      "datePublished": "${effectivePublished}",
-      "dateModified": "${effectiveModified}",
+      "datePublished": "${schemaPublished}",
+      "dateModified": "${schemaModified}",
       "inLanguage": "en",
       "isPartOf": { "@type": "WebSite", "@id": "https://dataengineerhub.blog/#website", "name": "DataEngineer Hub", "url": "https://dataengineerhub.blog/" },
       "wordCount": ${articleWordCount},
@@ -4281,7 +4287,6 @@ ${wasUpdated ? `            <span>·</span>
     }
     </script>` : ''}
 ${videoSchemaBlock}
-${howToSchemaBlock}
 
     <!-- React app loads and takes over for interactive experience -->
 ${relativeModulePreload}
@@ -6506,8 +6511,8 @@ function generateCheatsheetPageHTML(sheet, allCheatsheets, bundleFiles) {
   html += '      "image": "https://dataengineerhub.blog/og-image.jpg",\n';
   html += '      "datePublished": "' + toIsoSchemaDate(sheet.lastUpdated) + '",\n';
   html += '      "dateModified": "' + toIsoSchemaDate(sheet.lastUpdated) + '",\n';
-  html += '      "author": { "@type": "Person", "name": "Sainath Reddy", "url": "https://dataengineerhub.blog/about" },\n';
-  html += '      "publisher": { "@type": "Organization", "name": "DataEngineer Hub", "url": "https://dataengineerhub.blog" }\n';
+  html += '      "author": { "@type": "Person", "@id": "https://dataengineerhub.blog/#author", "name": "Sainath Reddy", "url": "https://dataengineerhub.blog/about" },\n';
+  html += '      "publisher": { "@type": "Organization", "@id": "https://dataengineerhub.blog/#organization", "name": "DataEngineer Hub", "url": "https://dataengineerhub.blog", "logo": { "@type": "ImageObject", "url": "https://dataengineerhub.blog/logo.png", "width": 250, "height": 250 } }\n';
   html += '    }\n';
   html += '    </script>\n\n';
 
@@ -7021,12 +7026,14 @@ ${CONSENT_MODE_V2_HTML}
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
-      "@type": "WebPage",
+      "@type": "${pagePath === '/about' ? 'AboutPage' : 'WebPage'}",
       "name": "${titleJsonLd}",
       "description": "${descriptionJsonLd}",
       "url": "${canonicalUrl(pagePath)}",
+      ${pagePath === '/about' ? '"mainEntity": { "@id": "https://dataengineerhub.blog/#author" },' : '"inLanguage": "en",'}
       "publisher": {
         "@type": "Organization",
+        "@id": "https://dataengineerhub.blog/#organization",
         "name": "DataEngineer Hub",
         "url": "https://dataengineerhub.blog"
       }
@@ -7369,6 +7376,8 @@ async function buildIncremental(options = {}) {
         slug: post.slug,
         date: post.date,
         modified: post.modified,
+        dateGmt: post.date_gmt,
+        modifiedGmt: post.modified_gmt,
         featuredImage: post.jetpack_featured_media_url || null,
         categoryNames: sortCategoriesByPriority((post.categories || []).map(id => catIdToName[id]).filter(Boolean)),
         tagNames: (post.tags || []).map(id => tagIdToName[id]).filter(Boolean),

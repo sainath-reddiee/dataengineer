@@ -169,7 +169,7 @@ const seoOverrides = {
   },
 
   'snowflake-native-dbt-integration-2025-guide': {
-    title: 'Snowflake Native dbt Integration: 2026 Setup Guide',
+    title: 'Snowflake Native dbt Integration: 2025 Setup Guide',
     description: 'Run dbt Core directly inside Snowflake — no containers or VMs needed. Complete setup guide with configuration, examples, and migration tips.'
   },
 
@@ -184,8 +184,8 @@ const seoOverrides = {
   },
 
   'salesforce-agentforce-complete-guide-2025': {
-    title: 'Salesforce Agentforce: Complete 2026 Guide',
-    description: 'Master Salesforce Agentforce — autonomous AI agents for CRM. Setup guide, real examples, and how it transforms customer engagement in 2026.'
+    title: 'Salesforce Agentforce Explained: Features and Use Cases',
+    description: 'Master Salesforce Agentforce — autonomous AI agents for CRM. Setup guide, real examples, and how it transforms customer engagement.'
   },
 
   'snowflake-unique-aggregations-hidden-functions': {
@@ -199,7 +199,7 @@ const seoOverrides = {
   },
 
   'snowflake-dynamic-tables-complete-guide-2025': {
-    title: 'Snowflake Dynamic Tables: Complete 2026 Guide',
+    title: 'Snowflake Dynamic Tables: Complete 2025 Guide',
     description: 'Build automated data pipelines with Snowflake Dynamic Tables. Covers target lag, refresh modes, monitoring, and real-world ETL patterns.'
   },
 
@@ -254,7 +254,7 @@ const seoOverrides = {
   },
 
   'snowflake-data-science-agent-automate-ml-2025': {
-    title: 'Snowflake Data Science Agent: Automate ML in 2026',
+    title: 'Snowflake Data Science Agent: Automate ML in 2025',
     description: 'Automate the 60-80% of data science work that kills productivity. Build ML workflows with Snowflake\'s Data Science Agent and Cortex AI.'
   },
 
@@ -266,7 +266,7 @@ const seoOverrides = {
   // === September-October 2025 Articles ===
 
   'snowflake-query-optimization-2025': {
-    title: 'Snowflake Query Optimization Tips for 2026',
+    title: 'Snowflake Query Optimization Tips for 2025',
     description: 'Fix slow Snowflake queries with practical optimization tips. Clustering keys, warehouse sizing, query profiling, and cost reduction strategies.'
   },
 

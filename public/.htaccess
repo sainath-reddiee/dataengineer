@@ -240,7 +240,7 @@
     SetEnvIf Request_URI "^/(glossary|compare|tag|tags|cheatsheets/category|category|interview-prep|practice|roadmaps|advertise|contribute|contributors|news|newsletter|reading-list)(/|$)" ADSENSE_REVIEW_PATH
     # Sponsored announcements (press releases) are always noindex, not only during review.
     SetEnvIf Request_URI "^/announcements(/|$)" ADSENSE_REVIEW_PATH
-    SetEnvIf Request_URI "^/cheatsheets/(?!(snowflake-sql|sql-window-functions|dbt-commands|airflow-essentials|snowflake-best-practices|databricks|python-for-data-engineers|data-modeling)(/|$))[^/]+" ADSENSE_REVIEW_PATH
+    SetEnvIf Request_URI "^/cheatsheets/(?!(snowflake-sql|sql-window-functions|dbt-commands|airflow-essentials|databricks|python-for-data-engineers|data-modeling)(/|$))[^/]+" ADSENSE_REVIEW_PATH
     SetEnvIf Request_URI "^/tools/(?!(snowflake-cost-calculator|cloud-data-warehouse-cost-comparison|sql-playground|databricks-cost-calculator|bigquery-cost-calculator)(/|$))[^/]+" ADSENSE_REVIEW_PATH
 </IfModule>
 <IfModule mod_headers.c>
