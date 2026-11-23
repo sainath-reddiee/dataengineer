@@ -118,11 +118,20 @@ async function saveGuestAuthor(fields) {
       email: fields.email,
     }),
   });
-  if (!res.ok) {
-    const txt = await res.text().catch(() => res.statusText);
-    throw new Error(`Failed to save guest author: ${txt}`);
-  }
+  if (!res.ok) throw new Error(await writeErrorMessage(res, 'Failed to save guest author'));
   return res.json();
+}
+
+/** Turn a failed write into a message that says what to fix. */
+async function writeErrorMessage(res, fallback) {
+  if (res.status === 401) {
+    return 'WordPress did not accept the Application Password (401). Re-enter your WordPress login name (not email) and a fresh Application Password in the banner. If it keeps failing, the server is stripping the Authorization header.';
+  }
+  if (res.status === 403) {
+    return 'That WordPress user is not allowed to manage contributors (403). Use an Administrator account.';
+  }
+  const body = await res.json().catch(() => ({}));
+  return body.message || `${fallback} (${res.status})`;
 }
 
 /** Delete guest author */
@@ -131,9 +140,7 @@ async function deleteGuestAuthorApi(id) {
   // Deleting requires a signed-in WordPress user; the CORS preflight for the
   // Authorization header is answered by functions.php.
   const res = await fetch(url, { method: 'POST', headers: { ...authHeader() } });
-  if (!res.ok) {
-    throw new Error(`Failed to delete guest author`);
-  }
+  if (!res.ok) throw new Error(await writeErrorMessage(res, 'Failed to delete guest author'));
   return res.json();
 }
 
@@ -376,6 +383,10 @@ export default function ContributorManagerPage() {
       toast({ title: 'Name required', description: 'Please enter a name for the guest contributor.', variant: 'destructive' });
       return;
     }
+    if (!hasAppPwd) {
+      toast({ title: 'App Password required', description: 'Enter a WordPress Application Password in the banner at the top of this page before adding a contributor.', variant: 'destructive' });
+      return;
+    }
     setAddingGuest(true);
     try {
       const created = await saveGuestAuthor({
@@ -467,8 +478,7 @@ export default function ContributorManagerPage() {
   // ── Save bio fields
   const handleSave = async () => {
     if (!selectedUser || !editFields) return;
-    const isGuest = selectedUser.is_guest || (typeof selectedUser.id === 'string' && selectedUser.id.startsWith('guest_'));
-    if (!hasAppPwd && !isGuest) {
+    if (!hasAppPwd) {
       toast({ title: 'App Password required', description: 'Enter a WordPress Application Password at the top of this page to enable saving.', variant: 'destructive' });
       return;
     }

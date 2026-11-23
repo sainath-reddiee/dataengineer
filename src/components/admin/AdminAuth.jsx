@@ -26,6 +26,7 @@ async function makeVerifier(timestamp) {
 
 const AUTH_VERIFIER_KEY = 'seo_admin_auth_v';
 const AUTH_TIMESTAMP_KEY = 'seo_admin_auth_ts';
+const LOGOUT_EVENT = 'seo-admin-logout';
 // Lockout in localStorage (persists across tab close); still client-side, so
 // not a hard guarantee, but raises the bar over sessionStorage which is
 // wiped by simply opening a new tab/incognito window.
@@ -112,10 +113,20 @@ export function useAdminAuth() {
         return { success: false, attemptsLeft: MAX_ATTEMPTS - attempts };
     };
 
+    // AdminAuth (the gate) and AdminLayout (the Logout button) each call this
+    // hook, so each has its own state. Broadcast logout so the gate re-locks.
+    useEffect(() => {
+        const onLogout = () => setIsAuthenticated(false);
+        window.addEventListener(LOGOUT_EVENT, onLogout);
+        return () => window.removeEventListener(LOGOUT_EVENT, onLogout);
+    }, []);
+
     const logout = () => {
         sessionStorage.removeItem(AUTH_VERIFIER_KEY);
         sessionStorage.removeItem(AUTH_TIMESTAMP_KEY);
+        try { sessionStorage.removeItem('deh-wp-app-auth'); } catch { /* ignore */ }
         setIsAuthenticated(false);
+        window.dispatchEvent(new Event(LOGOUT_EVENT));
     };
 
     return { isAuthenticated, isLoading, login, logout };
