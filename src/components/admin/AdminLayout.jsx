@@ -16,6 +16,7 @@ import {
     Menu, X, Mail
 } from 'lucide-react';
 import { AdminAuth, useAdminAuth } from './AdminAuth';
+import { Toaster } from '@/components/ui/toaster';
 import aiService from '@/services/aiService';
 import { groqService } from '@/services/groqService';
 import { geminiService } from '@/services/geminiService';
@@ -651,6 +652,9 @@ export function AdminLayout() {
                     </main>
                 </div>
             </div>
+            {/* /admin is outside the public Layout, which is where the Toaster lives; without
+                this every admin toast (save, add, delete, errors) is silently dropped. */}
+            <Toaster />
         </AdminAuth>
     );
 }
