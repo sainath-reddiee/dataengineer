@@ -3,6 +3,9 @@ name: Build and Deploy to Hostinger (Incremental)
 on:
   push:
     branches: [main]
+    # Only these paths start a deploy on push. An empty commit (or one that
+    # only touches docs/plans) does nothing; use Run workflow to rebuild, e.g.
+    # after changing a VITE_* repository secret, which is compiled in at build.
     paths:
       - 'src/**'
       - 'public/**'
