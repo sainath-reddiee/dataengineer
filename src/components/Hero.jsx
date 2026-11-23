@@ -28,14 +28,14 @@ const Hero = () => {
           </Link>
           .
         </p>
-        <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
+        <div className="flex flex-wrap items-center gap-x-8 gap-y-3">
           <Link
             to="/articles"
             className="inline-flex min-h-11 items-center rounded bg-ink px-5 text-[15px] font-medium text-paper transition-colors hover:bg-rust-600"
           >
             Browse all articles
           </Link>
-          <Link to="/tools/sql-playground" className="text-[15px] text-ink-soft underline decoration-paper-600 underline-offset-4 hover:text-rust-600">
+          <Link to="/tools/sql-playground" className="inline-flex min-h-11 items-center text-[15px] text-ink-soft underline decoration-paper-600 underline-offset-4 hover:text-rust-600">
             Open the SQL playground
           </Link>
           <p className="font-mono text-[12px] text-ink-faint">

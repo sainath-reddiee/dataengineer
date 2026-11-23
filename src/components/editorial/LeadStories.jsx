@@ -18,7 +18,7 @@ const LeadStories = ({ posts, loading, error }) => {
   const also = rest.slice(0, 3);
 
   return (
-    <section aria-labelledby="lead-story" className="grid gap-8 border-b border-paper-500 pb-10 md:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)] md:gap-10">
+    <section aria-labelledby="lead-story" className="grid gap-8 border-b border-paper-500 pb-10 md:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)] md:gap-12">
       <article>
         <p className="kicker mb-3">Latest · {storyKicker(lead)}</p>
         <h2 id="lead-story" className="mb-4 font-serif text-[28px] font-semibold leading-[1.15] text-ink sm:text-[36px]">
@@ -37,10 +37,10 @@ const LeadStories = ({ posts, loading, error }) => {
 
       {also.length > 0 && (
         <aside aria-label="Also new" className="md:border-l md:border-paper-500 md:pl-8">
-          <p className="kicker mb-4 text-ink-faint">Also new</p>
-          <ul className="space-y-5">
+          <p className="kicker mb-3 text-ink-faint">Also new</p>
+          <ul className="divide-y divide-paper-500 border-y border-paper-500">
             {also.map((post) => (
-              <li key={post.id || post.slug}>
+              <li key={post.id || post.slug} className="py-4">
                 <Link
                   to={`/articles/${post.slug}`}
                   reloadDocument={ADSENSE_REVIEW_MODE}

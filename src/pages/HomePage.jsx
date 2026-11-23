@@ -21,13 +21,13 @@ const SectionSkeleton = ({ height = 'h-32' }) => (
 );
 
 const SectionHeader = ({ title, note, actionText, actionLink }) => (
-  <div className="mb-6 flex items-end justify-between gap-4 border-t-2 border-ink pt-3">
+  <div className="mb-8 flex items-end justify-between gap-4 border-t-2 border-ink pt-4">
     <div>
       <h2 className="font-serif text-2xl font-semibold text-ink">{title}</h2>
       {note && <p className="mt-1 text-sm text-ink-faint">{note}</p>}
     </div>
     {actionText && actionLink && (
-      <Link to={actionLink} className="whitespace-nowrap pb-1 text-sm text-rust-600 hover:text-rust-700">
+      <Link to={actionLink} className="inline-flex min-h-11 items-center whitespace-nowrap rounded px-1 text-sm font-medium text-rust-600 hover:text-rust-700 hover:underline">
         {actionText} →
       </Link>
     )}
@@ -55,7 +55,7 @@ const HomePage = () => {
       <div className="min-h-screen overflow-x-clip bg-paper text-ink">
         {!keepStaticHero && <Hero />}
 
-        <div className="mx-auto max-w-6xl space-y-16 px-4 py-10 sm:px-6">
+        <div className="mx-auto max-w-6xl space-y-14 px-4 py-12 sm:space-y-20 sm:px-6 sm:py-16">
           <ContinueReading />
           <LeadStories posts={posts} loading={loading} error={error} />
           <StackShelf

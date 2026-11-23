@@ -16,7 +16,7 @@ const ThemeToggle = ({ className = '' }) => {
   return (
     <button
       type="button"
-      className={`inline-flex h-10 w-10 items-center justify-center text-ink-muted transition-colors hover:text-ink ${className}`}
+      className={`inline-flex h-11 w-11 items-center justify-center rounded text-ink-muted transition-colors hover:bg-paper-300/60 hover:text-ink ${className}`}
       aria-label={dark ? 'Switch to light mode' : 'Switch to dark mode'}
       aria-pressed={dark}
       title={dark ? 'Light mode' : 'Dark mode'}

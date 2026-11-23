@@ -73,7 +73,7 @@ const StackShelf = ({ categories = [], omitSlugs = [] }) => {
 
   return (
     <section aria-labelledby="stack-shelf-heading">
-      <div className="mb-4 flex items-end justify-between gap-4 border-t-2 border-ink pt-3">
+      <div className="mb-6 flex items-end justify-between gap-4 border-t-2 border-ink pt-4">
         <div>
           <h2 id="stack-shelf-heading" className="font-serif text-2xl font-semibold text-ink">The shelves</h2>
           <p className="mt-1 text-sm text-ink-faint">
@@ -82,7 +82,7 @@ const StackShelf = ({ categories = [], omitSlugs = [] }) => {
         </div>
         <Link
           to={`/category/${active.slug}`}
-          className="whitespace-nowrap pb-1 text-sm text-rust-600 hover:text-rust-700"
+          className="inline-flex min-h-11 items-center whitespace-nowrap rounded px-1 text-sm font-medium text-rust-600 hover:text-rust-700 hover:underline"
         >
           All {active.label} →
         </Link>
@@ -91,7 +91,7 @@ const StackShelf = ({ categories = [], omitSlugs = [] }) => {
       <div
         role="tablist"
         aria-label="Article stacks"
-        className="-mx-4 flex gap-x-4 overflow-x-auto px-4 [scrollbar-width:none] sm:mx-0 sm:flex-wrap sm:gap-x-5 sm:overflow-visible sm:px-0 [&::-webkit-scrollbar]:hidden"
+        className="-mx-4 flex gap-x-1 overflow-x-auto px-4 [scrollbar-width:none] sm:mx-0 sm:flex-wrap sm:gap-x-2 sm:overflow-visible sm:px-0 [&::-webkit-scrollbar]:hidden"
       >
         {SHELVES.map((stack) => {
           const on = stack.slug === active.slug;
@@ -104,7 +104,7 @@ const StackShelf = ({ categories = [], omitSlugs = [] }) => {
               aria-selected={on}
               aria-controls="stack-shelf-panel"
               onClick={() => setPicked(stack.slug)}
-              className={`shrink-0 border-b-2 px-0.5 font-mono text-[12px] uppercase tracking-[0.06em] ${
+              className={`min-h-11 shrink-0 border-b-2 px-3 font-mono text-[12px] uppercase tracking-[0.06em] transition-colors ${
                 on ? 'border-rust-500 text-ink' : 'border-transparent text-ink-faint hover:text-ink'
               }`}
             >
@@ -117,10 +117,10 @@ const StackShelf = ({ categories = [], omitSlugs = [] }) => {
       {/* The tab panel is a div that holds the list. role="tabpanel" on the <ul> itself is invalid
           ARIA and removes list semantics from its <li> items. */}
       <div id="stack-shelf-panel" role="tabpanel" aria-labelledby={`shelf-tab-${active.slug}`}>
-        <ul className="mt-2 border-b border-paper-500">
+        <ul className="mt-3 border-b border-paper-500">
           {titles.map((article, index) => (
-            <li key={article.slug} className="grid grid-cols-[2rem_minmax(0,1fr)] gap-3 border-t border-paper-500 py-3.5">
-              <span className="pt-1 font-mono text-[11px] text-ink-faint">0{index + 1}</span>
+            <li key={article.slug} className="grid grid-cols-[2rem_minmax(0,1fr)] gap-4 border-t border-paper-500 py-5">
+              <span className="pt-1 font-mono text-[12px] text-ink-faint">0{index + 1}</span>
               <Link
                 to={`/articles/${article.slug}`}
                 reloadDocument={ADSENSE_REVIEW_MODE}

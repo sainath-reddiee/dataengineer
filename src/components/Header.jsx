@@ -60,13 +60,16 @@ const LEARN_LINKS = [
 ];
 
 
-// Editorial nav: plain text links; the current page gets a rust underline.
+// Editorial nav: plain text links with comfortable padding; the current page gets a rust underline.
 const pillClass = (active) =>
-  `relative inline-flex items-center gap-1 min-h-10 px-2.5 text-[15px] transition-colors ${
+  `relative inline-flex items-center gap-1.5 min-h-11 rounded px-3 text-[15px] transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-0 focus-visible:outline-rust-500 ${
     active
-      ? 'text-ink after:absolute after:inset-x-2.5 after:bottom-1.5 after:h-0.5 after:bg-rust-500'
-      : 'text-ink-muted hover:text-ink'
+      ? 'font-medium text-ink after:absolute after:inset-x-3 after:bottom-1.5 after:h-0.5 after:bg-rust-500'
+      : 'text-ink-muted hover:bg-paper-300/60 hover:text-ink'
   }`;
+
+const iconButtonClass =
+  'inline-flex h-11 w-11 items-center justify-center rounded text-ink-muted transition-colors hover:bg-paper-300/60 hover:text-ink';
 
 const isPathActive = (pathname, path) => {
   if (path === '/') return pathname === '/';
@@ -173,25 +176,44 @@ const Header = ({ topOffset = 0 }) => {
       className="fixed left-0 right-0 z-[9999] border-b border-ink bg-paper"
       style={{ top: topOffset }}
     >
-      <nav className="mx-auto flex h-16 max-w-6xl items-center gap-2 px-4 sm:px-6 lg:gap-6">
-        <Link to="/" className="z-10 flex min-w-0 shrink-0 items-baseline gap-2" aria-label="DataEngineer Hub home">
+      <nav className="mx-auto flex h-16 max-w-6xl items-center gap-1 px-4 sm:px-6 lg:gap-8" aria-label="Primary">
+        <Link to="/" className="z-10 mr-auto flex min-h-11 min-w-0 shrink-0 items-center gap-2 rounded lg:mr-0" aria-label="DataEngineer Hub home">
           <span className="font-serif text-[21px] font-semibold leading-none tracking-tight text-ink sm:text-[23px]">
             DataEngineer Hub
           </span>
         </Link>
 
+        <Link
+          to="/tools"
+          className="hidden min-h-11 items-center gap-1.5 rounded px-3 text-[15px] text-ink-muted transition-colors hover:bg-paper-300/60 hover:text-ink sm:inline-flex lg:hidden"
+          aria-label="Free tools"
+          title="Free tools"
+        >
+          <Wrench className="h-4 w-4" />
+          <span>Tools</span>
+        </Link>
         <button
           type="button"
           onClick={() => setIsSearchOpen(true)}
-          className="lg:hidden ml-auto inline-flex h-10 w-10 items-center justify-center text-ink-muted transition-colors hover:text-ink"
+          className={`${iconButtonClass} lg:hidden`}
           aria-label="Search articles"
           title="Search"
         >
           <Search className="h-5 w-5" />
         </button>
         <ThemeToggle className="lg:hidden" />
+        <button
+          type="button"
+          onClick={() => setMobileMenuOpen((open) => !open)}
+          className={`${iconButtonClass} text-ink lg:hidden`}
+          aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
+          aria-expanded={isMenuOpen}
+          aria-controls="mobile-menu"
+        >
+          {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+        </button>
 
-        <div className="hidden flex-1 items-center justify-end gap-1 lg:flex">
+        <div className="hidden flex-1 items-center justify-end gap-2 lg:flex">
           {visibleMainLinks
             .filter((item) => item.path !== '/about')
             .map((item) => (
@@ -232,8 +254,9 @@ const Header = ({ topOffset = 0 }) => {
                 <div
                   id="learn-menu"
                   role="menu"
-                  className="absolute right-0 top-full z-50 mt-2 w-60 rounded-md border border-paper-500 bg-paper-50 p-1.5 shadow-lg"
+                  className="absolute right-0 top-full z-50 w-64 pt-2"
                 >
+                  <div className="space-y-0.5 rounded-md border border-paper-500 bg-paper-50 p-2 shadow-lg">
                   {visibleLearnLinks.map((item) => {
                     const Icon = item.icon;
                     return (
@@ -241,7 +264,7 @@ const Header = ({ topOffset = 0 }) => {
                         key={item.path}
                         to={item.path}
                         role="menuitem"
-                        className={`flex min-h-10 items-center gap-2.5 rounded px-3 text-sm transition-colors ${
+                        className={`flex min-h-11 items-center gap-3 rounded px-3 text-[15px] transition-colors ${
                           isPathActive(currentPath, item.path)
                             ? 'bg-rust-50 text-rust-600'
                             : 'text-ink-soft hover:bg-paper-300 hover:text-ink'
@@ -257,6 +280,7 @@ const Header = ({ topOffset = 0 }) => {
                       </Link>
                     );
                   })}
+                  </div>
                 </div>
             )}
           </div>
@@ -274,11 +298,11 @@ const Header = ({ topOffset = 0 }) => {
             ))}
         </div>
 
-        <div className="hidden items-center gap-1 border-l border-paper-500 pl-4 lg:flex">
+        <div className="hidden items-center gap-1 border-l border-paper-500 pl-6 lg:flex">
           <button
             type="button"
             onClick={() => setIsSearchOpen(true)}
-            className="inline-flex min-h-10 items-center gap-2 px-2 text-[15px] text-ink-muted transition-colors hover:text-ink"
+            className="inline-flex min-h-11 items-center gap-2 rounded px-3 text-[15px] text-ink-muted transition-colors hover:bg-paper-300/60 hover:text-ink"
             title="Search (Ctrl+K)"
           >
             <Search className="h-4 w-4" />
@@ -292,42 +316,11 @@ const Header = ({ topOffset = 0 }) => {
           <button
             type="button"
             onClick={() => setIsSupportOpen(true)}
-            className="inline-flex h-10 w-10 items-center justify-center text-ink-faint transition-colors hover:text-rust-500"
+            className={`${iconButtonClass} hover:text-rust-600`}
             title="Support DataEngineer Hub"
             aria-label="Buy me a coffee"
           >
             <Coffee className="h-4 w-4" />
-          </button>
-        </div>
-
-        <div className="flex shrink-0 items-center gap-0.5 lg:hidden">
-          <Link
-            to="/tools"
-            className="inline-flex h-10 items-center gap-1 px-2 text-sm text-ink-muted transition-colors hover:text-ink"
-            aria-label="Free tools"
-            title="Free tools"
-          >
-            <Wrench className="h-4 w-4" />
-            <span>Tools</span>
-          </Link>
-          <button
-            type="button"
-            onClick={() => setIsSupportOpen(true)}
-            className="hidden h-11 w-11 items-center justify-center text-ink-faint transition-colors hover:text-rust-500 min-[400px]:inline-flex"
-            aria-label="Buy me a coffee"
-            title="Buy me a coffee"
-          >
-            <Coffee className="h-4 w-4" />
-          </button>
-          <button
-            type="button"
-            onClick={() => setMobileMenuOpen((open) => !open)}
-            className="inline-flex h-11 w-11 items-center justify-center text-ink transition-colors hover:text-rust-500"
-            aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
-            aria-expanded={isMenuOpen}
-            aria-controls="mobile-menu"
-          >
-            {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
           </button>
         </div>
       </nav>
@@ -335,18 +328,17 @@ const Header = ({ topOffset = 0 }) => {
       {isMenuOpen && (
           <div
             id="mobile-menu"
-            className="border-t border-paper-500 bg-paper lg:hidden"
-            style={{ maxHeight: `calc(100vh - ${topOffset}px - 4rem)` }}
+            className="border-t border-paper-500 bg-paper shadow-lg lg:hidden"
           >
-            <div className="mx-auto max-w-7xl space-y-5 overflow-y-auto overscroll-contain px-4 py-4">
+            <div className="mx-auto max-w-6xl space-y-6 overflow-y-auto overscroll-contain px-4 pb-6 pt-5 sm:px-6" style={{ maxHeight: `calc(100vh - ${topOffset}px - 4rem)` }}>
               <div>
-                <p className="kicker mb-2 px-1">
+                <p className="kicker mb-2 px-3">
                   Free tools
                 </p>
-                <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1">
+                <div className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 sm:mx-0 sm:px-0">
                   {visibleFeaturedTools.map((tool) => {
                     const className =
-                      'shrink-0 rounded border border-paper-500 bg-paper-50 px-3 py-2 text-xs text-ink-soft';
+                      'inline-flex min-h-11 shrink-0 items-center rounded border border-paper-500 bg-paper-50 px-4 text-sm text-ink-soft hover:bg-paper-300';
                     return (
                       <Link
                         key={tool.slug}
@@ -407,7 +399,7 @@ const Header = ({ topOffset = 0 }) => {
                     setMobileMenuOpen(false);
                     setIsSupportOpen(true);
                   }}
-                  className="flex min-h-11 items-center gap-2 rounded px-3 text-sm text-ink-soft hover:bg-paper-300"
+                  className="flex min-h-12 items-center gap-3 rounded px-3 text-[15px] text-ink-soft hover:bg-paper-300"
                 >
                   <Coffee className="h-4 w-4" />
                   Buy me a coffee
@@ -417,7 +409,7 @@ const Header = ({ topOffset = 0 }) => {
               <Link
                 to="/articles"
                 onClick={() => setMobileMenuOpen(false)}
-                className="flex min-h-12 items-center justify-center rounded bg-ink text-sm font-medium text-paper"
+                className="flex min-h-12 items-center justify-center rounded bg-ink text-[15px] font-medium text-paper hover:bg-rust-600"
               >
                 Explore articles
               </Link>
@@ -437,10 +429,10 @@ const Header = ({ topOffset = 0 }) => {
 
 const MobileGroup = ({ title, children }) => (
   <div>
-    <p className="kicker mb-2 px-1">
+    <p className="kicker mb-2 px-3">
       {title}
     </p>
-    <div className="grid grid-cols-2 gap-1">{children}</div>
+    <div className="grid grid-cols-1 gap-1 min-[480px]:grid-cols-2">{children}</div>
   </div>
 );
 
@@ -450,7 +442,7 @@ const MobileLink = ({ item, active, onClick }) => {
     <Link
       to={item.path}
       onClick={onClick}
-      className={`flex min-h-11 items-center gap-2 rounded px-3 text-sm ${
+      className={`flex min-h-12 items-center gap-3 rounded px-3 text-[15px] ${
         active ? 'bg-rust-50 text-rust-600' : 'text-ink-soft hover:bg-paper-300 hover:text-ink'
       }`}
     >

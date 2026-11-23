@@ -66,14 +66,14 @@ const Footer = () => {
     { name: 'Email', icon: Mail, href: 'mailto:sainath@dataengineerhub.blog' }
   ];
 
-  const linkClass = 'text-[15px] text-paper-600 transition-colors hover:text-paper';
+  const linkClass = 'inline-flex min-h-9 items-center text-[15px] text-paper-600 transition-colors hover:text-paper hover:underline';
 
   // Dark ink band closes the page like a newspaper colophon. Uses the
   // explicit paper/ink tokens because legacy white/gray classes are inverted.
   return (
     <footer className="mt-16 bg-ink text-paper">
       <div className="mx-auto max-w-6xl px-4 py-14 sm:px-6">
-        <div className="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1fr]">
+        <div className="grid grid-cols-1 gap-12 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1fr]">
           <div className="sm:col-span-2 lg:col-span-1">
             <Link to="/" className="font-serif text-2xl font-semibold text-paper">
               DataEngineer Hub
@@ -82,7 +82,7 @@ const Footer = () => {
               Production notes on Snowflake, dbt, Airflow and the modern data stack, written and
               maintained by Sainath Reddy.
             </p>
-            <div className="mt-5 flex gap-4">
+            <div className="mt-5 flex gap-1">
               {socialLinks.map((social) => {
                 const IconComponent = social.icon;
                 return (
@@ -91,7 +91,7 @@ const Footer = () => {
                     href={social.href}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-paper-600 transition-colors hover:text-rust-300"
+                    className="inline-flex h-11 w-11 items-center justify-center rounded text-paper-600 transition-colors hover:text-rust-300"
                     aria-label={`Visit ${social.name}`}
                   >
                     <IconComponent className="h-5 w-5" />
@@ -111,7 +111,7 @@ const Footer = () => {
           ].map((section) => (
             <div key={section.title}>
               <p className="mb-4 font-mono text-[11px] uppercase tracking-[0.08em] text-rust-300">{section.title}</p>
-              <ul className="space-y-2.5">
+              <ul className="space-y-0.5">
                 {section.links.map((link) => (
                   <li key={link.name}>
                     {link.action ? (
