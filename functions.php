@@ -195,6 +195,50 @@ function dehub_rest_delete_guest_author($request) {
 }
 
 /**
+ * Upload an author headshot into the Media Library and return its URL.
+ * JPEG, PNG or WebP only, 2 MB max, and the bytes must decode as an image.
+ */
+function dehub_rest_upload_author_avatar($request) {
+    $files = $request->get_file_params();
+    $file  = isset($files['file']) ? $files['file'] : null;
+
+    if (!$file || !empty($file['error']) || empty($file['tmp_name'])) {
+        return new WP_Error('dehub_no_file', 'No image received. Choose a JPEG, PNG or WebP file.', ['status' => 400]);
+    }
+    if ((int) $file['size'] > 2 * 1024 * 1024) {
+        return new WP_Error('dehub_too_large', 'Image is larger than 2 MB.', ['status' => 413]);
+    }
+
+    $mimes = [
+        'jpg|jpeg|jpe' => 'image/jpeg',
+        'png'          => 'image/png',
+        'webp'         => 'image/webp',
+    ];
+    $check = wp_check_filetype_and_ext($file['tmp_name'], $file['name'], $mimes);
+    if (empty($check['type']) || !@getimagesize($file['tmp_name'])) {
+        return new WP_Error('dehub_bad_type', 'Only JPEG, PNG or WebP images are allowed.', ['status' => 415]);
+    }
+
+    require_once ABSPATH . 'wp-admin/includes/file.php';
+    require_once ABSPATH . 'wp-admin/includes/image.php';
+    require_once ABSPATH . 'wp-admin/includes/media.php';
+
+    $title = sanitize_text_field((string) $request->get_param('name'));
+    $attachment_id = media_handle_upload('file', 0, [
+        'post_title' => $title !== '' ? $title . ' (author photo)' : 'Author photo',
+    ], ['test_form' => false, 'mimes' => $mimes]);
+
+    if (is_wp_error($attachment_id)) {
+        return new WP_Error('dehub_upload_failed', $attachment_id->get_error_message(), ['status' => 500]);
+    }
+
+    update_post_meta($attachment_id, '_dehub_author_avatar', 1);
+    $url = wp_get_attachment_image_url($attachment_id, 'medium') ?: wp_get_attachment_url($attachment_id);
+
+    return rest_ensure_response(['id' => $attachment_id, 'url' => esc_url_raw($url)]);
+}
+
+/**
  * Guest-author writes change public author pages, so they need a signed-in
  * WordPress user who can edit users (cookie session or Application Password).
  * Reads stay public.
@@ -243,6 +287,16 @@ add_action('rest_api_init', function () {
             },
             'permission_callback' => 'dehub_can_manage_guest_authors'
         ]
+    ]);
+
+    // Avatar upload for the admin Contributor Manager. Registered before the
+    // (?P<id>) route below so "avatar" is never read as a guest author id.
+    register_rest_route('dehub/v1', '/guest-authors/avatar', [
+        'methods'  => 'POST',
+        'callback' => 'dehub_rest_upload_author_avatar',
+        'permission_callback' => function () {
+            return dehub_can_manage_guest_authors() && current_user_can('upload_files');
+        },
     ]);
 
     register_rest_route('dehub/v1', '/guest-authors/(?P<id>[a-zA-Z0-9_-]+)', [
@@ -4518,8 +4572,14 @@ function dehub_newsletter_send_batch($post_id, $after_id) {
     $slug = $post->post_name;
     $url = DEHUB_PUBLIC_SITE . '/articles/' . rawurlencode($slug)
         . '?utm_source=newsletter&utm_medium=email&utm_campaign=' . rawurlencode($slug);
-    $title = wp_strip_all_tags(get_the_title($post));
-    $summary = has_excerpt($post) ? wp_strip_all_tags($post->post_excerpt) : wp_trim_words(wp_strip_all_tags(strip_shortcodes($post->post_content)), 60);
+    // get_the_title() and trimmed content come back HTML-encoded (&amp;, &#8217;).
+    // Decode to plain text once: the subject and plain-text part show it as-is,
+    // and esc_html() below re-encodes it for the HTML body.
+    $decode = function ($value) {
+        return html_entity_decode((string) $value, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+    };
+    $title = $decode(wp_strip_all_tags(get_the_title($post)));
+    $summary = $decode(has_excerpt($post) ? wp_strip_all_tags($post->post_excerpt) : wp_trim_words(wp_strip_all_tags(strip_shortcodes($post->post_content)), 60));
 
     $last_id = (int) $after_id;
     $sent = 0;
@@ -4527,7 +4587,7 @@ function dehub_newsletter_send_batch($post_id, $after_id) {
         $token = (string) $row->token;
         $footer = $token !== ''
             ? 'You get this because you subscribed at dataengineerhub.blog. <a href="' . esc_url(dehub_newsletter_unsubscribe_page_url($token)) . '" style="color:#77705F;">Unsubscribe</a>'
-            : 'Test send to the site owner. Set DEHUB_NEWSLETTER_MODE to live to email subscribers.';
+            : 'Test send, delivered to the site owner only.';
         $html = dehub_newsletter_wrap_html(
             '<p style="margin:0 0 8px;font-family:Arial,sans-serif;font-size:12px;color:#77705F;">New article</p>'
             . '<h1 style="font-size:26px;line-height:1.2;margin:0 0 14px;"><a href="' . esc_url($url) . '" style="color:#1B1A17;text-decoration:none;">' . esc_html($title) . '</a></h1>'
