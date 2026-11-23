@@ -36,7 +36,9 @@ assert(redirects.includes('/.well-known/* /well-known/:splat 200'), '_redirects 
 assert(redirects.includes('/playground /tools/sql-playground/ 301'), '_redirects must keep the short playground URL');
 assert(redirects.includes('/cookie-policy /privacy-policy/ 301'), '_redirects must keep the cookie-policy alias');
 assert(!/^\s*\/\*\/ \/:splat 301\s*$/m.test(redirects), '_redirects must not strip trailing slashes (loops with Pages 308)');
-assert(redirects.includes('/admin /index.html 200'), '_redirects must still serve private app shells');
+assert(redirects.includes('/admin /app-shell/ 200'), '_redirects must still serve private app shells');
+assert(!/^\S+ \/index\.html 200\s*$/m.test(redirects), '_redirects must not rewrite to /index.html (Pages 308s it to /)');
+assert(headers.includes('/app-shell/'), '_headers must noindex the /app-shell/ copy of the SPA shell');
 
 for (const [from, to] of Object.entries(redirectsJson)) {
   assert(

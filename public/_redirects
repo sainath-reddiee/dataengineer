@@ -104,11 +104,14 @@
 
 # Private / noindex app shells have no static HTML. Serve the SPA without
 # turning every unknown public URL into a homepage duplicate.
-/admin /index.html 200
-/admin/* /index.html 200
-/debug /index.html 200
-/debug/* /index.html 200
-/sponsors/dashboard /index.html 200
-/announcements /index.html 200
-/announcements/* /index.html 200
-/advertise/checkout /index.html 200
+# Target is /app-shell/ (a copy of index.html made by pages:prepare), NOT
+# /index.html: Pages canonicalises /index.html to /, so a rewrite to it answers
+# 308 to the homepage and the app route never loads.
+/admin /app-shell/ 200
+/admin/* /app-shell/ 200
+/debug /app-shell/ 200
+/debug/* /app-shell/ 200
+/sponsors/dashboard /app-shell/ 200
+/announcements /app-shell/ 200
+/announcements/* /app-shell/ 200
+/advertise/checkout /app-shell/ 200

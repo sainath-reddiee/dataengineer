@@ -41,6 +41,11 @@ for (const name of ['_headers', '_redirects']) {
   fs.copyFileSync(from, path.join(dest, name));
 }
 
+// _redirects rewrites /admin, /debug, etc. to /app-shell/. Pages turns a
+// rewrite to /index.html into a 308 to /, so the SPA shell needs its own path.
+fs.mkdirSync(path.join(dest, 'app-shell'), { recursive: true });
+fs.copyFileSync(path.join(dest, 'index.html'), path.join(dest, 'app-shell', 'index.html'));
+
 const removed = [];
 for (const file of walk(dest)) {
   const base = path.basename(file);
@@ -75,6 +80,12 @@ for (const required of ['_headers', '_redirects', '404.html', 'index.html']) {
 const redirects = fs.readFileSync(path.join(dest, '_redirects'), 'utf8');
 if (/^\s*\/\* \/index\.html 200\s*$/m.test(redirects)) {
   fail('SPA catch-all /* /index.html 200 would duplicate the homepage onto unknown URLs');
+}
+if (/^\S+ \/index\.html 200\s*$/m.test(redirects)) {
+  fail('a 200 rewrite to /index.html is answered with a 308 to / by Pages; target /app-shell/ instead');
+}
+if (!redirects.includes('/admin /app-shell/ 200')) {
+  fail('_redirects must rewrite /admin to /app-shell/');
 }
 if (!redirects.includes('/.well-known/* /well-known/:splat 200')) {
   fail('_redirects must map /.well-known/* onto /well-known/');

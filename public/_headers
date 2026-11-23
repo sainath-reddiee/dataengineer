@@ -181,6 +181,10 @@ https://:project.pages.dev/*
   X-Robots-Tag: noindex, nofollow
   Cache-Control: no-store, max-age=0, must-revalidate
 
+/app-shell/
+  X-Robots-Tag: noindex, nofollow
+  Cache-Control: no-store, max-age=0, must-revalidate
+
 # NOTE: Pages MERGES headers from every matching rule (it does not let a
 # specific rule override a wildcard), so a wildcard noindex plus a specific
 # 'index' rule sends noindex on the allowed page. Held-out slugs are therefore
