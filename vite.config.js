@@ -1,4 +1,4 @@
-import { defineConfig } from 'vite';
+import { defineConfig, loadEnv } from 'vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
 import fs from 'fs';
@@ -23,6 +23,27 @@ export default defineConfig({
         ].filter(Boolean)
       }
     }),
+
+    // VITE_* values are compiled into the public bundle. If a plaintext
+    // username or password is pasted into the admin hash variables, it ships
+    // to every visitor and login can never match. Refuse to build; the message
+    // never includes the value.
+    {
+      name: 'admin-hash-guard',
+      config(_, { mode, command }) {
+        if (command !== 'build') return;
+        const fromFile = loadEnv(mode, process.cwd(), 'VITE_ADMIN_');
+        for (const key of ['VITE_ADMIN_USER_HASH', 'VITE_ADMIN_PASS_HASH']) {
+          const value = process.env[key] ?? fromFile[key] ?? '';
+          if (value && !/^[0-9a-f]{64}$/.test(value)) {
+            throw new Error(
+              `${key} must be a lowercase 64-character SHA-256 hex hash (it is ${value.length} characters). ` +
+              'A plaintext value would be published in the site JavaScript. See the comment at the top of src/components/admin/AdminAuth.jsx.'
+            );
+          }
+        }
+      },
+    },
 
     // Homepage first paint is inline CSS + the static hero. The Tailwind
     // bundle (~24 KB) was render-blocking for 1.2s on slow 4G / PSI mobile.

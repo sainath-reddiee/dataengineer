@@ -4613,6 +4613,137 @@ function dehub_newsletter_send_batch($post_id, $after_id) {
 
 
 // ============================================================================
+// NEWSLETTER SUBSCRIBERS ADMIN (Tools > Newsletter subscribers)
+// ============================================================================
+// Lists the subscriber table with status counts, search and a status filter,
+// and deletes rows (one, or ticked in bulk). Use it to clear test addresses
+// and addresses that bounce with "user unknown", which hurt sender reputation.
+add_action('admin_menu', function () {
+    add_management_page(
+        'Newsletter subscribers',
+        'Newsletter subscribers',
+        'manage_options',
+        'dehub-newsletter-subscribers',
+        'dehub_newsletter_admin_page'
+    );
+});
+
+function dehub_newsletter_looks_like_test($email) {
+    return (bool) preg_match('/@(dataengineerhub\.blog|example\.(com|org|net)|test\.|localhost)|\+nl-/i', (string) $email);
+}
+
+function dehub_newsletter_admin_page() {
+    if (!current_user_can('manage_options')) {
+        wp_die('You do not have permission to manage subscribers.');
+    }
+    global $wpdb;
+    $table = dehub_newsletter_table_name();
+    $base = admin_url('tools.php?page=dehub-newsletter-subscribers');
+    $notice = '';
+
+    if (isset($_POST['dehub_nl_delete'])) {
+        check_admin_referer('dehub_nl_delete');
+        $ids = isset($_POST['ids']) ? (array) wp_unslash($_POST['ids']) : array();
+        if (!empty($_POST['single'])) {
+            $ids = array(wp_unslash($_POST['single']));
+        }
+        $ids = array_values(array_filter(array_map('intval', $ids)));
+        if ($ids) {
+            $marks = implode(',', array_fill(0, count($ids), '%d'));
+            $deleted = (int) $wpdb->query($wpdb->prepare("DELETE FROM {$table} WHERE id IN ({$marks})", $ids));
+            delete_transient('dehub_newsletter_count');
+            $notice = $deleted . ' subscriber' . ($deleted === 1 ? '' : 's') . ' deleted.';
+        } else {
+            $notice = 'Nothing was selected.';
+        }
+    }
+
+    $status = isset($_GET['status']) ? sanitize_key(wp_unslash($_GET['status'])) : '';
+    $search = isset($_GET['s']) ? sanitize_text_field(wp_unslash($_GET['s'])) : '';
+    $paged = max(1, (int) (isset($_GET['paged']) ? $_GET['paged'] : 1));
+    $per_page = 50;
+
+    $where = array('1=1');
+    $args = array();
+    if (in_array($status, array('active', 'pending', 'unsubscribed'), true)) {
+        $where[] = 'status = %s';
+        $args[] = $status;
+    } else {
+        $status = '';
+    }
+    if ($search !== '') {
+        $where[] = 'email LIKE %s';
+        $args[] = '%' . $wpdb->esc_like($search) . '%';
+    }
+    $where_sql = implode(' AND ', $where);
+
+    $count_sql = "SELECT COUNT(*) FROM {$table} WHERE {$where_sql}";
+    $total = (int) ($args ? $wpdb->get_var($wpdb->prepare($count_sql, $args)) : $wpdb->get_var($count_sql));
+    $pages = max(1, (int) ceil($total / $per_page));
+    $paged = min($paged, $pages);
+
+    $rows_sql = "SELECT id, email, status, subscribed_date, confirmed_date FROM {$table} WHERE {$where_sql} ORDER BY id DESC LIMIT %d OFFSET %d";
+    $rows = $wpdb->get_results($wpdb->prepare($rows_sql, array_merge($args, array($per_page, ($paged - 1) * $per_page))), ARRAY_A);
+
+    $by_status = array('active' => 0, 'pending' => 0, 'unsubscribed' => 0);
+    foreach ((array) $wpdb->get_results("SELECT status, COUNT(*) AS n FROM {$table} GROUP BY status", ARRAY_A) as $r) {
+        $by_status[$r['status']] = (int) $r['n'];
+    }
+    $live = dehub_newsletter_const('DEHUB_NEWSLETTER_MODE') === 'live';
+
+    echo '<div class="wrap"><h1>Newsletter subscribers</h1>';
+    if ($notice !== '') {
+        echo '<div class="notice notice-success is-dismissible"><p>' . esc_html($notice) . '</p></div>';
+    }
+    echo '<p>Sending is <strong>' . ($live ? 'live' : 'in test mode (only the site owner receives articles)') . '</strong>. ';
+    echo 'Only <strong>active</strong> (confirmed) subscribers receive new articles. ';
+    echo 'Active: <strong>' . (int) $by_status['active'] . '</strong> &middot; Pending: <strong>' . (int) $by_status['pending']
+        . '</strong> &middot; Unsubscribed: <strong>' . (int) $by_status['unsubscribed'] . '</strong></p>';
+
+    echo '<form method="get" style="margin:12px 0"><input type="hidden" name="page" value="dehub-newsletter-subscribers">';
+    echo '<select name="status"><option value="">All statuses</option>';
+    foreach (array('active', 'pending', 'unsubscribed') as $s) {
+        echo '<option value="' . esc_attr($s) . '"' . selected($status, $s, false) . '>' . esc_html($s) . '</option>';
+    }
+    echo '</select> <input type="search" name="s" value="' . esc_attr($search) . '" placeholder="Search email"> <button class="button">Filter</button></form>';
+
+    echo '<form method="post" action="' . esc_url(add_query_arg(array('status' => $status, 's' => $search, 'paged' => $paged), $base)) . '">';
+    wp_nonce_field('dehub_nl_delete');
+    echo '<p><button class="button button-secondary" name="dehub_nl_delete" value="1" onclick="this.form.querySelector(\'#dehub-nl-single\').value=\'\';return confirm(\'Delete the ticked subscribers permanently?\');">Delete ticked</button> ';
+    echo '<span class="description">' . (int) $total . ' match' . ($total === 1 ? '' : 'es') . '. Rows flagged "test address" use your own domain, example.com or a +nl- tag.</span></p>';
+    echo '<table class="widefat striped"><thead><tr>';
+    echo '<td class="check-column"><input type="checkbox" onclick="document.querySelectorAll(\'.dehub-nl-row\').forEach(function(c){c.checked=this.checked}.bind(this));"></td>';
+    echo '<th>Email</th><th>Status</th><th>Signed up (UTC)</th><th>Confirmed (UTC)</th><th></th></tr></thead><tbody>';
+    if (!$rows) {
+        echo '<tr><td colspan="6">No subscribers match.</td></tr>';
+    }
+    foreach ((array) $rows as $row) {
+        $flag = dehub_newsletter_looks_like_test($row['email']) ? ' <span style="color:#b32d2e">test address</span>' : '';
+        echo '<tr>';
+        echo '<th class="check-column"><input class="dehub-nl-row" type="checkbox" name="ids[]" value="' . (int) $row['id'] . '"></th>';
+        echo '<td>' . esc_html($row['email']) . $flag . '</td>';
+        echo '<td>' . esc_html($row['status']) . '</td>';
+        echo '<td>' . esc_html((string) $row['subscribed_date']) . '</td>';
+        echo '<td>' . esc_html((string) $row['confirmed_date']) . '</td>';
+        echo '<td><button class="button-link-delete" name="dehub_nl_delete" value="1" onclick="this.form.querySelector(\'#dehub-nl-single\').value=' . (int) $row['id'] . ';return confirm(\'Delete this subscriber permanently?\');">Delete</button></td>';
+        echo '</tr>';
+    }
+    echo '</tbody></table>';
+    echo '<input type="hidden" id="dehub-nl-single" name="single" value="">';
+    echo '</form>';
+
+    if ($pages > 1) {
+        echo '<p style="margin-top:12px">';
+        for ($i = 1; $i <= $pages; $i++) {
+            $url = add_query_arg(array('status' => $status, 's' => $search, 'paged' => $i), $base);
+            echo $i === $paged ? '<strong>' . $i . '</strong> ' : '<a href="' . esc_url($url) . '">' . $i . '</a> ';
+        }
+        echo '</p>';
+    }
+    echo '</div>';
+}
+
+// ============================================================================
 // SPONSORED ANNOUNCEMENTS (press releases)
 // ============================================================================
 // Posts in the "announcements" category are paid press releases. They live
