@@ -24,6 +24,8 @@ Disallow: /debug
 Disallow: /sponsors/dashboard
 Disallow: /practice/*/q/
 Disallow: /practice/*/topics/
+Disallow: /*?sql=
+Disallow: /tools/cloud-data-warehouse-cost-comparison/?*
 
 # Allow static assets
 Allow: /*.css$
@@ -63,6 +65,8 @@ Disallow: /debug
 Disallow: /sponsors/dashboard
 Disallow: /practice/*/q/
 Disallow: /practice/*/topics/
+Disallow: /*?sql=
+Disallow: /tools/cloud-data-warehouse-cost-comparison/?*
 
 User-agent: AdsBot-Google
 Allow: /
@@ -72,6 +76,8 @@ Disallow: /debug
 Disallow: /sponsors/dashboard
 Disallow: /practice/*/q/
 Disallow: /practice/*/topics/
+Disallow: /*?sql=
+Disallow: /tools/cloud-data-warehouse-cost-comparison/?*
 
 User-agent: AdsBot-Google-Mobile
 Allow: /
@@ -81,6 +87,8 @@ Disallow: /debug
 Disallow: /sponsors/dashboard
 Disallow: /practice/*/q/
 Disallow: /practice/*/topics/
+Disallow: /*?sql=
+Disallow: /tools/cloud-data-warehouse-cost-comparison/?*
 
 # =============================================================================
 # SITEMAPS
